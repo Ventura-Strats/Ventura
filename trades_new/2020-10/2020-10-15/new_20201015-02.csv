@@ -1,1 +1,2 @@
 trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020101502001,2020-10-15,4,KOSPI2:IND,314.34,down,-1,306.98781565455596,321.692184345444,2020-10-22,306.987815654556,321.692184345444,0.023389273860927817,156157.0725664578,2020-10-15 13:46:13,2020-10-15 13:49:00
