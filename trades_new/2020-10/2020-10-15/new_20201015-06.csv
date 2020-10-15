@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020101506001,2020-10-15,4,HEX25:IND,4398.55,down,-1,4317.61104174706,4479.48895825294,2020-10-22,4317.61104174706,4479.48895825294,0.01840128184354839,10.348488098121166,2020-10-15 22:46:10,2020-10-15 22:49:00
