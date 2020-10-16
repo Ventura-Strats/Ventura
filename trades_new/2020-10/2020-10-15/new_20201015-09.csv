@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020101609001,2020-10-15,14,XAUUSD,1908.95,down,-1,1868.345896557,1949.554103443,2020-10-22,1868.345896557,1949.554103443,0.021270386046256,24.6312784766812,2020-10-16 04:46:06,2020-10-16 04:49:00
