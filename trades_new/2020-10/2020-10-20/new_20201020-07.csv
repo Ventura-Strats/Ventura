@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020102007001,2020-10-20,9,EURPLN,4.5653,flat,0,4.6150466477185,4.5155533522815,2020-10-27,4.5155533522815,4.6150466477185,0.010896687560182139,77955.3678221772,2020-10-20 23:51:01,2020-10-20 23:53:00
