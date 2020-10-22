@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020102206001,2020-10-22,4,OMX:IND,1805.59,up,1,1840.75359651606,1770.4264034839398,2020-10-29,1770.42640348394,1840.75359651606,0.01947485116558023,246.33265178542655,2020-10-22 22:50:59,2020-10-22 22:54:00
