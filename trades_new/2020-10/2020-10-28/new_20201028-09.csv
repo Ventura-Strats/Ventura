@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020102809001,2020-10-28,14,USDSGD,1.365475,up,1,1.37139675249176,1.35955324750824,2020-11-04,1.35955324750824,1.37139675249176,0.004336771080949875,230586.30057572047,2020-10-29 04:50:59,2020-10-29 04:54:00
