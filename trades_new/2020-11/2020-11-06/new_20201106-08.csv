@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020110608001,2020-11-06,14,CCMP:IND,11915.21,down,-1,11545.159462719399,12285.2605372806,2020-11-13,11545.1594627194,12285.2605372806,0.031056988276379593,2.702333598401785,2020-11-07 04:50:16,2020-11-07 04:48:00
