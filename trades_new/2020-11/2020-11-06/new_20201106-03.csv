@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020110603001,2020-11-06,9,SHCOMP:IND,3311.62,up,1,3367.89374493381,3255.3462550661898,2020-11-13,3255.34625506619,3367.89374493381,0.01699281467493563,117.5530437467917,2020-11-06 14:50:14,2020-11-06 14:50:00
