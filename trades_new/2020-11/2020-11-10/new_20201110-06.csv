@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020111006001,2020-11-10,2,IBEX:IND,7663.0,up,1,7959.65114635533,7366.34885364467,2020-11-17,7366.34885364467,7959.65114635533,0.038712142288311435,2.8366214808530326,2020-11-10 23:50:28,2020-11-10 23:49:00
