@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020111309001,2020-11-13,6,CHFSEK,9.518,flat,0,9.80876762830203,9.227232371697971,2020-11-20,9.22723237169797,9.80876762830203,0.030549236005676494,29877.179246983556,2020-11-14 05:50:18,2020-11-14 05:49:00
