@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020111307001,2020-11-13,10,EURCZK,26.43725,flat,0,26.7227588550065,26.151741144993498,2020-11-20,26.1517411449935,26.7227588550065,0.010799491437517128,78337.55876695234,2020-11-14 00:50:16,2020-11-14 00:49:00
