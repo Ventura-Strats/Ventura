@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020112009001,2020-11-20,6,SEKJPY,12.0461,flat,0,12.4825442821871,11.609655717812899,2020-11-27,11.6096557178129,12.4825442821871,0.036231168775545664,237855.9757038975,2020-11-21 05:50:39,2020-11-21 05:49:00
