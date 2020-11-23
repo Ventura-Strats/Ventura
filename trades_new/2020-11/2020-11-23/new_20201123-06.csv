@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020112306001,2020-11-23,7,PSI20:IND,4453.33,up,1,4565.15690378736,4341.50309621264,2020-11-30,4341.50309621264,4565.15690378736,0.025110850484325153,7.557962188391067,2020-11-23 23:50:32,2020-11-23 23:49:00
