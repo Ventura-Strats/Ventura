@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020120203001,2020-12-02,14,SHSZ300:IND,5069.04,down,0,5069.04,5069.04,2020-12-09,4981.56936373341,5156.51063626659,0.017255858361068466,74.87284052718687,2020-12-02 14:50:13,2020-12-02 14:50:59
