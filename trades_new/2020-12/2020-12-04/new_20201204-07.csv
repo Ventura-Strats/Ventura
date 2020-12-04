@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020120407001,2020-12-04,14,EURRUB,89.70135,up,1,90.9478621978495,88.45483780215051,2020-12-11,88.4548378021505,90.9478621978495,0.013896247914323423,59285.21081274794,2020-12-05 00:50:21,2020-12-05 00:50:59
