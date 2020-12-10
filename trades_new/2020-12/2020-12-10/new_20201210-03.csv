@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020121003001,2020-12-10,14,SICOM:IND,13718.2,down,-1,13479.961133915402,13956.4388660846,2020-12-17,13479.9611339154,13956.4388660846,0.017366627260471335,27.415132162695613,2020-12-10 14:50:20,2020-12-10 14:50:59
