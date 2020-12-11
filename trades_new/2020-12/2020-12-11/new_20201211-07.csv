@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020121107001,2020-12-11,9,EURHUF,354.3025,up,1,357.63568524251,350.96931475749,2020-12-18,350.96931475749,357.63568524251,0.009407738422703815,87755.02872197262,2020-12-12 00:50:20,2020-12-12 00:50:59
