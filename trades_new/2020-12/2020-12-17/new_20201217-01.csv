@@ -1,1 +1,2 @@
 trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020121701001,2020-12-17,5,AS51:IND,6750.2,down,-1,6671.39563739386,6829.00436260614,2020-12-24,6671.39563739386,6829.00436260614,0.011674374478702898,16.724969906647917,2020-12-17 12:50:24,2020-12-17 12:50:59
