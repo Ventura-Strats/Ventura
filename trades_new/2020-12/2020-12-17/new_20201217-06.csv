@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020121706001,2020-12-17,2,DAX:IND,13691.45,up,1,13936.687828812,13446.212171188,2020-12-24,13446.212171188,13936.687828812,0.017911749947010724,3.3283741111221428,2020-12-17 23:50:24,2020-12-17 23:50:59
