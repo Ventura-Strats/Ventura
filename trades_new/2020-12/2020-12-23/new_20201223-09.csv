@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020122309001,2020-12-23,14,EURNZD,1.7185,up,1,1.73383144617962,1.7031685538203798,2020-12-30,1.70316855382038,1.73383144617962,0.008921411800768109,91995.7177880863,2020-12-24 05:50:21,2020-12-24 05:50:59
