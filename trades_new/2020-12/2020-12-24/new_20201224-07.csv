@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020122407001,2020-12-24,10,EURHUF,363.22,flat,0,367.586555439111,358.85344456088905,2020-12-31,358.853444560889,367.586555439111,0.012021792409864451,68253.52026682906,2020-12-25 00:50:20,2020-12-25 00:50:59
