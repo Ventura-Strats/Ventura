@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020122806001,2020-12-28,11,PSI20:IND,4929.14,flat,0,5041.89324918322,4816.3867508167805,2021-01-04,4816.38675081678,5041.89324918322,0.022874831955111752,7.254298525550529,2020-12-28 23:50:24,2020-12-28 23:50:59
