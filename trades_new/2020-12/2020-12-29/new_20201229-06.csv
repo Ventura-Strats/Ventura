@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020122906001,2020-12-29,12,SX5E:IND,3582.72,up,1,3642.25558569136,3523.1844143086396,2021-01-05,3523.18441430864,3642.25558569136,0.016617426338469077,13.710174024610655,2020-12-29 23:50:25,2020-12-29 23:50:59
