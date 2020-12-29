@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020122908001,2020-12-29,14,NDX:IND,12846.77,down,-1,12599.0416224012,13094.4983775988,2021-01-05,12599.0416224012,13094.4983775988,0.019283320056232123,4.036679243988393,2020-12-30 04:50:20,2020-12-30 04:50:59
