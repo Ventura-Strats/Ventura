@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020123008001,2020-12-30,5,RTY:IND,1980.83,up,1,2020.18109567411,1941.4789043258897,2021-01-06,1941.47890432589,2020.18109567411,0.019865963093304462,25.412253022929583,2020-12-31 04:50:27,2020-12-31 04:50:59
