@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020123004001,2020-12-30,7,JPYKRW,10.5091,flat,0,10.6132876483539,10.4049123516461,2021-01-06,10.4049123516461,10.6132876483539,0.009914041007688557,10420826.373411095,2020-12-30 15:50:20,2020-12-30 15:50:59
