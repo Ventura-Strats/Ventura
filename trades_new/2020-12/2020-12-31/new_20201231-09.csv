@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2020123109001,2020-12-31,13,BTCUSD,28985.0,up,1,30988.6067924084,26981.3932075916,2021-01-07,26981.3932075916,30988.6067924084,0.06912564403686061,0.49909992508957574,2021-01-01 05:50:33,2021-01-01 05:50:59
