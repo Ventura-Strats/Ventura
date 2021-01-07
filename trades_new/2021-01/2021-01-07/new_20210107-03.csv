@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021010703001,2021-01-07,2,FTXIN9:IND,18630.71,up,1,18984.9109663674,18276.5090336326,2021-01-14,18276.5090336326,18984.9109663674,0.01901167300480755,18.180851018120595,2021-01-07 14:50:22,2021-01-07 14:50:59
