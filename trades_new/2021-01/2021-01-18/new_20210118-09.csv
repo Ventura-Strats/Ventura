@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021011809001,2021-01-15,14,USDTRY,7.4757,flat,0,7.6255440428015,7.3258559571985,2021-01-22,7.32585595719851,7.6255440428015,0.020044148748812773,49889.871230337514,2021-01-16 05:50:22,2021-01-19 05:50:59
