@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021012502001,2021-01-25,4,TPX:IND,1855.87,down,-1,1828.0910478265498,1883.64895217345,2021-02-01,1828.09104782655,1883.64895217345,0.014968156268192256,3732.9521773362717,2021-01-25 13:50:23,2021-01-25 13:50:59
