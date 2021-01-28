@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021012809001,2021-01-28,9,GBPNOK,11.8018,flat,0,11.9654018406765,11.6381981593235,2021-02-04,11.6381981593235,11.9654018406765,0.013862448158459051,52559.07481712207,2021-01-29 05:50:17,2021-01-29 05:50:59
