@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021012806001,2021-01-28,9,FTSEMIB:IND,21891.5,down,-1,21407.4971985556,22375.5028014444,2021-02-04,21407.4971985556,22375.5028014444,0.02210916572388366,1.70256380680018,2021-01-28 23:50:17,2021-01-28 23:50:59
