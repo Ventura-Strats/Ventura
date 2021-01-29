@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021012908001,2021-01-29,4,XBI:US,153.33,down,-1,146.73192170821403,159.928078291786,2021-02-05,146.731921708214,159.928078291786,0.0430318808568837,151.55928071434244,2021-01-30 04:50:16,2021-01-30 04:50:59
