@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021020802001,2021-02-08,11,TPX:IND,1920.66,flat,0,1955.87923433683,1885.4407656631702,2021-02-15,1885.44076566317,1955.87923433683,0.018337047856898048,2995.3944765255815,2021-02-08 13:50:15,2021-02-08 13:50:59
