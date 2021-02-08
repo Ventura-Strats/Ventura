@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021020806001,2021-02-08,5,CAC:IND,5707.75,flat,0,5827.32840113154,5588.17159886846,2021-02-15,5588.17159886846,5827.32840113154,0.020950181968646175,6.935666248312624,2021-02-08 23:50:17,2021-02-08 23:50:59
