@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021022607001,2021-02-26,14,EURRUB,90.268875,down,-1,89.02918788468568,91.5085621153143,2021-03-05,89.0291878846857,91.5085621153143,0.013733273127800816,60205.25953554119,2021-02-27 00:50:17,2021-02-27 00:50:59
