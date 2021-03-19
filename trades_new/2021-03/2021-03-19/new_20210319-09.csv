@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021031909001,2021-03-19,9,AUDNZD,1.08073,flat,0,1.08776730564641,1.0736926943535898,2021-03-26,1.07369269435359,1.08776730564641,0.006511622372294745,198297.57776808878,2021-03-20 04:50:17,2021-03-20 04:50:59
