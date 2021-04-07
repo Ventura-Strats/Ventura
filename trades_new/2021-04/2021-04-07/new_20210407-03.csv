@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021040703001,2021-04-07,14,SHCOMP:IND,3477.34,flat,0,3537.64004956873,3417.0399504312704,2021-04-14,3417.03995043127,3537.64004956873,0.017340855242435227,108.53531708196017,2021-04-07 14:50:16,2021-04-07 14:50:59
