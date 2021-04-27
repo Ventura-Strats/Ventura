@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021042708001,2021-04-27,14,IBOV:IND,119388.37,up,1,121295.07429029,117481.66570971,2021-05-04,117481.66570971,121295.07429029,0.015970603252980053,2.859436582675753,2021-04-27 21:50:16,2021-04-27 21:50:59
