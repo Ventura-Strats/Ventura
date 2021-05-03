@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021050308001,2021-05-03,8,CHFJPY,119.7065,flat,0,120.662286606313,118.75071339368701,2021-05-10,118.750713393687,120.662286606313,0.007984416939038397,114117.28708016807,2021-05-03 21:50:15,2021-05-03 21:50:59
