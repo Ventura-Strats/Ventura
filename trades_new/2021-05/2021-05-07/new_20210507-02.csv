@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021050702001,2021-05-07,14,SICOM:IND,13996.99,down,-1,13690.1417120073,14303.8382879927,2021-05-14,13690.1417120073,14303.8382879927,0.021922448182980725,21.0545740445966,2021-05-07 07:50:14,2021-05-07 07:50:59
