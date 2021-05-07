@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021050708001,2021-05-07,14,NZDJPY,79.089,down,-1,78.2817723006836,79.8962276993164,2021-05-14,78.2817723006836,79.8962276993164,0.01020657359830568,134521.53969374692,2021-05-07 21:50:15,2021-05-07 21:50:59
