@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021051208001,2021-05-12,13,CADJPY,90.393,up,1,91.3246318532084,89.4613681467916,2021-05-19,89.4613681467916,91.3246318532084,0.010306460159618558,117711.6081769145,2021-05-12 21:50:16,2021-05-12 21:50:59
