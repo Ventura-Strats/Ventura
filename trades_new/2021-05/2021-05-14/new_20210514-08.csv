@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021051408001,2021-05-14,12,USDNOK,8.2219,up,1,8.33463522344043,8.10916477655957,2021-05-21,8.10916477655956,8.33463522344043,0.013711578034326655,72931.06581142743,2021-05-14 21:50:18,2021-05-14 21:50:59
