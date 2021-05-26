@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021052601001,2021-05-26,11,NKY:IND,28676.5,flat,0,29436.0944510637,27916.9055489363,2021-06-02,27916.9055489363,29436.0944510637,0.026488394715662666,143.20988502125576,2021-05-26 06:50:09,2021-05-26 06:50:59
