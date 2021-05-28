@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021052808001,2021-05-28,11,USDCNH,6.3598,down,-1,6.32896265364876,6.39063734635124,2021-06-04,6.32896265364876,6.39063734635124,0.004848791841133293,206236.94164735955,2021-05-28 21:50:26,2021-05-28 21:50:59
