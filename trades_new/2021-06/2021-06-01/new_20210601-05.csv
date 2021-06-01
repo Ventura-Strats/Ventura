@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021060105001,2021-06-01,4,DAX:IND,15575.6,down,-1,15255.9134609034,15895.2865390966,2021-06-08,15255.9134609034,15895.2865390966,0.020524829804090983,2.5529798925641565,2021-06-01 15:50:18,2021-06-01 15:50:59
