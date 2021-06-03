@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021060308001,2021-06-03,12,NZDCAD,0.865105,up,1,0.874063721207078,0.856146278792922,2021-06-10,0.856146278792922,0.874063721207078,0.010355646085825398,135154.2431391858,2021-06-03 21:50:17,2021-06-03 21:50:59
