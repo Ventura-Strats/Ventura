@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021062208001,2021-06-22,12,USDJPY,110.676,up,1,111.37360081372,109.97839918628,2021-06-29,109.97839918628,111.37360081372,0.006303090224800245,158652.33787474327,2021-06-22 21:50:15,2021-06-22 21:50:59
