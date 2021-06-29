@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021062908001,2021-06-29,7,USDCAD,1.23994,up,1,1.24952731347876,1.2303526865212402,2021-07-06,1.23035268652124,1.24952731347876,0.007732078551187849,129331.32965215077,2021-06-29 21:50:16,2021-06-29 21:50:00
