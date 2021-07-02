@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021070201001,2021-07-02,14,KOSPI2:IND,436.02,up,1,440.33551291637,431.70448708362994,2021-07-09,431.70448708363,440.33551291637,0.009897511390234426,262564.38619423844,2021-07-02 06:50:13,2021-07-02 06:50:00
