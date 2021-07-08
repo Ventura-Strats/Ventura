@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021070808001,2021-07-08,2,CHFNOK,9.607575,up,1,9.74537803201322,9.469771967986782,2021-07-15,9.46977196798679,9.74537803201322,0.014343164847864243,63801.12128016572,2021-07-08 21:50:16,2021-07-08 21:50:00
