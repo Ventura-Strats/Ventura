@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021070806001,2021-07-08,2,EURCZK,25.8706,down,-1,25.6820452485941,26.0591547514059,2021-07-15,25.6820452485941,26.0591547514059,0.007288379527568001,115892.63412336035,2021-07-08 16:50:12,2021-07-08 16:50:00
