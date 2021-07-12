@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021071208001,2021-07-12,10,USDILS,3.282495,flat,0,3.31002524418126,3.25496475581874,2021-07-19,3.25496475581874,3.31002524418126,0.008386987392596135,119232.32421724874,2021-07-12 21:50:15,2021-07-12 21:50:00
