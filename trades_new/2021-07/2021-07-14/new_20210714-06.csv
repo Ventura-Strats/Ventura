@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021071406001,2021-07-14,8,GBPPLN,5.363095,flat,0,5.42625581832594,5.299934181674061,2021-07-21,5.29993418167406,5.42625581832594,0.01177693446152639,61278.250856247214,2021-07-14 16:50:12,2021-07-14 16:50:00
