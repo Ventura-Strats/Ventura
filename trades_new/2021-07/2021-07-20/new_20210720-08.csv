@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021072008001,2021-07-20,9,USDBRL,5.2158,up,1,5.32595965133697,5.105640348663029,2021-07-27,5.10564034866303,5.32595965133697,0.02112037488725993,47347.64441152095,2021-07-20 21:50:16,2021-07-20 21:50:00
