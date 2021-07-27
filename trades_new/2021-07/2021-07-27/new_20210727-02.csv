@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021072702001,2021-07-27,3,SHSZ300:IND,4749.03,down,-1,4645.563359266959,4852.49664073304,2021-08-03,4645.56335926696,4852.49664073304,0.021786899794913994,62.66154921109404,2021-07-27 07:50:15,2021-07-27 07:50:00
