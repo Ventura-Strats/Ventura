@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021072805001,2021-07-28,4,SMI:IND,12057.53,down,-1,11900.329773634701,12214.7302263653,2021-08-04,11900.3297736347,12214.7302263653,0.013037514844690401,5.82626387491115,2021-07-28 15:50:16,2021-07-28 15:50:00
