@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021081101001,2021-08-11,14,AS51:IND,7576.2,down,-1,7502.02963216019,7650.37036783981,2021-08-18,7502.02963216019,7650.37036783981,0.00978991682371233,18.35998753353623,2021-08-11 06:50:13,2021-08-11 06:50:00
