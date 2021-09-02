@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021090208001,2021-09-02,14,GBPCHF,1.265075,up,1,1.27473395931323,1.2554160406867698,2021-09-09,1.25541604068677,1.27473395931323,0.007635088285856684,94653.38487560277,2021-09-02 21:50:16,2021-09-02 21:50:00
