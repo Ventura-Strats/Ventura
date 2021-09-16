@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021091607001,2021-09-16,4,NDX:IND,15522.14,down,-1,15324.032739802298,15720.2472601977,2021-09-23,15324.0327398023,15720.2472601977,0.012762883223428112,5.047770581461999,2021-09-16 20:50:20,2021-09-16 20:50:00
