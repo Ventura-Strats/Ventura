@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021091708001,2021-09-17,2,USDCHF,0.932395,up,1,0.940580394735917,0.9242096052640829,2021-09-24,0.924209605264083,0.940580394735917,0.008778891709969594,113909.59508754022,2021-09-17 21:50:15,2021-09-17 21:50:00
