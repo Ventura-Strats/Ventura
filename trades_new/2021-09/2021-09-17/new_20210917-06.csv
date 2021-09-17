@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021091706001,2021-09-17,2,EURHUF,352.8995,flat,0,356.166284111774,349.63271588822596,2021-09-24,349.632715888227,356.166284111774,0.009256981411914778,92057.77364400438,2021-09-17 16:50:12,2021-09-17 16:50:00
