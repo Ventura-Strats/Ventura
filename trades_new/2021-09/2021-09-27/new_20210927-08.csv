@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021092708001,2021-09-27,10,EURCHF,1.08285,flat,0,1.08957882983632,1.0761211701636801,2021-10-04,1.07612117016368,1.08957882983632,0.006213999941192094,137581.43490990612,2021-09-27 21:50:16,2021-09-27 21:50:00
