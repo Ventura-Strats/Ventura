@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021092908001,2021-09-29,2,USDJPY,111.9955,up,1,112.738825265137,111.25217473486302,2021-10-06,111.252174734863,112.738825265137,0.006637099393609569,150668.2272926084,2021-09-29 21:50:15,2021-09-29 21:50:00
