@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021093006001,2021-09-30,7,EURPLN,4.60491,up,1,4.64357355419495,4.56624644580505,2021-10-07,4.56624644580505,4.64357355419495,0.00839615849060027,102802.27276005245,2021-09-30 16:50:12,2021-09-30 16:50:00
