@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021100108001,2021-10-01,7,USDZAR,14.884045,flat,0,15.1844462623196,14.5836437376804,2021-10-08,14.5836437376804,15.1844462623196,0.02018277036380911,49547.211902740455,2021-10-01 21:50:15,2021-10-01 21:50:00
