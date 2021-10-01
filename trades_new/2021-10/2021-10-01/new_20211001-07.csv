@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021100107001,2021-10-01,9,DGRO:US,50.78,up,1,51.6185126947445,49.9414873052555,2021-10-08,49.9414873052555,51.6185126947445,0.01651265645420441,1192.587788196464,2021-10-01 20:50:20,2021-10-01 20:50:00
