@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021100408001,2021-10-04,10,USDILS,3.2263,flat,0,3.24681715626222,3.20578284373778,2021-10-11,3.20578284373778,3.24681715626222,0.006359345461432575,157248.8876512032,2021-10-04 21:50:15,2021-10-04 21:50:00
