@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021101507001,2021-10-15,8,IJR:US,112.21,flat,0,115.401850667397,109.01814933260299,2021-10-22,109.018149332603,115.401850667397,0.028445331676294483,313.2978651584327,2021-10-15 20:50:20,2021-10-15 20:50:00
