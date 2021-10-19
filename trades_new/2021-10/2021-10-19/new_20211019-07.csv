@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021101907001,2021-10-19,14,EFV:US,52.28,up,1,53.144127675443,51.415872324557,2021-10-26,51.415872324557,53.144127675443,0.01652883847442621,1157.2363996875133,2021-10-19 20:50:19,2021-10-19 20:50:00
