@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021102208001,2021-10-22,8,USDBRL,5.6549,flat,0,5.77513198454855,5.534668015451449,2021-10-29,5.53466801545145,5.77513198454855,0.021261558037905193,47033.24178864013,2021-10-22 21:50:15,2021-10-22 21:50:00
