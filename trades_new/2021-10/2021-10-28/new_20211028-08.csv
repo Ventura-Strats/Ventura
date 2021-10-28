@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021102808001,2021-10-28,7,NZDJPY,81.7605,up,1,82.8577379552528,80.66326204474719,2021-11-04,80.6632620447472,82.8577379552528,0.013420147323619736,103502.16376292963,2021-10-28 21:50:21,2021-10-28 21:50:00
