@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021111602001,2021-11-17,14,JPNK400:IND,18401.93,up,1,18692.4827470909,18111.3772529091,2021-11-24,18111.3772529091,18692.4827470909,0.015789254012535725,395.44799059860003,2021-11-17 05:50:15,2021-11-17 05:50:00
