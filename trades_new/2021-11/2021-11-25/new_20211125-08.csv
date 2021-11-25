@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021112508001,2021-11-25,9,SEKJPY,12.711,up,1,12.8595431443289,12.562456855671101,2021-12-02,12.5624568556711,12.8595431443289,0.01168618868137039,776301.0034625017,2021-11-25 21:51:04,2021-11-25 21:50:00
