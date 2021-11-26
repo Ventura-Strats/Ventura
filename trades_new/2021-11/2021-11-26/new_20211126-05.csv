@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021112605001,2021-11-26,3,UKX:IND,7072.42,up,1,7194.14628967158,6950.69371032842,2021-12-03,6950.69371032843,7194.14628967158,0.017211405667590496,6.167832686752297,2021-11-26 15:50:17,2021-11-26 15:50:00
