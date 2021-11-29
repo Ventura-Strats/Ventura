@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021112904001,2021-11-29,11,HSI:IND,23850.0,down,-1,23222.9456927289,24477.0543072711,2021-12-06,23222.9456927289,24477.0543072711,0.026291585210528323,12.436721843022776,2021-11-29 07:50:13,2021-11-29 07:50:00
