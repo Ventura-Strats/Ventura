@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021120107001,2021-12-01,9,DVY:US,115.12,up,1,117.464547756954,112.775452243046,2021-12-08,112.775452243046,117.464547756954,0.020366120195917325,426.5214888602582,2021-12-01 20:50:20,2021-12-01 20:50:00
