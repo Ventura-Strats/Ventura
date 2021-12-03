@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021120306001,2021-12-03,7,EURCZK,25.39645,flat,0,25.6091995917029,25.183700408297103,2021-12-10,25.1837004082971,25.6091995917029,0.008377138997887501,105657.14324768269,2021-12-03 16:50:13,2021-12-03 16:50:00
