@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2021120905001,2021-12-09,6,EUXS:LN,663.4,flat,0,685.361473041097,641.4385269589029,2021-12-16,641.438526958903,685.361473041097,0.03310442122565127,34.48639665348818,2021-12-09 15:50:23,2021-12-09 15:50:00
