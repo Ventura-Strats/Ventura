@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022010608001,2022-01-06,8,USDRUB,76.484595,up,1,77.6446579887369,75.3245320112631,2022-01-13,75.324532011263,77.6446579887369,0.015167276348092118,65931.41557190585,2022-01-06 21:51:07,2022-01-06 21:50:00
