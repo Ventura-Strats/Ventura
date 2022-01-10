@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022011005001,2022-01-10,11,OMX:IND,2347.57,up,1,2401.50974733065,2293.6302526693503,2022-01-17,2293.63025266935,2401.50974733065,0.022976843003893244,169.34812363886516,2022-01-10 15:50:15,2022-01-10 15:50:00
