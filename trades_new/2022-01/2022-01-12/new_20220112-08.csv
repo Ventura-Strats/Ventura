@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022011208001,2022-01-12,14,USDJPY,114.621,down,-1,113.87829377008299,115.363706229917,2022-01-19,113.878293770083,115.363706229917,0.006479669780555142,154328.85222035582,2022-01-12 21:50:15,2022-01-12 21:50:00
