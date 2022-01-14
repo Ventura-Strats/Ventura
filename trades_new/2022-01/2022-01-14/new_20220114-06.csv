@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022011406001,2022-01-14,8,EURRUB,87.115715,flat,0,88.6855744853093,85.54585551469069,2022-01-21,85.5458555146907,88.6855744853093,0.01802039374077702,48597.22315172046,2022-01-14 16:50:12,2022-01-14 16:50:00
