@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022012407001,2022-01-24,1,XBI:US,91.74,up,1,96.8576180286945,86.62238197130549,2022-01-31,86.6223819713054,96.8576180286945,0.05578393316649777,195.40340728694403,2022-01-24 20:50:27,2022-01-24 20:50:00
