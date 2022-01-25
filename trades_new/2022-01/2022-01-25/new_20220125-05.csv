@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022012505001,2022-01-25,9,IBEX:IND,8505.47,down,-1,8344.866255432999,8666.073744567,2022-02-01,8344.86625543299,8666.073744567,0.018882406800212248,5.530696440998013,2022-01-25 15:50:23,2022-01-25 15:50:00
