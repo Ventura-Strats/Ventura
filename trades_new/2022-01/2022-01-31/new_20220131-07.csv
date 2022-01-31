@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022013107001,2022-01-31,11,IWF:US,278.36,flat,0,291.043165267267,265.676834732733,2022-02-07,265.676834732733,291.043165267267,0.04556389304234432,78.84467157270475,2022-01-31 20:50:30,2022-01-31 20:50:00
