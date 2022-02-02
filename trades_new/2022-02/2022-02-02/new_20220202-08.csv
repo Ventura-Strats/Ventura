@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022020208001,2022-02-02,7,USDILS,3.16865,flat,0,3.20491153727908,3.13238846272092,2022-02-09,3.13238846272092,3.20491153727908,0.01144384431195622,87383.22304465703,2022-02-02 21:50:18,2022-02-02 21:50:00
