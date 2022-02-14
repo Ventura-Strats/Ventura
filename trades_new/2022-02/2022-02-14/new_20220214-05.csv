@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022021405001,2022-02-14,11,EUXS:LN,626.0,up,1,644.414508500845,607.585491499155,2022-02-21,607.585491499155,644.414508500845,0.02941614776492818,40.140446302774066,2022-02-14 15:50:25,2022-02-14 15:50:00
