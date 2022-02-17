@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022021707001,2022-02-17,7,XLF:US,39.21,up,1,40.5579693771076,37.862030622892405,2022-02-24,37.8620306228924,40.5579693771076,0.034378203955817366,741.85661557516,2022-02-17 20:50:32,2022-02-17 20:50:00
