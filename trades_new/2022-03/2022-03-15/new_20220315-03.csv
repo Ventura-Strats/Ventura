@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022031503001,2022-03-15,3,SHCOMP:IND,3075.82,up,1,3167.11793778423,2984.5220622157703,2022-03-22,2984.52206221577,3167.11793778423,0.02968247094570864,70.05415626271453,2022-03-15 06:50:15,2022-03-15 06:50:00
