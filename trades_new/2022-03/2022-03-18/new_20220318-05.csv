@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022031805001,2022-03-18,6,SX5E:IND,3890.05,flat,0,4072.50709634586,3707.59290365414,2022-03-25,3707.59290365414,4072.50709634586,0.04690353500491251,4.967138403070171,2022-03-18 15:50:19,2022-03-18 15:50:00
