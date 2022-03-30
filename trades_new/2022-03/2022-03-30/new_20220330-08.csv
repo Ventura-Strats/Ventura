@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022033008001,2022-03-30,1,SEKJPY,13.1681,flat,0,13.4871481353937,12.849051864606302,2022-04-06,12.8490518646063,13.4871481353937,0.024228866381155845,381860.62255045504,2022-03-30 21:50:17,2022-03-30 21:50:00
