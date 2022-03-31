@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022033106001,2022-03-31,10,EURCZK,24.4275,flat,0,24.8473096002046,24.007690399795397,2022-04-07,24.0076903997954,24.8473096002046,0.01718594208185853,52423.16537314862,2022-03-31 16:50:13,2022-03-31 16:50:00
