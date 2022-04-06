@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022040605001,2022-04-06,14,SMI:IND,12300.34,flat,0,12524.3473899246,12076.3326100754,2022-04-13,12076.3326100754,12524.3473899246,0.018211479513948303,4.165264370582009,2022-04-06 15:50:18,2022-04-06 15:50:00
