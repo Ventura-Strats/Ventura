@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022041103001,2022-04-11,10,NKY:IND,26759.83,up,1,27469.3587597099,26050.301240290104,2022-04-18,26050.3012402901,27469.3587597099,0.026514696084014577,176.11900615711878,2022-04-11 06:50:14,2022-04-11 06:50:00
