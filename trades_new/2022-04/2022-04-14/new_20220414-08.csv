@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022041408001,2022-04-14,13,USDJPY,125.8825,up,1,127.649965902293,124.11503409770698,2022-04-21,124.115034097707,127.649965902293,0.01404060057826162,71222.02461540367,2022-04-14 21:50:16,2022-04-14 21:50:00
