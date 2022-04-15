@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022041503001,2022-04-15,10,JPNK400:IND,17087.98,up,1,17467.5927409242,16708.3672590758,2022-04-22,16708.3672590758,17467.5927409242,0.02221519108310055,333.0473041874133,2022-04-15 06:50:15,2022-04-15 06:50:00
