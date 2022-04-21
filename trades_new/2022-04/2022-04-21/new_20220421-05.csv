@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022042105001,2022-04-21,14,SXXPIEX:GR,45.95,up,1,46.7399634229809,45.160036577019106,2022-04-28,45.160036577019,46.7399634229809,0.01719180463505765,1164.4036196930772,2022-04-21 15:50:16,2022-04-21 15:50:00
