@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022042603001,2022-04-26,12,KOSPI2:IND,351.09,down,-1,345.40548019537295,356.774519804627,2022-05-03,345.405480195373,356.774519804627,0.016191061564348352,219930.62615110722,2022-04-26 06:50:16,2022-04-26 06:50:00
