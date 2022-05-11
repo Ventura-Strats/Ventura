@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022051108001,2022-05-11,14,USDJPY,130.0105,up,1,131.671781353946,128.34921864605403,2022-05-18,128.349218646054,131.671781353946,0.012778055264351496,78259.17006242901,2022-05-11 21:50:16,2022-05-11 21:50:00
