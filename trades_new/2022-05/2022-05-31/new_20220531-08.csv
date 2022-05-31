@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022053108001,2022-05-31,10,USDCAD,1.26535,flat,0,1.27918731199214,1.25151268800786,2022-06-07,1.25151268800786,1.27918731199214,0.010935560905788844,91444.78354746672,2022-05-31 21:50:15,2022-05-31 21:50:00
