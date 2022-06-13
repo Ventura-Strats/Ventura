@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022061304001,2022-06-13,4,FTXIN9:IND,13760.41,down,-1,13472.726440479799,14048.0935595202,2022-06-20,13472.7264404798,14048.0935595202,0.02090661248612502,23.472839432542763,2022-06-13 07:50:14,2022-06-13 07:50:00
