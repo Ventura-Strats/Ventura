@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022061606001,2022-06-16,2,GBPPLN,5.5462,up,1,5.63815858359049,5.454241416409509,2022-06-23,5.45424141640951,5.63815858359049,0.01658046655196177,48962.440117201615,2022-06-16 16:50:12,2022-06-16 16:50:00
