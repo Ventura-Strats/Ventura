@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022061704001,2022-06-17,10,SICOM:IND,12310.98,flat,0,12675.2547454151,11946.705254584898,2022-06-24,11946.7052545849,12675.2547454151,0.029589418991428973,18.39696570884532,2022-06-17 07:50:14,2022-06-17 07:50:00
