@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022062403001,2022-06-24,6,AS51:IND,6577.5,flat,0,6709.49992553946,6445.50007446054,2022-07-01,6445.50007446054,6709.49992553946,0.02006840373081853,10.955548588874938,2022-06-24 06:50:15,2022-06-24 06:50:00
