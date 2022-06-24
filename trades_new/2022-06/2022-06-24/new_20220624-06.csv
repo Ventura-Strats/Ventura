@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022062406001,2022-06-24,7,EURPLN,4.6888,flat,0,4.74547569303603,4.632124306963969,2022-07-01,4.63212430696397,4.74547569303603,0.012087462258153492,78428.54565813612,2022-06-24 16:50:13,2022-06-24 16:50:00
