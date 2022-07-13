@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022071308001,2022-07-13,1,EURCHF,0.9844,up,1,0.996686629140225,0.9721133708597751,2022-07-20,0.972113370859775,0.996686629140225,0.012481338013231369,79657.60120903261,2022-07-13 21:50:25,2022-07-13 21:50:00
