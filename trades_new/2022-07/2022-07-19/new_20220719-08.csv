@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022071908001,2022-07-19,14,USDJPY,138.1755,down,-1,136.629253130811,139.721746869189,2022-07-26,136.629253130811,139.721746869189,0.01119045611695979,89361.86242528948,2022-07-19 21:50:14,2022-07-19 21:50:00
