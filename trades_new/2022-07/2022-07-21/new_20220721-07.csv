@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022072107001,2022-07-21,9,XRT:US,64.71,flat,0,67.7065758478725,61.71342415212749,2022-07-28,61.7134241521274,67.7065758478725,0.04630777079079751,333.71422942955866,2022-07-21 20:50:14,2022-07-21 20:50:00
