@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022072207001,2022-07-22,9,USMV:US,71.54,flat,0,73.0529070439065,70.02709295609351,2022-07-29,70.0270929560935,73.0529070439065,0.021147708189914738,660.9791421275195,2022-07-22 20:50:13,2022-07-22 20:50:00
