@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022072807001,2022-07-28,9,KRE:US,62.89,flat,0,64.9882918278906,60.791708172109395,2022-08-04,60.7917081721094,64.9882918278906,0.03336447492273176,476.5781321301212,2022-07-28 20:50:14,2022-07-28 20:50:00
