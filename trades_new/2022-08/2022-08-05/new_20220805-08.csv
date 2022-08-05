@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022080508001,2022-08-05,9,AUDNZD,1.1073,flat,0,1.11523791300189,1.09936208699811,2022-08-12,1.09936208699811,1.11523791300189,0.007168710378298471,201801.23549013343,2022-08-05 21:50:14,2022-08-05 21:50:00
