@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022081607001,2022-08-16,10,RSP:US,152.6,flat,0,157.360269965098,147.83973003490198,2022-08-23,147.839730034902,157.360269965098,0.03119442965332908,210.0721192982611,2022-08-16 20:50:14,2022-08-16 20:50:00
