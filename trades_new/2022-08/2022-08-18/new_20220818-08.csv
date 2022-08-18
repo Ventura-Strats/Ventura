@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022081808001,2022-08-18,6,USDILS,3.25515,flat,0,3.33946353616059,3.17083646383941,2022-08-25,3.17083646383941,3.33946353616059,0.025901582464890938,38607.6797182365,2022-08-18 21:50:14,2022-08-18 21:50:00
