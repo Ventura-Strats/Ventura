@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022082508001,2022-08-25,9,USDMXN,19.9291,flat,0,20.1873004587765,19.670899541223495,2022-09-01,19.6708995412235,20.1873004587765,0.012955951787913422,77184.60336761193,2022-08-25 21:50:14,2022-08-25 21:50:00
