@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022082606001,2022-08-26,10,EURHUF,412.187,flat,0,421.755865284203,402.618134715797,2022-09-02,402.618134715797,421.755865284203,0.023214864331488005,43099.55416406839,2022-08-26 16:50:14,2022-08-26 16:50:00
