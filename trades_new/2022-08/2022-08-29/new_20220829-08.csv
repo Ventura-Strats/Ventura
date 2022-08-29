@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022082908001,2022-08-29,14,CADJPY,106.6295,down,-1,105.05134570480298,108.207654295197,2022-09-05,105.051345704803,108.207654295197,0.014800353515650011,87910.06232548473,2022-08-29 21:50:13,2022-08-29 21:50:00
