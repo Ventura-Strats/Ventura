@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022101808001,2022-10-18,6,GBPNZD,1.99075,flat,0,2.0458214572147,1.9356785427853,2022-10-25,1.9356785427853,2.0458214572147,0.027663673095416286,31920.605438979437,2022-10-18 21:50:14,2022-10-18 21:50:00
