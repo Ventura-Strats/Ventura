@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022110707001,2022-11-07,1,INDU:IND,32856.5,flat,0,33775.2528789504,31937.7471210496,2022-11-14,31937.7471210496,33775.2528789504,0.027962591236144974,1.0884319634920994,2022-11-07 20:50:13,2022-11-07 20:50:00
