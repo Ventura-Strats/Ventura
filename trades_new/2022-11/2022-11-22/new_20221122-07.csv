@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022112207001,2022-11-22,7,AAXJ:US,62.89,up,1,65.2961070932118,60.4838929067882,2022-11-29,60.4838929067882,65.2961070932118,0.03825897747196372,415.6090985398108,2022-11-22 20:50:13,2022-11-22 20:50:00
