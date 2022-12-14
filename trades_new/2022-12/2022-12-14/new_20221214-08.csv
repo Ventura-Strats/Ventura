@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2022121408001,2022-12-14,14,GBPNOK,12.07715,flat,0,12.2718208726459,11.882479127354099,2022-12-21,11.8824791273541,12.2718208726459,0.01611894135999803,49912.55778221191,2022-12-14 21:50:14,2022-12-14 21:50:00
