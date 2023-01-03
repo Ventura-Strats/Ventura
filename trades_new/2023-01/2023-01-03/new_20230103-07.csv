@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023010307001,2023-01-03,10,IWF:US,212.78,flat,0,221.870729849287,203.689270150713,2023-01-10,203.689270150713,221.870729849287,0.04272361053335372,110.00216886638988,2023-01-03 20:50:15,2023-01-03 20:50:00
