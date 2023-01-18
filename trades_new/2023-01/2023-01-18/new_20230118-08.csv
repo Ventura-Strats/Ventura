@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023011808001,2023-01-18,6,NZDUSD,0.6443,flat,0,0.665627519013929,0.6229724809860709,2023-01-25,0.62297248098607,0.665627519013929,0.03310184543524608,46887.779087051706,2023-01-18 21:50:13,2023-01-18 21:50:00
