@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023011907001,2023-01-19,7,XLF:US,34.87,down,-1,34.08310010837249,35.6568998916275,2023-01-26,34.0831001083725,35.6568998916275,0.02256667311808158,1270.8096806720246,2023-01-19 20:50:14,2023-01-19 20:50:00
