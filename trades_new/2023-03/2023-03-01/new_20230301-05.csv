@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023030105001,2023-03-01,4,CAC:IND,7280.23,up,1,7408.90832210252,7151.551677897479,2023-03-08,7151.55167789748,7408.90832210252,0.017675035280825035,7.29290235608422,2023-03-01 15:50:13,2023-03-01 15:50:00
