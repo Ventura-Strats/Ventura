@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023030607001,2023-03-06,10,XRT:US,65.6,up,1,68.1369404603467,63.063059539653295,2023-03-13,63.0630595396533,68.1369404603467,0.03867287287113874,394.17558891521594,2023-03-06 20:50:14,2023-03-06 20:50:00
