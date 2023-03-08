@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023030808001,2023-03-08,14,USDJPY,137.4255,flat,0,139.234067884224,135.616932115776,2023-03-15,135.616932115776,139.234067884224,0.013160351493893163,75985.81242028627,2023-03-08 21:50:14,2023-03-08 21:50:00
