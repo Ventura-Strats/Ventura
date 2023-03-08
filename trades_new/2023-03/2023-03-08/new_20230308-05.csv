@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023030805001,2023-03-08,4,EUXS:LN,637.9,down,-1,630.2844323134219,645.515567686578,2023-03-15,630.284432313421,645.515567686578,0.011938497705875628,110.73534716400759,2023-03-08 15:50:13,2023-03-08 15:50:00
