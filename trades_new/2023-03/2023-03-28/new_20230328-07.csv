@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023032807001,2023-03-28,1,KRE:US,43.78,flat,0,48.5778899182248,38.982110081775204,2023-04-04,38.9821100817752,48.5778899182248,0.10959090722304232,208.4249570215228,2023-03-28 20:50:13,2023-03-28 20:50:00
