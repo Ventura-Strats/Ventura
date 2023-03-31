@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023033107001,2023-03-31,5,VEA:US,45.12,flat,0,46.1251877712826,44.1148122287174,2023-04-07,44.1148122287174,46.1251877712826,0.022278097767788108,994.8390027905136,2023-03-31 20:50:13,2023-03-31 20:50:00
