@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023040308001,2023-04-03,10,GBPUSD,1.24185,flat,0,1.25890769331069,1.2247923066893098,2023-04-10,1.22479230668931,1.25890769331069,0.013735711487450342,58624.573779462386,2023-04-03 21:50:13,2023-04-03 21:50:00
