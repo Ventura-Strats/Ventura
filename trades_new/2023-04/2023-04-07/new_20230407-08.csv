@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023040708001,2023-04-07,9,AUDCAD,0.9008,flat,0,0.910821955168637,0.8907780448313631,2023-04-14,0.890778044831362,0.910821955168637,0.011125616306213226,134867.82369539785,2023-04-07 21:50:13,2023-04-07 21:50:00
