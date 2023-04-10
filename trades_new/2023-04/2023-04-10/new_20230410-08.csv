@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023041008001,2023-04-10,10,USDCAD,1.35065,flat,0,1.36337259960122,1.3379274003987798,2023-04-17,1.33792740039878,1.36337259960122,0.00941961248378198,106161.4797553221,2023-04-10 21:50:13,2023-04-10 21:50:00
