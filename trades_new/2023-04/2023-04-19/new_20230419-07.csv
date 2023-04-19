@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023041907001,2023-04-19,5,ACWI:US,92.4,down,-1,90.90506256465382,93.8949374353462,2023-04-26,90.9050625646538,93.8949374353462,0.016178976573010706,668.9243150623394,2023-04-19 20:50:14,2023-04-19 20:50:00
