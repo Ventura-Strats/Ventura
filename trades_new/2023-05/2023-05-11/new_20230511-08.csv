@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023051108001,2023-05-11,2,USDZAR,19.1904,up,1,19.5282579654711,18.852542034528902,2023-05-18,18.852542034529,19.5282579654711,0.01760557182086342,56800.19996936161,2023-05-11 21:50:14,2023-05-11 21:50:00
