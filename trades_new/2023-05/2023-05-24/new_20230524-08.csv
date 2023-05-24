@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023052408001,2023-05-24,8,GBPNOK,13.5599,flat,0,13.7583483635516,13.361451636448402,2023-05-31,13.3614516364484,13.7583483635516,0.014634942997485023,55258.26985952434,2023-05-24 21:50:14,2023-05-24 21:50:00
