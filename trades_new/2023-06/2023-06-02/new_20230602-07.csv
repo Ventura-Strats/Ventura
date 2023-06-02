@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023060207001,2023-06-02,2,RTY:IND,1828.94,up,1,1871.06145964693,1786.8185403530701,2023-06-09,1786.81854035306,1871.06145964693,0.02303053115297926,23.740867680801916,2023-06-02 20:50:14,2023-06-02 20:50:00
