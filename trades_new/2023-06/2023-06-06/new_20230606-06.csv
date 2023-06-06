@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023060606001,2023-06-06,12,EURPLN,4.48065,flat,0,4.52009812592016,4.44120187407984,2023-06-13,4.44120187407984,4.52009812592016,0.008804107868313649,106246.98804228396,2023-06-06 16:50:14,2023-06-06 16:50:00
