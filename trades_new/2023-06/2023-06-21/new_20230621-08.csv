@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023062108001,2023-06-21,8,USDCNH,7.1779,flat,0,7.23160155724898,7.1241984427510205,2023-06-28,7.12419844275102,7.23160155724898,0.007481513708602838,133662.79057273138,2023-06-21 21:50:14,2023-06-21 21:50:00
