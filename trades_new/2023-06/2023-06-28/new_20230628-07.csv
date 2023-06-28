@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023062807001,2023-06-28,5,VTI:US,216.5,up,1,219.348270835906,213.651729164094,2023-07-05,213.651729164095,219.348270835906,0.013155985385246982,351.0902079232652,2023-06-28 20:50:14,2023-06-28 20:50:00
