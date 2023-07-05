@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023070508001,2023-07-05,7,EURAUD,1.6312,up,1,1.64682777846499,1.61557222153501,2023-07-12,1.61557222153501,1.64682777846499,0.009580540991288578,96165.68940284984,2023-07-05 21:50:14,2023-07-05 21:50:00
