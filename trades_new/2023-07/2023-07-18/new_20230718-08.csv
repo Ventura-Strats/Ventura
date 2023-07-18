@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023071808001,2023-07-18,10,USDNOK,10.0542,flat,0,10.2610309988715,9.8473690011285,2023-07-25,9.84736900112848,10.2610309988715,0.02057160180536477,48610.70175581635,2023-07-18 21:50:16,2023-07-18 21:50:00
