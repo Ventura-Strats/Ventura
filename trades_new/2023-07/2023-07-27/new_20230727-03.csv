@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023072703001,2023-07-27,14,NKY:IND,32911.05,down,-1,32286.367245150606,33535.7327548494,2023-08-03,32286.3672451506,33535.7327548494,0.018980942718308746,224.45553188642796,2023-07-27 06:50:15,2023-07-27 06:50:00
