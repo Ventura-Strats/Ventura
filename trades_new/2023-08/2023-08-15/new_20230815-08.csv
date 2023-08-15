@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023081508001,2023-08-14,6,USDSEK,10.803455,flat,0,11.1964211622356,10.4104888377644,2023-08-21,10.4104888377644,11.1964211622356,0.03637411941231772,27492.074479234278,2023-08-14 21:50:09,2023-08-14 21:50:00
