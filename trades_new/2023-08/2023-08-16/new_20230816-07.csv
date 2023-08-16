@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023081607001,2023-08-16,4,NDX:IND,14947.82,up,1,15255.5833580587,14640.056641941299,2023-08-23,14640.0566419413,15255.5833580587,0.020589180098415705,3.2492497037586534,2023-08-16 20:50:24,2023-08-16 20:50:00
