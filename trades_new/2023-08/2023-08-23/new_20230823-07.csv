@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023082307001,2023-08-23,4,SPX:IND,4439.76,up,1,4501.74706188154,4377.772938118461,2023-08-30,4377.77293811846,4501.74706188154,0.013961804665463706,16.13239875622848,2023-08-23 20:50:32,2023-08-23 20:50:00
