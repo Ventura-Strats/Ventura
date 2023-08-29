@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023082905001,2023-08-29,11,UKX:IND,7463.75,flat,0,7588.12725960095,7339.37274039905,2023-09-05,7339.37274039905,7588.12725960095,0.016664178141142294,6.37618853733657,2023-08-29 15:50:15,2023-08-29 15:50:00
