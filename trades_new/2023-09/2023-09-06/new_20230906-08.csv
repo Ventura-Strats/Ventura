@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023090608001,2023-09-06,9,USDCLP,873.1,flat,0,891.916487089838,854.283512910162,2023-09-13,854.283512910162,891.916487089838,0.021551353899711412,46400.79712177112,2023-09-06 21:50:18,2023-09-06 21:50:00
