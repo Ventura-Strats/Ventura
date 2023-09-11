@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023091108001,2023-09-11,7,NZDCHF,0.52735,flat,0,0.532602837908812,0.522097162091188,2023-09-18,0.522097162091188,0.532602837908812,0.009960819017373668,169596.25480684955,2023-09-11 21:50:17,2023-09-11 21:50:00
