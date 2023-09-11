@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023091106001,2023-09-11,11,GBPPLN,5.421255,flat,0,5.48482806892495,5.357681931075051,2023-09-18,5.35768193107505,5.48482806892495,0.011726633210382031,68075.36552863817,2023-09-11 16:50:14,2023-09-11 16:50:00
