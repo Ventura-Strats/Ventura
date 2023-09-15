@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023091508001,2023-09-15,9,AUDUSD,0.643065,flat,0,0.650611686942122,0.635518313057878,2023-09-22,0.635518313057878,0.650611686942122,0.011735496321712446,132508.47791478882,2023-09-15 21:50:17,2023-09-15 21:50:00
