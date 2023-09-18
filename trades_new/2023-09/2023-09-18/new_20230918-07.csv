@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023091807001,2023-09-18,4,VTI:US,220.88,up,1,223.711176700376,218.048823299624,2023-09-25,218.048823299624,223.711176700376,0.012817714145128667,353.21002743035643,2023-09-18 20:50:26,2023-09-18 20:50:00
