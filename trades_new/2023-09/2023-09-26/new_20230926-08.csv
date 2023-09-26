@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023092608001,2023-09-26,14,USDTRY,27.2558,flat,0,27.7015521383092,26.8100478616908,2023-10-03,26.8100478616908,27.7015521383092,0.01635439569960151,61145.64049739642,2023-09-26 21:50:18,2023-09-26 21:50:00
