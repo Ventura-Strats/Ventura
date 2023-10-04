@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023100403001,2023-10-04,3,TPX:IND,2221.58,up,1,2260.65876894059,2182.5012310594097,2023-10-11,2182.50123105941,2260.65876894059,0.017590529686345002,3817.7507645343526,2023-10-04 06:50:17,2023-10-04 06:50:00
