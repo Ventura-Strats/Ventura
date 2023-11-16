@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023111607001,2023-11-16,14,EZU:US,44.62,up,1,45.4032302185971,43.83676978140289,2023-11-23,43.836769781403,45.4032302185971,0.01755334420881005,1276.763812549478,2023-11-16 20:50:25,2023-11-16 20:50:00
