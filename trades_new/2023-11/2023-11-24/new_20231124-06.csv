@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023112406001,2023-11-24,10,EURPLN,4.36319,flat,0,4.40322960142109,4.32315039857891,2023-12-01,4.32315039857891,4.40322960142109,0.009176680690295314,99681.08816112902,2023-11-24 16:50:14,2023-11-24 16:50:00
