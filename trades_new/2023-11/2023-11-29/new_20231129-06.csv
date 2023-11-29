@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023112906001,2023-11-29,14,EURRUB,97.5157,up,1,99.4474815268807,95.5839184731193,2023-12-06,95.5839184731193,99.4474815268807,0.01980995395490881,46037.3035094715,2023-11-29 16:50:14,2023-11-29 16:50:00
