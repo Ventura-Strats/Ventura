@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023121907001,2023-12-19,14,NDX:IND,16793.84,down,-1,16547.1188237694,17040.5611762306,2023-12-26,16547.1188237695,17040.5611762306,0.014691171062163333,4.053158367992447,2023-12-19 20:50:26,2023-12-19 20:50:00
