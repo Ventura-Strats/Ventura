@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2023122601001,2023-12-27,11,AS51:IND,7571.4,down,-1,7484.63859205596,7658.16140794404,2024-01-03,7484.63859205595,7658.16140794404,0.01145909712127735,16.85548047819903,2023-12-27 04:50:16,2023-12-27 04:50:00
