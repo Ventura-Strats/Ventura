@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024010307001,2024-01-03,14,INDU:IND,37463.6,up,1,37800.7159811645,37126.484018835494,2024-01-10,37126.4840188355,37800.7159811645,0.008998494035931115,2.966338162153194,2024-01-03 20:50:24,2024-01-03 20:50:00
