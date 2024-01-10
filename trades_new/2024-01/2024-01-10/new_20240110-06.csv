@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024011006001,2024-01-10,14,GBPPLN,5.046555,up,1,5.09266638291831,5.0004436170816895,2024-01-17,5.00044361708169,5.09266638291831,0.009137200113406019,86009.44345414064,2024-01-10 16:50:15,2024-01-10 16:50:00
