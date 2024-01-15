@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024011508001,2024-01-15,10,USDJPY,145.7795,flat,0,147.838256765716,143.72074323428401,2024-01-22,143.720743234284,147.838256765716,0.014122402434608494,70809.48192988684,2024-01-15 21:50:17,2024-01-15 21:50:00
