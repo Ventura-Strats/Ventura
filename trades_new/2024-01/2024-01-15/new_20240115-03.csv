@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024011503001,2024-01-15,4,SHCOMP:IND,2885.32,down,-1,2847.4434009776905,2923.19659902231,2024-01-22,2847.44340097769,2923.19659902231,0.013127347754255947,189.58117110172665,2024-01-15 06:50:16,2024-01-15 06:50:00
