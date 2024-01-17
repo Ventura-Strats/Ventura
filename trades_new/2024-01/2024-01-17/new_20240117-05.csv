@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024011705001,2024-01-17,3,UKX:IND,7419.01,up,1,7513.98547695947,7324.03452304053,2024-01-24,7324.03452304053,7513.98547695947,0.01280163754456054,8.322195526691571,2024-01-17 15:50:20,2024-01-17 15:50:00
