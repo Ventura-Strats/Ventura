@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024011808001,2024-01-18,8,GBPAUD,1.932905,flat,0,1.95305744629037,1.9127525537096302,2024-01-25,1.91275255370963,1.95305744629037,0.010425989011549897,75487.00193197261,2024-01-18 21:50:17,2024-01-18 21:50:00
