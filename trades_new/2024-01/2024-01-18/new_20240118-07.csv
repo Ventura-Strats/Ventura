@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024011807001,2024-01-18,9,IWD:US,162.33,up,1,164.437963805031,160.22203619496904,2024-01-25,160.222036194969,164.437963805031,0.012985669962612967,474.3914471459871,2024-01-18 20:50:26,2024-01-18 20:50:00
