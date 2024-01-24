@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024012408001,2024-01-24,14,CHFJPY,170.9855,down,-1,169.226711340067,172.744288659933,2024-01-31,169.226711340067,172.744288659933,0.010286186021229993,83896.01337355611,2024-01-24 21:50:17,2024-01-24 21:50:00
