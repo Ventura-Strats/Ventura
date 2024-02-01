@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024020107001,2024-02-01,14,USMV:US,80.47,down,-1,79.6995737798986,81.2404262201014,2024-02-08,79.6995737798986,81.2404262201014,0.009574080031084842,1297.982822895602,2024-02-01 20:50:33,2024-02-01 20:50:00
