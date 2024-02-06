@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024020608001,2024-02-06,14,BTCUSD,43103.0,flat,0,45677.5008072004,40528.4991927996,2024-02-13,40528.4991927996,45677.5008072004,0.0597290399090642,0.38842481509548893,2024-02-06 21:50:17,2024-02-06 21:50:00
