@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024021407001,2024-02-14,14,IWF:US,326.88,down,-1,321.168373618,332.591626382,2024-02-21,321.168373618,332.591626382,0.017473159514194814,175.08147997065538,2024-02-14 20:50:32,2024-02-14 20:50:00
