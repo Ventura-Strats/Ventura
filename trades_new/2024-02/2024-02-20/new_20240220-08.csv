@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024022008001,2024-02-20,14,GBPJPY,189.307,down,-1,187.65126891030098,190.962731089699,2024-02-27,187.651268910301,190.962731089699,0.008746275043706842,90593.46425424467,2024-02-20 21:50:28,2024-02-20 21:50:00
