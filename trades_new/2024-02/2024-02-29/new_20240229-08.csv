@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024022908001,2024-02-29,14,AUDJPY,97.428,down,-1,96.7442179691472,98.1117820308528,2024-03-07,96.7442179691472,98.1117820308528,0.007018331802487898,219290.49885657028,2024-02-29 21:50:26,2024-02-29 21:50:00
