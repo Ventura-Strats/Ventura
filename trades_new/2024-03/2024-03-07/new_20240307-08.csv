@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024030708001,2024-03-07,7,EURCAD,1.473445,flat,0,1.48207899657868,1.4648110034213198,2024-03-14,1.46481100342132,1.48207899657868,0.005859734553159468,155880.3008471468,2024-03-07 21:50:26,2024-03-07 21:50:00
