@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024031805001,2024-03-18,13,FTSEMIB:IND,33884.0,up,1,34244.0158009957,33523.9841990043,2024-03-25,33523.9841990043,34244.0158009957,0.010624949858213384,2.5514330504477813,2024-03-18 15:50:15,2024-03-18 15:50:00
