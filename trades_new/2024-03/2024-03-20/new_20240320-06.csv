@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024032006001,2024-03-20,14,EURRUB,100.425,up,1,102.180581440725,98.66941855927499,2024-03-27,98.6694185592746,102.180581440725,0.01748151795593733,52688.64401555588,2024-03-20 16:50:14,2024-03-20 16:50:00
