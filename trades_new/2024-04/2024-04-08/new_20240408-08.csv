@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024040808001,2024-04-08,4,EFA:US,79.39,up,1,80.4097693532156,78.3702306467844,2024-04-15,78.3702306467844,80.4097693532156,0.012845060501518901,980.6138974923615,2024-04-08 20:51:02,2024-04-08 20:50:00
