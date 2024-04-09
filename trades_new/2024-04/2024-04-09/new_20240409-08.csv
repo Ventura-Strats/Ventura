@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024040908001,2024-04-09,5,EZU:US,50.58,up,1,51.2481195349238,49.911880465076194,2024-04-16,49.9118804650762,51.2481195349238,0.01320916439153419,1496.7381549681113,2024-04-09 20:50:25,2024-04-09 20:50:00
