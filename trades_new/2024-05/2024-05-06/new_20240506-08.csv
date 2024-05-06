@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024050608001,2024-05-06,6,USDMXN,16.880015,flat,0,17.5376719102364,16.2223580897636,2024-05-13,16.2223580897636,17.5376719102364,0.03896068280960652,25666.901293460658,2024-05-06 21:50:16,2024-05-06 21:50:00
