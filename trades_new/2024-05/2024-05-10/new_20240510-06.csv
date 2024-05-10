@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024051006001,2024-05-10,9,EURPLN,4.302605,flat,0,4.341817819278,4.263392180722,2024-05-17,4.263392180722,4.341817819278,0.00911373906691404,101888.69889185733,2024-05-10 16:50:15,2024-05-10 16:50:00
