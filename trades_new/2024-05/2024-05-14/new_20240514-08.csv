@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024051408001,2024-05-14,10,USDCLP,916.34,flat,0,933.755525538345,898.9244744616551,2024-05-21,898.924474461655,933.755525538345,0.019005528011813322,52616.27034925981,2024-05-14 21:50:17,2024-05-14 21:50:00
