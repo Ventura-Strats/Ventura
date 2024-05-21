@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024052105001,2024-05-21,4,OMX:IND,2624.8,down,-1,2588.3487494921105,2661.25125050789,2024-05-28,2588.34874949211,2661.25125050789,0.013887248745767078,293.1201221117904,2024-05-21 15:50:16,2024-05-21 15:50:00
