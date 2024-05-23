@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024052303001,2024-05-23,14,TPX:IND,2753.1,down,-1,2707.41608169125,2798.78391830875,2024-05-30,2707.41608169125,2798.78391830875,0.016593628385728865,3430.5726347904388,2024-05-23 06:50:16,2024-05-23 06:50:00
