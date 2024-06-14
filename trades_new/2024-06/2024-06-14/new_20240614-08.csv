@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024061408001,2024-06-14,8,NZDJPY,96.668,down,-1,95.53670095641341,97.7992990435866,2024-06-21,95.5367009564134,97.7992990435866,0.011702932134590505,139151.35277117311,2024-06-14 21:50:16,2024-06-14 21:50:00
