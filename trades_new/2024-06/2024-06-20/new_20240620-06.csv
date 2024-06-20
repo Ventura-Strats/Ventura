@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024062006001,2024-06-20,6,EURRUB,93.633,flat,0,99.2123941619717,88.05360583802829,2024-06-27,88.0536058380283,99.2123941619717,0.05958790343118037,15657.925417311775,2024-06-20 16:50:14,2024-06-20 16:50:00
