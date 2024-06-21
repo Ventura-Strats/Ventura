@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024062108001,2024-06-21,6,USDRUB,89.1217,flat,0,91.7013626643161,86.54203733568391,2024-06-28,86.5420373356839,91.7013626643161,0.028945393370145345,34547.81170918247,2024-06-21 21:50:26,2024-06-21 21:50:00
