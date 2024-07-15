@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024071505001,2024-07-15,8,SMI:IND,12331.61,up,1,12515.5526014694,12147.6673985306,2024-07-22,12147.6673985306,12515.5526014694,0.014916349241453464,4.864615335718494,2024-07-15 15:50:17,2024-07-15 15:50:00
