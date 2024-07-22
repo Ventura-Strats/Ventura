@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024072207001,2024-07-22,10,IWN:US,167.24,flat,0,172.260987129234,162.21901287076602,2024-07-29,162.219012870766,172.260987129234,0.030022644877026883,199.16402377883898,2024-07-22 20:50:24,2024-07-22 20:50:00
