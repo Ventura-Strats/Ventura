@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024081307001,2024-08-13,6,ACWI:US,112.37,flat,0,115.890433458105,108.84956654189502,2024-08-20,108.849566541895,115.890433458105,0.03132894418532506,284.0559300155875,2024-08-13 20:50:28,2024-08-13 20:50:00
