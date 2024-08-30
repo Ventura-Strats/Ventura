@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024083007001,2024-08-30,14,INDU:IND,41461.9,flat,0,42147.6579467843,40776.142053215706,2024-09-06,40776.1420532157,42147.6579467843,0.01653947230552144,1.4582404836710456,2024-08-30 20:50:24,2024-08-30 20:50:00
