@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024090605001,2024-09-06,14,DAX:IND,18600.55,down,-1,18362.627221138697,18838.4727788613,2024-09-13,18362.6272211387,18838.4727788613,0.01279116901711519,3.7920950458989826,2024-09-06 15:50:17,2024-09-06 15:50:00
