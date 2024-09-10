@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024091007001,2024-09-10,5,KRE:US,55.24,up,1,57.0061138231308,53.47388617686921,2024-09-17,53.4738861768692,57.0061138231308,0.03197164777572037,566.2149216562374,2024-09-10 20:50:26,2024-09-10 20:50:00
