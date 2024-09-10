@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024091008001,2024-09-10,14,USDTRY,34.0451,flat,0,34.4857491032299,33.604450896770096,2024-09-17,33.6044508967701,34.4857491032299,0.012943099101776712,77261.24880421637,2024-09-10 21:50:28,2024-09-10 21:50:00
