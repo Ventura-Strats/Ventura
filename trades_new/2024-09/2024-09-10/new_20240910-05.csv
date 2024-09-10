@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024091005001,2024-09-10,10,SX5E:IND,4755.95,up,1,4820.61538990351,4691.28461009649,2024-09-17,4691.28461009649,4820.61538990351,0.013596734596349913,14.035162592510565,2024-09-10 15:50:19,2024-09-10 15:50:00
