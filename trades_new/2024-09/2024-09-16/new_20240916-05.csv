@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024091605001,2024-09-16,11,IBEX:IND,11563.95,flat,0,11758.3727664592,11369.5272335408,2024-09-23,11369.5272335408,11758.3727664592,0.01681283354383223,4.622082744239283,2024-09-16 15:50:18,2024-09-16 15:50:00
