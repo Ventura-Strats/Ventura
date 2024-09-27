@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024092708001,2024-09-27,14,XAUUSD,2650.53,up,1,2694.8917090703,2606.1682909297006,2024-10-04,2606.1682909297,2694.8917090703,0.01673692018966011,22.541962899024114,2024-09-27 21:50:28,2024-09-27 21:50:00
