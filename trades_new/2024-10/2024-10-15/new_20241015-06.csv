@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024101506001,2024-10-15,7,EURHUF,400.084,up,1,402.435631787514,397.732368212486,2024-10-22,397.732368212486,402.435631787514,0.005877845121309511,156016.35623797306,2024-10-15 16:50:15,2024-10-15 16:50:00
