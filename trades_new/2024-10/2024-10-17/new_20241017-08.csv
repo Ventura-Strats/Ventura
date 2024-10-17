@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024101708001,2024-10-17,9,EURNOK,11.83039,flat,0,11.9861649733748,11.6746150266252,2024-10-24,11.6746150266252,11.9861649733748,0.013167357405360347,70119.50392187302,2024-10-17 21:50:26,2024-10-17 21:50:00
