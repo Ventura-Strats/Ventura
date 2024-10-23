@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024102308001,2024-10-22,10,USDBRL,5.6904,flat,0,5.78750815371359,5.5932918462864105,2024-10-29,5.59329184628641,5.78750815371359,0.0170652596853631,58598.580885218034,2024-10-22 21:50:49,2024-10-22 21:50:00
