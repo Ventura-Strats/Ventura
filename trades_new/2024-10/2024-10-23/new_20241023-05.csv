@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024102305001,2024-10-23,14,SMI:IND,12179.67,down,-1,12016.6719002795,12342.6680997205,2024-10-30,12016.6719002795,12342.6680997205,0.0133828009889021,5.320920927834086,2024-10-23 15:50:14,2024-10-23 15:50:00
