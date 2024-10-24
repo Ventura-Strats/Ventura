@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024102405001,2024-10-24,14,DAX:IND,19466.45,up,1,19713.32946458,19219.57053542,2024-10-31,19219.57053542,19713.32946458,0.012682305432166752,3.7491296367584255,2024-10-24 15:50:12,2024-10-24 15:50:00
