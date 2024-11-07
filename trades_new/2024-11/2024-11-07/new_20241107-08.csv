@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024110708001,2024-11-07,8,CADJPY,110.309,flat,0,111.572478537795,109.04552146220499,2024-11-14,109.045521462205,111.572478537795,0.011453993217189984,121035.95433594228,2024-11-07 21:50:28,2024-11-07 21:50:00
