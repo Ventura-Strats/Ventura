@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024111103001,2024-11-11,10,SICOM:IND,11330.96,flat,0,11789.2229453703,10872.697054629698,2024-11-18,10872.6970546297,11789.2229453703,0.04044343509908255,15.712834896964116,2024-11-11 06:50:16,2024-11-11 06:50:00
