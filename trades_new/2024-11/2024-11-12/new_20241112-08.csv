@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024111208001,2024-11-12,7,EURUSD,1.068005,up,1,1.07725143562656,1.0587585643734403,2024-11-19,1.05875856437344,1.07725143562656,0.008657670728657418,108149.78229314298,2024-11-12 21:51:14,2024-11-12 21:50:00
