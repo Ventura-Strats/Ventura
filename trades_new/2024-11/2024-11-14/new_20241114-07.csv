@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024111407001,2024-11-14,14,NDX:IND,20962.9,down,-1,20608.6383098307,21317.1616901693,2024-11-21,20608.6383098306,21317.1616901693,0.01689946000645426,2.8227720573514583,2024-11-14 20:50:30,2024-11-14 20:50:00
