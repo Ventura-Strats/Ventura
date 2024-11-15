@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024111507001,2024-11-15,10,VWO:US,45.09,up,1,46.1889164883209,43.99108351167911,2024-11-22,43.9910835116792,46.1889164883209,0.02437162316080932,909.987256199938,2024-11-15 20:50:25,2024-11-15 20:50:00
