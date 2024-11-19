@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024111907001,2024-11-19,4,VTV:US,177.13,down,-1,174.430620897606,179.829379102394,2024-11-26,174.430620897606,179.829379102394,0.015239536512132279,370.45556110037785,2024-11-19 20:50:25,2024-11-19 20:50:00
