@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024112007001,2024-11-20,4,DVY:US,138.88,down,-1,136.908220682917,140.851779317083,2024-11-27,136.908220682917,140.851779317083,0.014197719737060632,507.1561463984643,2024-11-20 20:50:42,2024-11-20 20:50:00
