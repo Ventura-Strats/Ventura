@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024112806001,2024-11-28,11,EURHUF,412.868,flat,0,417.565787138383,408.170212861617,2024-12-05,408.170212861617,417.565787138383,0.011378423947564276,83303.91827078165,2024-11-28 16:50:20,2024-11-28 16:50:00
