@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024121708001,2024-12-17,14,XAUUSD,2645.79,down,-1,2594.06928953025,2697.51071046975,2024-12-24,2594.06928953025,2697.51071046975,0.01954830522065243,19.334614527093017,2024-12-17 21:50:28,2024-12-17 21:50:00
