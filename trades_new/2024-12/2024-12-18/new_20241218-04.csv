@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2024121804001,2024-12-18,14,HSI:IND,19919.75,up,1,20474.9110726004,19364.5889273996,2024-12-25,19364.5889273996,20474.9110726004,0.02786988152965786,13.994704210091948,2024-12-18 07:50:15,2024-12-18 07:50:00
