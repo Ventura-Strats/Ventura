@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025012408001,2025-01-24,14,XAUUSD,2771.16,up,1,2807.24424982961,2735.0757501703897,2025-01-31,2735.07575017039,2807.24424982961,0.01302135200768273,27.71292197349267,2025-01-24 21:50:29,2025-01-24 21:50:00
