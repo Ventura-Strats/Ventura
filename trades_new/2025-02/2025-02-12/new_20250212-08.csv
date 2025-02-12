@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025021208001,2025-02-12,9,AUDCHF,0.5737,flat,0,0.580080882800326,0.567319117199674,2025-02-19,0.567319117199674,0.580080882800326,0.011122333624413505,143189.15976680006,2025-02-12 21:50:27,2025-02-12 21:50:00
