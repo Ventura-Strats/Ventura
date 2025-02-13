@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025021308001,2025-02-13,8,GBPCHF,1.134615,flat,0,1.14657878345946,1.1226512165405398,2025-02-20,1.12265121654054,1.14657878345946,0.010544355097949598,75479.29816691566,2025-02-13 21:50:28,2025-02-13 21:50:00
