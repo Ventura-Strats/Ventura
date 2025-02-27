@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025022707001,2025-02-27,11,EFV:US,57.35,flat,0,58.4482549638909,56.2517450361091,2025-03-06,56.2517450361091,58.4482549638909,0.019150042962352343,910.5353791957303,2025-02-27 20:50:37,2025-02-27 20:50:00
