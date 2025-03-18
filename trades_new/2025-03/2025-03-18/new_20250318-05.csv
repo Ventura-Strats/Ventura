@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025031805001,2025-03-18,12,IBEX:IND,13297.96,up,1,13572.4691278559,13023.450872144098,2025-03-25,13023.4508721441,13572.4691278559,0.02064295033643515,3.3365232338322794,2025-03-18 15:50:19,2025-03-18 15:50:00
