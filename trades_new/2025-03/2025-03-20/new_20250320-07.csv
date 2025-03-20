@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025032007001,2025-03-20,1,EURCAD,1.554785,up,1,1.57347037861918,1.5360996213808202,2025-03-27,1.53609962138082,1.57347037861918,0.01201798230570783,76665.96924642101,2025-03-20 20:50:29,2025-03-20 20:50:00
