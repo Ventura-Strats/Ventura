@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025032107001,2025-03-21,10,AUDNZD,1.09412,flat,0,1.10046899686233,1.08777100313767,2025-03-28,1.08777100313767,1.10046899686233,0.00580283411538951,274775.5150142271,2025-03-21 20:50:29,2025-03-21 20:50:00
