@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025040904001,2025-04-09,6,FTXIN9:IND,12749.59,flat,0,13080.7869252474,12418.393074752601,2025-04-16,12418.3930747526,13080.7869252474,0.025977064772074954,22.29573838731761,2025-04-09 07:50:17,2025-04-09 07:50:00
