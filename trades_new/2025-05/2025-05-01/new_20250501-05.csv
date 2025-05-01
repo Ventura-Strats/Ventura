@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025050105001,2025-05-01,6,CAC:IND,7593.87,flat,0,8041.52098633623,7146.21901366377,2025-05-08,7146.21901366377,8041.52098633623,0.05894899258694575,1.9789455054128617,2025-05-01 15:50:29,2025-05-01 15:50:00
