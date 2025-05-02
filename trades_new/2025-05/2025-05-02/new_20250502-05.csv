@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025050205001,2025-05-02,6,SMI:IND,12265.7,flat,0,12827.1203872016,11704.279612798402,2025-05-09,11704.2796127984,12827.1203872016,0.04577157334694304,1.4683560105628708,2025-05-02 15:50:17,2025-05-02 15:50:00
