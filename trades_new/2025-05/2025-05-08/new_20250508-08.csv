@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025050808001,2025-05-08,12,IBOV:IND,136823.0,up,1,139895.030482207,133750.969517793,2025-05-15,133750.969517793,139895.030482207,0.02245258825056462,1.8427551525898356,2025-05-08 21:50:28,2025-05-08 21:50:00
