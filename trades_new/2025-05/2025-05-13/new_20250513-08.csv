@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025051308001,2025-05-13,14,GBPCAD,1.85509,down,-1,1.8390928156716397,1.87108718432836,2025-05-20,1.83909281567164,1.87108718432836,0.008623400658922309,87148.36203630913,2025-05-13 21:50:28,2025-05-13 21:50:00
