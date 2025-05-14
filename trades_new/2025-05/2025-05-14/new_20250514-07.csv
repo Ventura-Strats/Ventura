@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025051407001,2025-05-14,14,EFA:US,86.63,down,-1,85.1876999949232,88.0723000050768,2025-05-21,85.1876999949232,88.0723000050768,0.01664896692920248,693.3370286903273,2025-05-14 20:50:27,2025-05-14 20:50:00
