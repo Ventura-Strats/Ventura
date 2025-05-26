@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025052608001,2025-05-26,11,USDSGD,1.28175,flat,0,1.29664219167983,1.2668578083201698,2025-06-02,1.26685780832017,1.29664219167983,0.011618639890641713,86068.59403616206,2025-05-26 21:50:20,2025-05-26 21:50:00
