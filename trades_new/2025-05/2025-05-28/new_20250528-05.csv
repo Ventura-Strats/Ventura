@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025052805001,2025-05-28,14,DAX:IND,24103.92,down,-1,23574.567610644695,24633.2723893553,2025-06-04,23574.5676106447,24633.2723893553,0.02196125731230869,1.6691486894810144,2025-05-28 15:50:20,2025-05-28 15:50:00
