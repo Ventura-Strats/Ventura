@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025061608001,2025-06-16,11,XAUUSD,3431.68,flat,0,3518.77659242918,3344.58340757082,2025-06-23,3344.58340757082,3518.77659242918,0.025380161445466953,11.48150544251338,2025-06-16 21:50:28,2025-06-16 21:50:00
