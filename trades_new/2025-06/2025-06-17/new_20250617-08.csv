@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025061708001,2025-06-17,14,EURNZD,1.90955,down,-1,1.89207771235201,1.92702228764799,2025-06-24,1.89207771235201,1.92702228764799,0.009149950327558942,95166.95833625588,2025-06-17 21:50:28,2025-06-17 21:50:00
