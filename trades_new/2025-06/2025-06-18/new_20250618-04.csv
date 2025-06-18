@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025061804001,2025-06-18,14,SHSZ300:IND,3875.59,up,1,3915.40458539275,3835.7754146072502,2025-06-25,3835.77541460725,3915.40458539275,0.01027316754165164,180.54225427923188,2025-06-18 07:50:18,2025-06-18 07:50:00
