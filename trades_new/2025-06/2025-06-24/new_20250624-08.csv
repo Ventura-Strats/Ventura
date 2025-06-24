@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025062408001,2025-06-24,11,USDILS,3.4063,flat,0,3.49893115326046,3.3136688467395397,2025-07-01,3.31366884673954,3.49893115326046,0.027194067833267832,36772.725806642695,2025-06-24 21:50:48,2025-06-24 21:50:00
