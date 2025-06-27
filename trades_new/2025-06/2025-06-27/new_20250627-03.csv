@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025062703001,2025-06-27,2,TPX:IND,2838.9,up,1,2877.87702281135,2799.9229771886503,2025-07-04,2799.92297718865,2877.87702281135,0.013729621618003396,3708.3386460679326,2025-06-27 06:50:10,2025-06-27 06:50:00
