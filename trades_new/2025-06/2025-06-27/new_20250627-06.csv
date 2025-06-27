@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025062706001,2025-06-27,11,EURHUF,398.54,flat,0,401.55207285232,395.52792714768003,2025-07-04,395.52792714768,401.55207285232,0.007557767983941366,112867.18139350785,2025-06-27 16:50:12,2025-06-27 16:50:00
