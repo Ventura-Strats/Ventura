@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025071506001,2025-07-15,11,EURCZK,24.6677,flat,0,24.7981524380811,24.5372475619189,2025-07-22,24.5372475619189,24.7981524380811,0.005288390813942945,162899.2400983741,2025-07-15 16:50:11,2025-07-15 16:50:00
