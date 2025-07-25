@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025072508001,2025-07-25,7,USDCHF,0.7952,down,-1,0.787498768369368,0.802901231630632,2025-08-01,0.787498768369367,0.802901231630632,0.00968464742282693,103256.21123211751,2025-07-25 21:50:29,2025-07-25 21:50:00
