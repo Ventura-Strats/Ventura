@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025073108001,2025-07-31,8,USDCLP,972.04,flat,0,987.910022649272,956.1699773507279,2025-08-07,956.169977350728,987.910022649272,0.016326511922628795,61250.07011534317,2025-07-31 21:50:28,2025-07-31 21:50:00
