@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025080107001,2025-08-01,9,VEA:US,56.1,up,1,57.1892611948766,55.0107388051234,2025-08-08,55.0107388051235,57.1892611948766,0.019416420586035654,918.0534519209486,2025-08-01 20:50:35,2025-08-01 20:50:00
