@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025080608001,2025-08-06,14,EURNZD,1.96639,down,-1,1.9488136494063502,1.98396635059365,2025-08-13,1.94881364940635,1.98396635059365,0.008938384854301429,95969.18365558557,2025-08-06 21:50:29,2025-08-06 21:50:00
