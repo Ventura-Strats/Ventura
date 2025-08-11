@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025081104001,2025-08-11,14,SHCOMP:IND,3645.42,up,1,3683.10023641385,3607.7397635861503,2025-08-18,3607.73976358615,3683.10023641385,0.010336322402864306,190.65976447428656,2025-08-11 07:50:10,2025-08-11 07:50:00
