@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025082005001,2025-08-20,2,UKX:IND,9285.75,up,1,9384.66007327342,9186.83992672658,2025-08-27,9186.83992672658,9384.66007327342,0.010651813076318017,7.501813239801934,2025-08-20 15:50:34,2025-08-20 15:50:00
