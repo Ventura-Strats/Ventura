@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025082103001,2025-08-21,11,NKY:IND,42588.5,flat,0,43844.0864318471,41332.9135681529,2025-08-28,41332.9135681529,43844.0864318471,0.029481818609415678,117.41923635087002,2025-08-21 06:50:11,2025-08-21 06:50:00
