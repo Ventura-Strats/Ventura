@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025091903001,2025-09-19,14,KOSPI2:IND,472.25,up,1,480.124882878162,464.375117121838,2025-09-26,464.375117121838,480.124882878162,0.016675241668950846,176261.66909087566,2025-09-19 06:50:11,2025-09-19 06:50:00
