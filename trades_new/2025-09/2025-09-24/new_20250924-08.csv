@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025092408001,2025-09-24,14,EURNZD,2.0189,down,-1,2.0024428712383497,2.03535712876165,2025-10-01,2.00244287123835,2.03535712876165,0.008151532399648387,104532.59741615114,2025-09-24 21:50:28,2025-09-24 21:50:00
