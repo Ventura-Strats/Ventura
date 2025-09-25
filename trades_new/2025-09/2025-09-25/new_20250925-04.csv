@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025092504001,2025-09-25,4,SHCOMP:IND,3857.4,down,-1,3793.06748906746,3921.73251093254,2025-10-02,3793.06748906746,3921.73251093254,0.016677687284839537,110.82281565966088,2025-09-25 07:50:17,2025-09-25 07:50:00
