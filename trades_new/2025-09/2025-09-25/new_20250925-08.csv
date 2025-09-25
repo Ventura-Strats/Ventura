@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025092508001,2025-09-25,2,USDJPY,149.7735,flat,0,151.35955214146,148.18744785854003,2025-10-02,148.18744785854,151.35955214146,0.010589671346800333,94431.63694614089,2025-09-25 21:50:31,2025-09-25 21:50:00
