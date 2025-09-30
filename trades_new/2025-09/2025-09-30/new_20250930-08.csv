@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025093008001,2025-09-30,13,XAGUSD,46.93,up,1,48.3292379119157,45.5307620880843,2025-10-07,45.5307620880843,48.3292379119157,0.029815425355118164,714.6747465060469,2025-09-30 21:50:30,2025-09-30 21:50:00
