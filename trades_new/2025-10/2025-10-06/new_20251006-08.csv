@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025100608001,2025-10-06,14,GBPCAD,1.88073,down,-1,1.86782031213738,1.89363968786262,2025-10-13,1.86782031213738,1.89363968786262,0.006864189895742667,108061.07233776333,2025-10-06 21:50:24,2025-10-06 21:50:00
