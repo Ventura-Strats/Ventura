@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025100708001,2025-10-07,12,SEKJPY,16.1533,up,1,16.3426235026664,15.963976497333604,2025-10-14,15.9639764973336,16.3426235026664,0.011720422617446324,802650.2377138473,2025-10-07 21:50:52,2025-10-07 21:50:00
