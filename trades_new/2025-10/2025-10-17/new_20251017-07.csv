@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025101707001,2025-10-17,12,VEA:US,60.73,down,-1,59.55813543189469,61.9018645681053,2025-10-24,59.5581354318946,61.9018645681053,0.019296304431175804,853.340929674851,2025-10-17 20:50:54,2025-10-17 20:50:00
