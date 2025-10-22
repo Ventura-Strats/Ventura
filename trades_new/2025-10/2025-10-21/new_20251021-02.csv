@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025102102001,2025-10-22,4,AS51:IND,9026.7,up,1,9112.40108675851,8940.998913241492,2025-10-29,8940.9989132415,9112.40108675851,0.009494176914986552,17.951482258289886,2025-10-22 05:50:09,2025-10-22 05:50:00
