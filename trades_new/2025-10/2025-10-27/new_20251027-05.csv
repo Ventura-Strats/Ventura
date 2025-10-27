@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025102705001,2025-10-27,11,UKX:IND,9658.95,flat,0,9771.0871472854,9546.812852714602,2025-11-03,9546.8128527146,9771.0871472854,0.011609662259914222,6.692421390406545,2025-10-27 15:50:14,2025-10-27 15:50:00
