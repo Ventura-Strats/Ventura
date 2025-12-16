@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2025121502001,2025-12-16,12,TPX:IND,3375.84,up,1,3435.13545338237,3316.54454661763,2025-12-23,3316.54454661763,3435.13545338237,0.01756465157779097,2609.3062987861817,2025-12-16 05:50:09,2025-12-16 05:50:00
