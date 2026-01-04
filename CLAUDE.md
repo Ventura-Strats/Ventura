@@ -127,36 +127,59 @@ Located in `/HD/Scripts/Python/`:
 - `Signal_List.py` - Generate signal list for execution
 - `IB_Account_Data.py` - Fetch account data/NAV
 
-## Current Pain Points (as of Jan 2025)
+## Current Status (Updated 2026-01-04)
 
-### 1. Read_Executions.py - BROKEN
-- Script to pull executed trades from IB API is not working
-- This has stopped trade inventory maintenance
-- Trading has been paused due to this
-- **Status**: Investigating error (user to provide error message)
+### Completed
+- **GitHub backup**: Code pushed to `git@github.com:Ventura-Strats/Ventura.git`
+- **IB API error() fix**: Fixed `advancedOrderRejectJson` parameter issue in 10 Python files
+- **init.py fix**: `scriptFinish()` now handles missing `script_id` gracefully
 
-### 2. Historical Data Corruption
+### Issues Fixed (2026-01-04)
+The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
+
+**Root cause**: The `error()` callback signature changed in newer IB API versions. The parameter was made optional with `advancedOrderRejectJson=""`.
+
+**Files fixed**:
+- IB_Account_Data.py, Read_Executions.py, Execute_Orders.py, Signal_List.py
+- Price_IB.py, Get_Future_Expiries.py, do_the_trades.py
+- ib_retrieve_live_price.py, ib_retrieve_live_price_from_both_books.py, ib_retrieve_contract_details.py
+- init.py (scriptFinish crash fix)
+
+### Remaining Issues
+
+#### 1. "DB not writable" warning
+- Scripts show `Good to start: False` and `DB not writable`
+- Account 1 data still retrieves successfully despite this warning
+- Account 2 fails (possibly separate IB connection issue)
+- **Status**: User investigating
+
+#### 2. Historical Data Corruption
 - Machine downtime caused gaps in price history
 - Some currencies have incorrect prices
 - Current workaround: Manual download from investing.com, then `T.importInvestingComHistoFile()`
 - Diagnostic: Run `T.plotPriceSeries()` across assets to identify issues
 
-### 3. Trade Execution Not Automated
+#### 3. Trade Execution Not Automated
 - Need to write execution script using Python IB API
 - Currently trades require manual intervention
 
-### 4. Trade Inventory Workflow (when working)
+#### 4. Trade Inventory Workflow (when working)
 - `Read_Executions.py` pulls executions from IB
 - `B.readTradesFromIB()` processes the data
 - `B.createNewTradeIDFromLegs()` creates trade records manually
 
+### Security Note
+- DB.R (line 16) has database password in plaintext - should move to environment variable
+
 ## Priorities (Agreed Plan)
 
-1. **Backup to GitHub** - Before any changes
-2. **Fix Read_Executions.py** - Critical for resuming trading
-3. **Fix historical data issues** - Improve data pipeline resilience
-4. **Restructure codebase** - Add documentation, tests, logging improvements
-5. **Future: Convert to R package** - Maybe, lower priority
+1. ~~**Backup to GitHub**~~ - DONE
+2. ~~**Fix IB API error() signature**~~ - DONE (testing in progress)
+3. **Test Read_Executions.py** - Needs a trade execution on weekday
+4. **Investigate "DB not writable"** - User investigating
+5. **Fix historical data issues** - Improve data pipeline resilience
+6. **Restructure codebase** - Add documentation, tests, logging improvements
+7. **Future: Convert to R package** - Maybe, lower priority
 
 ## Key Functions Reference
 
