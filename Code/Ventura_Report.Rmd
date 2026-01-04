@@ -1,0 +1,273 @@
+---
+title: "Ventura Strats"
+date: "`r format(Sys.Date() - switch(weekdays(Sys.Date()), 'Monday' = 3, 'Sunday' = 2, 1), '%B %d, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+[Other dates](https://ventura-strats.github.io/Ventura/Reporting.html)  
+  
+***
+
+# P&L Report  
+*Simulation, assuming all signals executed perfectly, using realistic transaction cost assumptions*  
+  
+#### Capital allocation per trade:  
+* Use a notional such that the stop corresponds to losing 1% of last night NAV  
+* If more than 10 trades a day, scale down such that the sum of all stops corresponds to 10% of NAV  
+
+### Day P&L
+
+```{r, echo=FALSE, message=FALSE, warning = FALSE}
+
+source("Init.R")
+library(knitr)
+options(knitr.kable.NA = '')
+file_name <- paste0(DIRECTORY_DATA, "Git_PnL/pnl_%s.RData") %>%
+  sprintf(format(YESTERDAY, "%Y-%m-%d"))
+load(file_name)
+
+dat_pnl$pnl %>%
+  filter(date == YESTERDAY) %>%
+  mutate(
+    PnL_pct = 100 * round(nav_evening / nav_morning - 1, 4),
+    Fees_pct = -100 * round(fees / nav_morning, 4)
+    ) %>%
+  rename(
+    Nb_Trd_New = n_new,
+    Nb_Trd_Exit = n_exit,
+    Nb_Trd_Live_Morning = n_live,
+  ) %>%
+  select(PnL_pct, Fees_pct, Nb_Trd_Live_Morning, Nb_Trd_New, Nb_Trd_Exit) %>%
+  kable
+
+```
+  
+***   
+### Historical performance
+  
+```{r, echo=FALSE, message=FALSE, warning = FALSE}
+
+source("Init.R")
+library(knitr)
+options(knitr.kable.NA = '')
+file_name <- paste0(DIRECTORY_DATA, "Git_PnL/pnl_%s.RData") %>%
+  sprintf(format(YESTERDAY, "%Y-%m-%d"))
+load(file_name)
+
+dat_pnl$summary %>%
+  mutate(
+    rtn = round(rtn, 2),
+    max_drawdown_pct = round(max_drawdown_pct, 2),
+    lowest_ytd_pct = round(lowest_ytd_pct, 2),
+    volatility = round(volatility, 2),
+    drawdown_ratio = round(drawdown_ratio, 2),
+    sharpe = round(sharpe, 2)
+  ) %>%
+  rename(
+    Month = month,
+    Nb_Trades = nb_trades,
+    Return_pct = rtn,
+    Max_Drawdown_pct = max_drawdown_pct,
+    Lowest_ytd_pct = lowest_ytd_pct,
+    Volatility = volatility,
+    Drawdown_ratio = drawdown_ratio,
+    Sharpe = sharpe
+    ) %>%
+  kable
+
+print(
+  dat_pnl$pnl %>% 
+    ggplot(aes(x = date, y = nav_evening)) +
+    geom_step(col = "lightseagreen") +
+    scale_x_date(date_breaks = "months", date_labels = "%b%y") +
+    scale_y_continuous(trans = 'log10') +
+    theme(
+         axis.title.x = element_blank(),
+         axis.title.y = element_blank(),
+         axis.text=element_text(size=12),
+         axis.title=element_text(size=12)
+    ) + 
+    labs(title = "NAV (base 100 on 2020-10-13)")
+)
+
+```
+  
+***
+
+### Live trades at end of day
+
+Gross P&L per trade = 1 if hit target, -1 if hit stop
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+source("Init.R")
+library(knitr)
+
+dat_px <- T.getHistoPx(date_from = YESTERDAY-5) %>%
+  left_join(INSTRUMENTS, by = "instrument_id") %>%
+  group_by(ticker) %>%
+  summarize(price_last = last(close)) %>%
+  ungroup
+
+paste0(DIRECTORY_CODE, "Code/trades_ventura.csv") %>%
+  read.csv %>%
+  filter(
+    trade_status == "live", 
+    buy_sell != 0
+    ) %>%
+  left_join(dat_px, by = "ticker") %>%
+  mutate(
+    gross_pnl = (price_last - price_entry) / (target - price_entry)
+    ) %>%  
+  select(strategy, ticker, date_trade, buy_sell, price_entry, target, stop_loss, date_exit_latest, price_last, gross_pnl) %>%
+  rename(
+    Strategy = strategy,
+    Ticker = ticker,
+    Date_Trade = date_trade,
+    Buy_Sell = buy_sell,
+    Price_Entry = price_entry,
+    Target = target,
+    Stop = stop_loss,
+    Date_Exit_Latest = date_exit_latest,
+    Price_Last = price_last,
+    Gross_PnL = gross_pnl
+  ) %>%
+  kable 
+```
+  
+  
+***
+
+### New trades
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+source("Init.R")
+library(knitr)
+
+paste0(DIRECTORY_CODE, "Code/trades_ventura.csv") %>%
+  read.csv %>%
+  filter(
+    trade_status == "live", 
+    buy_sell != 0,
+    date_trade == YESTERDAY
+    ) %>%
+  left_join(dat_px, by = "ticker") %>%
+  mutate(gross_pnl = (price_last - price_entry) / (target - price_entry)) %>%  
+  select(strategy, ticker, date_trade, buy_sell, price_entry, target, stop_loss, date_exit_latest, price_last, gross_pnl) %>%
+  rename(
+    Strategy = strategy,
+    Ticker = ticker,
+    Date_Trade = date_trade,
+    Buy_Sell = buy_sell,
+    Price_Entry = price_entry,
+    Target = target,
+    Stop = stop_loss,
+    Date_Exit_Latest = date_exit_latest,
+    Price_Last = price_last,
+    Gross_PnL = gross_pnl
+  ) %>% 
+  kable
+```
+    
+***  
+
+### Exit trades
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+source("Init.R")
+library(knitr)
+
+paste0(DIRECTORY_CODE, "Code/trades_ventura.csv") %>%
+  read.csv %>%
+  filter(
+    buy_sell != 0,
+    date_exit == YESTERDAY
+    ) %>%
+  mutate(gross_pnl = (price_exit - price_entry) / (target - price_entry)) %>%  
+  select(strategy, ticker, date_trade, buy_sell, trade_status, price_entry, target, stop_loss, date_exit_latest, price_exit, gross_pnl) %>%
+  rename(
+    Strategy = strategy,
+    Ticker = ticker,
+    Date_Trade = date_trade,
+    Buy_Sell = buy_sell,
+    Price_Entry = price_entry,
+    Target = target,
+    Stop = stop_loss,
+    Date_Exit = date_exit_latest,
+    Price_Exit = price_exit,
+    Gross_PnL = gross_pnl,
+    Status = trade_status
+  ) %>%
+  kable 
+```
+    
+***  
+
+### Closed trades statistics
+  
+```{r, echo=FALSE, message=FALSE, warning = FALSE}
+library(tidyverse)
+paste0(DIRECTORY_CODE, "Code/trades_ventura.csv") %>%
+  read.csv %>%
+  filter(
+    trade_status != "live", 
+    buy_sell != 0
+    ) %>%
+  mutate(
+    gross_pnl = (price_exit - price_entry) / (target - price_entry),
+    gross_pnl = pmin(1, gross_pnl),
+    gross_pnl = pmax(-1, gross_pnl)
+    ) %>%
+  ggplot(aes(x=gross_pnl)) +
+  geom_histogram(fill = "lightseagreen", bins = 100) + 
+  aes(y=stat(count)/sum(stat(count))) + 
+  scale_y_continuous(labels = scales::percent) + 
+  scale_x_continuous(limits = c(-1.1, 1.1)) +
+  labs(
+    title = "Gross PnL distribution",
+    x = "PnL per trade (+1 = hit target, -1 = stopped)"
+  ) + 
+  theme(
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.text = element_text(size=12),
+    axis.title = element_text(size=12)
+  ) 
+```
+
+***
+
+### Closed trades last month
+  
+```{r, echo=FALSE, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(lubridate)
+paste0(DIRECTORY_CODE, "Code/trades_ventura.csv") %>%
+  read.csv %>%
+  filter(
+    trade_status != "live", 
+    buy_sell != 0,
+    date_trade >= Sys.Date() %m+% months(-1)
+    ) %>%
+  mutate(gross_pnl = (price_exit - price_entry) / (target - price_entry)) %>%
+  select(strategy, ticker, date_trade, buy_sell, trade_status, price_entry, target, stop_loss, date_exit, price_exit, gross_pnl) %>%
+  rename(
+    Strategy = strategy,
+    Ticker = ticker,
+    Date_Trade = date_trade,
+    Buy_Sell = buy_sell,
+    Outcome = trade_status,
+    Price_Entry = price_entry,
+    Target = target,
+    Stop = stop_loss,
+    Date_Exit = date_exit,
+    Price_Exit = price_exit,
+    Gross_PnL = gross_pnl
+  ) %>%
+  kable 
+```
+

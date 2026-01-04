@@ -1,0 +1,70 @@
+# Data directories - don't commit data files
+Data/
+*.csv
+*.rds
+*.RData
+!Code/VenturaStrat.RData
+
+# Old/backup folders
+Git/
+Code_copy/
+zzz_Old/
+**/zzz_Old/
+.Trash*/
+
+# R artifacts
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+Rplots.pdf
+
+# Temporary output files
+tmp_*.png
+tmp_*.html
+test.png
+tbl.html
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.ipynb_checkpoints/
+*.so
+.eggs/
+*.egg-info/
+*.egg
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Credentials - IMPORTANT: DB.R has credentials, consider using env vars
+# For now, we'll track DB.R but you should move credentials to env vars
+# .env
+# credentials.json
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Large binary files
+*.zip
+*.tar.gz
+*.7z

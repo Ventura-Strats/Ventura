@@ -1,0 +1,405 @@
+############################################################################################
+### Project: Glenorchy                                                                   ###
+############################################################################################
+
+############################################################################################
+### System Maintenance                                                                   ###
+### Main (Big): 192.168.0.34                                                             ###
+### Home (New): 192.168.0.33                                                             ###
+### Laptop:     192.168.0.                                                               ###
+### DB:         192.168.0.43                                                             ###
+### IB:         192.168.0.42                                                             ###
+### GLENORCHY: 	192.168.0.44                                                             ###
+### VENTURA1: 	192.168.0.40                                                             ###
+### VENTURA2: 	192.168.0.39                                                             ###
+### VENTURA3: 	192.168.0.37                                                             ###
+### VENTURA4: 	192.168.0.41                                                             ###
+### VENTURA5: 	192.168.0.38                                                            ssh  ###
+### Time set at Hong Kong time                                                           ### 
+############################################################################################
+A SHELL=/bin/sh
+A PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+############################################################################################
+### Python package udpate
+############################################################################################
+H 05 23 * * 7 /home/fls/anaconda3/bin/conda update --all
+I 05 23 * * 7 /home/fls/anaconda3/bin/conda update --all
+
+############################################################################################
+### Crontab maintenance                                                                  ###
+############################################################################################
+H 14,29,44,59 * * * * RScriptGlenorchy.sh Maintenance/Generate_Crontab.R
+M */15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_user_M.txt | crontab - -u fls
+H */15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_user_H.txt | crontab - -u fls
+I */15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_user_I.txt | crontab - -u fls
+G */15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_user_G.txt | crontab - -u fls
+D */15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_user_D.txt | crontab - -u fls
+L */15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_user_L.txt | crontab - -u fls
+V */15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_user_V.txt | crontab - -u fls
+W */15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_user_W.txt | crontab - -u fls
+X */15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_user_X.txt | crontab - -u fls
+Y */15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_user_Y.txt | crontab - -u fls
+Z */15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_user_Z.txt | crontab - -u fls
+
+############################################################################################
+### Backup                                                                               ###
+############################################################################################
+A 58 23 * * * ~/Util/user/./backup_crontab_user.sh
+G 58 23 * * * ~/Util/user/./backup_crontab_master.sh
+G 58 23 * * * ~/Util/user/./backup_code.sh
+# G 05 07 * * * RScriptGlenorchy.sh Maintenance/Backup_XML_Files.R
+G 15 22 * * * RScriptGlenorchy.sh Maintenance/Backup_Database.R
+
+############################################################################################
+### Files maintenance                                                                    ###
+############################################################################################
+G 01 04 * * * rm ~/home/fls/Data/Glenorchy/Shared/Log/Executions/*.*
+G 30 22 * * * RScriptGlenorchy.sh Maintenance/Erase_Older_Files.R
+G 30 22 * * * ~/Util/user/./erase_older_log_files.sh
+G 30 22 * * * ~/Util/user/./erase_older_xml_files.sh
+# L */15 * * * * cd /home/fls/Mount/GDrv && grive
+H 00 23 * * * RScriptGlenorchy.sh Maintenance/Clean_Track_System_Files.R
+
+############################################################################################
+############################################################################################
+### Project: Glenorchy                                                                   ###
+############################################################################################
+############################################################################################
+
+############################################################################################
+### Data maintenance                                                                     ###
+############################################################################################
+G 15 22 * * * RScriptGlenorchy.sh Maintenance/Morning_Status_Country.Rcd ..
+
+G 16 22 * * * RScriptGlenorchy.sh Maintenance/Morning_Status_Fundamentals.R
+H 17 22 * * * RScriptGlenorchy.sh Maintenance/Morning_Status_Technicals.R
+G 18 22 * * * RScriptGlenorchy.sh Maintenance/Download_Standard_Data.R
+G 30 22 * * * RScriptGlenorchy.sh Maintenance/Erase_tmp_DBtables.R
+G 00 22 * * * RScriptGlenorchy.sh Maintenance/Optimize_Small_Tables.R
+G */15 * * * * RScriptGlenorchy.sh Maintenance/DB_Tables_Size.R
+
+# I 39 02 * * * pkill R
+# I 59 * * * * killall --older-than 2h R
+# I 11 07 * * 1-5 pkill java
+# M 11 07 * * 1-5 pkill java
+# M 59 * * * * pkill python
+# G 59 * * * * pkill python
+
+############################################################################################
+### Book                                                                                 ###
+############################################################################################
+# I */05 * * * * RScriptGlenorchy.sh Book/Accounts.R
+# G 15 05-07 * * * RScriptGlenorchy.sh Book/Trades.R
+# G 14 05 * * * RScriptGlenorchy.sh Book/Erase_Trades_Today.R
+# G */15 03,14-23 * * * RScriptGlenorchy.sh Book/Trades_Today.R
+# G 35,40,50,55 03,12-13,20-23 * * * RScriptGlenorchy.sh Book/Trades_Today.R
+# G 30 08 * * * RScriptGlenorchy.sh Book/PnL.R
+# G 05 07,09,15 * * * RScriptGlenorchy.sh Book/PnL.R
+
+# M 15 05-07 * * * RScriptGlenorchy.sh Book/Trades.R
+# M 14 05 * * * RScriptGlenorchy.sh Book/Erase_Trades_Today.R
+# M */15 03,14-23 * * * RScriptGlenorchy.sh Book/Trades_Today.R
+# M 35,40,50,55 03,12-13,20-23 * * * RScriptGlenorchy.sh Book/Trades_Today.R
+M 15 08 * * 1-6 RScriptGlenorchy.sh Book/Trades_Exit_To_Github.R
+
+############################################################################################
+### Stock inventory maintenance                                                          ###
+############################################################################################
+# G 00 04 * * * RScriptGlenorchy.sh /Stocks/Update/01_Update_Stock_IB_Details.R
+I 01 10 * * * RScriptGlenorchy.sh /Stocks/Stock_List.R
+
+############################################################################################
+### Fundamentals - Python get xml files from IB                                          ###
+############################################################################################
+G 59 * * * * RScriptGlenorchy.sh Fundamentals/Prepare_IB_Download_Lists.R
+H 00 * * * * PScriptGlenorchy.sh ib_Get_Statements.py 1 & PScriptGlenorchy.sh ib_Get_Statements.py 2
+I 00 * * * * PScriptGlenorchy.sh ib_Get_Statements.py 1 & PScriptGlenorchy.sh ib_Get_Statements.py 2
+
+############################################################################################
+### Fundamentals - Data treatment                                                        ###
+############################################################################################
+G 55 * * * * RScriptGlenorchy.sh Fundamentals/Copy_XML_Files_By_Stock.R
+G 01 22 * * * RScriptGlenorchy.sh Fundamentals/Calendar_Clean_XML_Files.R
+
+G 00 * * * * RScriptGlenorchy.sh Fundamentals/Read_Statements_Data.R
+G 40 * * * * RScriptGlenorchy.sh Fundamentals/Combine_Fundamentals.R
+# G 05,35 * * * * RScriptGlenorchy.sh Fundamentals/Overrides.R
+# G 06,21,36,51 * * * * RScriptGlenorchy.sh Fundamentals/Overrides_Calendar.R
+G 45 * * * * RScriptGlenorchy.sh Fundamentals/Phi.R
+G */15 * * * * RScriptGlenorchy.sh Fundamentals/Check_Status_In.R
+# I 25 * * * * RScriptGlenorchy.sh Fundamentals/RESC.R
+G 55 * * * * RScriptGlenorchy.sh Fundamentals/Calendar_IB.R
+G 07 01,03,05,07,09,11,13,15,17,19,21,23 * * * RScriptGlenorchy.sh Fundamentals/Calendar_Financial_Website.R
+G 07 00,04,08,10,12,14,16,18,20,22 * * * RScriptGlenorchy.sh Fundamentals/Calendar_Exchange.R
+G 05 * * * * RScriptGlenorchy.sh Fundamentals/Combine_Calendar.R
+G 30 23 * * * RScriptGlenorchy.sh Fundamentals/Phi_Histo.R
+
+############################################################################################
+### Technicals                                                                           ###
+############################################################################################
+### Technicals: Initialization morning
+G 35,55 06-11 * * * RScriptGlenorchy.sh Technicals/Histo_Index.R
+G 51 08-10 * * * RScriptGlenorchy.sh Technicals/Histo_Index_Nonbook.R
+G 40 06-11 * * * RScriptGlenorchy.sh Technicals/Histo_FX.R
+G */15 07-13 * * * RScriptGlenorchy.sh Technicals/Histo_Stocks.R
+G */15 07-13 * * * RScriptGlenorchy.sh Technicals/Histo_Stocks_Japan.R
+
+# G 05,20,35,50 02-05 * * * RScriptGlenorchy.sh Technicals/Histo_Stocks.R
+# G 05,20,35,45 02-05  * * * RScriptGlenorchy.sh Technicals/Histo_Stocks_Japan.R
+# G 55 00-02 * * * RScriptGlenorchy.sh Technicals/Histo_Stocks_in_Book.R
+# I 30 06 * * 1-5 RScriptGlenorchy.sh Technicals/Histo_Stocks_Australia.R
+
+# M 10,25,40,55 02-08 * * * RScriptGlenorchy.sh Technicals/Histo_Stocks.R
+# M 10,25,40,55 02-06 * * * RScriptGlenorchy.sh Technicals/Histo_Stocks_Japan.R
+
+# L 03,18,33,48 02-15 * * 1-5 RScriptGlenorchy.sh Technicals/Histo_Stocks.R
+# L 03,18,33,48 02-07 * * 1-5 RScriptGlenorchy.sh Technicals/Histo_Stocks_Japan.R
+
+### Technicals: Live
+H 58 02,04,05,15 * * 1-5 RScriptGlenorchy.sh Technicals/Live_Price.R "Asia_NJA"
+H 01 02,03,05,10 * * 1-5 RScriptGlenorchy.sh Technicals/Live_Price.R "Asia_Japan"
+H 55 03,05,06,15,16 * * 1-5 RScriptGlenorchy.sh Technicals/Live_Price.R "Europe"
+H 55 14,16,18,20,22 * * 1-5 RScriptGlenorchy.sh Technicals/Live_Price.R "America"
+H 35 20 * * 1-5 RScriptGlenorchy.sh Technicals/Live_Price.R "America"
+
+############################################################################################
+### Execution                                                                            ###
+############################################################################################
+I 00 04 * * 1-5 RScriptGlenorchy.sh Execution/Choose_CCY_Account_2.R
+I 05 15,16,02,04,05,06,10,12,13,14,15,16 * * 1-5 RScriptGlenorchy.sh Execution/Screen_Stocks.R
+I 00 15,16,03,06,10,13,16 * * * RScriptGlenorchy.sh Execution/Erase_Orders_By_Account.R
+I 20,25,30,35 05-06 * * 1-5 RScriptGlenorchy.sh Execution/Prepare_Orders_By_Account.R "Asia"
+# G 50 06 * * 1-5 RScriptGlenorchy.sh Execution/Trades_Execution.R "Australia" 1
+# G 50 06 * * 1-5 RScriptGlenorchy.sh Execution/Trades_Execution.R "Australia" 2
+# G 45 06 * * 1-5 RScriptGlenorchy.sh Execution/Trades_Execution.R "Asia" 1
+# G 45 06 * * 1-5 RScriptGlenorchy.sh Execution/Trades_Execution.R "Asia" 2
+I 20,25,30,35 16 * * 1-5 RScriptGlenorchy.sh Execution/Prepare_Orders_By_Account.R "Europe"
+# G 45 16 * * 1-5 RScriptGlenorchy.sh Execution/Trades_Execution.R "Europe" 1
+# G 45 16 * * 1-5 RScriptGlenorchy.sh Execution/Trades_Execution.R "Europe" 2
+I 20,25,30,35 20 * * 1-5 RScriptGlenorchy.sh Execution/Prepare_Orders_By_Account.R "America"
+# G 45 20 * * 2-6 RScriptGlenorchy.sh Execution/Trades_Execution.R "America" 1
+# G 45 20 * * 2-6 RScriptGlenorchy.sh Execution/Trades_Execution.R "America" 2
+# G 55 03,06,08,12,13,15,18,20,23 * * 1-6 RScriptGlenorchy.sh Execution/Trades_Hedge_FX.R 1
+# G 55 03,06,08,12,13,15,18,20,23 * * 1-6 RScriptGlenorchy.sh Execution/Trades_Hedge_FX.R 2
+
+############################################################################################
+### Python                                                                               ###
+############################################################################################
+# G */10 * * * * python3 /home/fls/GDrv/Glenorchy/Scripts/Python/Script_Position_Px_Live.py
+
+############################################################################################
+############################################################################################
+### Project: FX Options data                                                             ###
+############################################################################################
+############################################################################################
+# M 05 06 * * * RScriptFX.sh Roll_MarketData.R
+# M 25 06 * * * RScriptFX.sh Download_Forwards.R
+# M 05 10 * * * RScriptFX.sh Download_ForwardsCME.R
+# M 10 10 * * * RScriptFX.sh Download_CME_Options_Prices.R
+# M 30 11 * * * RScriptFX.sh Aggregate_Downloaded_Data.R
+# M 50 11 * * * RScriptFX.sh Download_DTCC.R
+# M 10 19 * * * RScriptFX.sh Download_CME_Options_Expiries.R
+# M 05 * * * * RScriptFX.sh Download_Sentry_ATM.R
+
+############################################################################################
+############################################################################################
+### Project: Ventura                                                                     ###
+############################################################################################
+############################################################################################
+
+############################################################################################
+### Data maintenance                                                                     ###
+############################################################################################
+I 05 23 * * * RScriptVentura.sh Maintenance/Static_Tables.R
+H 02 23 * * * RScriptVentura.sh Maintenance/Active_Future.R
+
+############################################################################################
+### Book                                                                                 ###
+############################################################################################
+H */5 * * * * PScriptVentura.sh IB_Account_Data.py
+H 1,6,11,16,21,26,31,36,41,46,51,56 * * * * KillScriptVentura.sh IB_Account_Data.py
+H */5 * * * 1-6 PScriptVentura.sh Read_Executions.py
+H 1,6,11,16,21,26,31,36,41,46,51,56 * * * * KillScriptVentura.sh Read_Executions.py
+H 00 01 * * 2-6 RScriptVentura.sh Book/PnL_Github.R
+
+############################################################################################
+### Communication                                                                        ###
+############################################################################################
+H 00 * * * * RScriptVentura.sh Communications/Send_Status.R
+
+############################################################################################
+### Prepare morning technicals and calibrate models                                      ###
+############################################################################################
+H 50 23 * * 1-5,7 RScriptVentura.sh Technicals/Price_Histo.R
+
+V 02 00 * * 1-6 RScriptVentura.sh Technicals/Recent.R 1 & RScriptVentura.sh Technicals/Recent.R 2 & RScriptVentura.sh Technicals/Recent.R 3 
+W 02 00 * * 1-6 RScriptVentura.sh Technicals/Recent.R 4 & RScriptVentura.sh Technicals/Recent.R 5 & RScriptVentura.sh Technicals/Recent.R 6
+Y 02 00 * * 1-6 RScriptVentura.sh Technicals/Recent.R 7 & RScriptVentura.sh Technicals/Recent.R 8 & RScriptVentura.sh Technicals/Recent.R 9
+Z 02 00 * * 1-6 RScriptVentura.sh Technicals/Recent.R 10 & RScriptVentura.sh Technicals/Recent.R 11 & RScriptVentura.sh Technicals/Recent.R 12
+I 02 00 * * 1-6 RScriptVentura.sh Technicals/Recent.R 13 & RScriptVentura.sh Technicals/Recent.R 14 & RScriptVentura.sh Technicals/Recent.R 15
+H 02 00 * * 1-6 RScriptVentura.sh Technicals/Recent.R 16 & RScriptVentura.sh Technicals/Recent.R 17 & RScriptVentura.sh Technicals/Recent.R 18 & RScriptVentura.sh Technicals/Recent.R 19 & RScriptVentura.sh Technicals/Recent.R 20
+
+
+H 40 01 * * 1-6 RScriptVentura.sh Maintenance/Load_Tech.R
+
+V 25 02 * * 1-6 RScriptVentura.sh Model/Train.R 1 & RScriptVentura.sh Model/Train.R 5
+W 25 02 * * 1-6 RScriptVentura.sh Model/Train.R 2 & RScriptVentura.sh Model/Train.R 6
+Y 25 02 * * 1-6 RScriptVentura.sh Model/Train.R 4
+Z 25 02 * * 1-6 RScriptVentura.sh Model/Train.R 8
+I 25 02 * * 1-6 RScriptVentura.sh Model/Train.R 3 & RScriptVentura.sh Model/Train.R 7
+
+############################################################################################
+### Live Prices, technicals and model predictions                                        ###
+############################################################################################
+### Run technicals but not for execution
+
+H 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Technicals/Price_Live.R
+
+H 36 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Price_IB.py
+H 39 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Price_IB_Future.py
+H 40 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Price_Live.R
+
+V 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Technicals/Live.R 1 & RScriptVentura.sh Technicals/Live.R 2 & RScriptVentura.sh Technicals/Live.R 3
+W 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Technicals/Live.R 4 & RScriptVentura.sh Technicals/Live.R 5 & RScriptVentura.sh Technicals/Live.R 6
+Y 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Technicals/Live.R 7 & RScriptVentura.sh Technicals/Live.R 8 & RScriptVentura.sh Technicals/Live.R 9
+Z 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Technicals/Live.R 10 & RScriptVentura.sh Technicals/Live.R 11 & RScriptVentura.sh Technicals/Live.R 12
+I 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Technicals/Live.R 13 & RScriptVentura.sh Technicals/Live.R 14 & RScriptVentura.sh Technicals/Live.R 15
+H 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Technicals/Live.R 16 & RScriptVentura.sh Technicals/Live.R 17 & RScriptVentura.sh Technicals/Live.R 18 & RScriptVentura.sh Technicals/Live.R 19 & RScriptVentura.sh Technicals/Live.R 20
+
+V 32 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
+Y 32 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
+W 34 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
+Z 34 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
+I 34 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
+H 34 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
+
+V 33 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Model/Predict.R 4
+Y 33 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Model/Predict.R 8
+W 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Model/Predict.R 1
+Z 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Model/Predict.R 2 & RScriptVentura.sh Model/Predict.R 7
+I 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Model/Predict.R 3
+H 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Model/Predict.R 5 & RScriptVentura.sh Model/Predict.R 6
+
+H 47 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Communications/Send_Predict.R
+
+V 46 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
+Y 46 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
+W 48 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
+Z 48 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
+I 48 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
+H 48 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
+
+### Run technicals for execution
+H 50 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Technicals/Price_Live.R
+
+H 51 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Price_IB.py
+H 54 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Price_IB_Future.py
+H 55 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Price_Live.R
+
+V 50 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Technicals/Live.R 1 & RScriptVentura.sh Technicals/Live.R 2 & RScriptVentura.sh Technicals/Live.R 3
+W 50 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Technicals/Live.R 4 & RScriptVentura.sh Technicals/Live.R 5 & RScriptVentura.sh Technicals/Live.R 6
+Y 50 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Technicals/Live.R 7 & RScriptVentura.sh Technicals/Live.R 8 & RScriptVentura.sh Technicals/Live.R 9
+Z 50 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Technicals/Live.R 10 & RScriptVentura.sh Technicals/Live.R 11 & RScriptVentura.sh Technicals/Live.R 12
+I 50 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Technicals/Live.R 13 & RScriptVentura.sh Technicals/Live.R 14 & RScriptVentura.sh Technicals/Live.R 15
+H 50 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Technicals/Live.R 16 & RScriptVentura.sh Technicals/Live.R 17 & RScriptVentura.sh Technicals/Live.R 18 & RScriptVentura.sh Technicals/Live.R 19 & RScriptVentura.sh Technicals/Live.R 20
+
+V 47 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 4
+Y 47 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 8
+W 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 1
+Z 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 2 & RScriptVentura.sh Model/Predict.R 7
+I 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 3
+H 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 5 & RScriptVentura.sh Model/Predict.R 6
+
+#V 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+#Y 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+#W 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+#Z 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+#I 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+#H 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+
+### Execution
+H 52 04-08,15-16,20-21 * * 1-5 PScriptVentura.sh Signal_List.py
+H 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Signal_List.py
+
+H 52 04-08,15-16,20-21 * * 1-5 PScriptVentura.sh Price_IB_Exec.py
+H 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Price_IB_Exec.py
+
+H 52 04-08,15-16,20-21 * * 1-5 PScriptVentura.sh Execute_Orders.py 1 & PScriptVentura.sh Execute_Orders.py 2
+H 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Execute_Orders.py
+
+############################################################################################
+### Scenarios                                                                            ###
+############################################################################################
+# V 40 02,09,17 * * 1-5 RScriptVentura.sh Scenario/Calc_Bumped.R 1 & RScriptVentura.sh Scenario/Calc_Bumped.R 2 & RScriptVentura.sh Scenario/Calc_Bumped.R 3 & RScriptVentura.sh Scenario/Calc_Bumped.R 4
+# W 40 02,09,17 * * 1-5 RScriptVentura.sh Scenario/Calc_Bumped.R 5 & RScriptVentura.sh Scenario/Calc_Bumped.R 6 & RScriptVentura.sh Scenario/Calc_Bumped.R 7 & RScriptVentura.sh Scenario/Calc_Bumped.R 8
+# Y 40 02,09,17 * * 1-5 RScriptVentura.sh Scenario/Calc_Bumped.R 9 & RScriptVentura.sh Scenario/Calc_Bumped.R 10 & RScriptVentura.sh Scenario/Calc_Bumped.R 11 & RScriptVentura.sh Scenario/Calc_Bumped.R 12
+# Z 40 02,09,17 * * 1-5 RScriptVentura.sh Scenario/Calc_Bumped.R 13 & RScriptVentura.sh Scenario/Calc_Bumped.R 14 & RScriptVentura.sh Scenario/Calc_Bumped.R 15 & RScriptVentura.sh Scenario/Calc_Bumped.R 16
+# I 40 02,09,17 * * 1-5 RScriptVentura.sh Scenario/Calc_Bumped.R 17 & RScriptVentura.sh Scenario/Calc_Bumped.R 18 & RScriptVentura.sh Scenario/Calc_Bumped.R 19 
+# H 40 02,09,17 * * 1-5 RScriptVentura.sh Scenario/Calc_Bumped.R 20 & RScriptVentura.sh Scenario/Calc_Bumped.R 21 & RScriptVentura.sh Scenario/Calc_Bumped.R 22 & RScriptVentura.sh Scenario/Calc_Bumped.R 23 & RScriptVentura.sh Scenario/Calc_Bumped.R 24 & RScriptVentura.sh Scenario/Calc_Bumped.R 25
+
+# V 40 03,10,18 * * 1-5 RScriptVentura.sh Scenario/Predict_Bumped.R 6
+# W 40 03,10,18 * * 1-5 RScriptVentura.sh Scenario/Predict_Bumped.R 7
+# Y 40 03,10,18 * * 1-5 RScriptVentura.sh Scenario/Predict_Bumped.R 1
+# Z 40 03,10,18 * * 1-5 RScriptVentura.sh Scenario/Predict_Bumped.R 2
+# I 40 03,10,18 * * 1-5 RScriptVentura.sh Scenario/Predict_Bumped.R 5
+# H 40 03,10,18 * * 1-5 RScriptVentura.sh Scenario/Predict_Bumped.R 3 & RScriptVentura.sh Scenario/Predict_Bumped.R 4
+
+
+############################################################################################
+### Week-end full technicals recompute                                                   ###
+############################################################################################
+V 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 1
+V 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 2
+V 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 3
+W 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 4
+W 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 5
+W 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 6
+Y 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 13
+Y 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 7
+Y 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 8
+Z 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 9
+Z 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 10
+Z 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 11
+I 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 12
+I 01 03 * * 6 RScriptVentura.sh Technicals/Full.R 14
+
+############################################################################################
+### Week-end Features optimization                                                       ###
+############################################################################################
+# V 00 10 * * 7 RScriptVentura.sh Model/Remove_Features.R 1
+# W 00 10 * * 7 RScriptVentura.sh Model/Remove_Features.R 2
+# Y 00 10 * * 7 RScriptVentura.sh Model/Remove_Features.R 3
+# Z 00 10 * * 7 RScriptVentura.sh Model/Remove_Features.R 4
+# I 00 10 * * 7 RScriptVentura.sh Model/Remove_Features.R 5
+# V 00 18 * * 7 RScriptVentura.sh Model/Remove_Features.R 6
+# W 00 18 * * 7 RScriptVentura.sh Model/Remove_Features.R 7
+# Y 00 18 * * 7 RScriptVentura.sh Model/Remove_Features.R 8
+# Z 00 18 * * 7 RScriptVentura.sh Model/Remove_Features.R 9
+# I 00 18 * * 7 RScriptVentura.sh Model/Remove_Features.R 10
+# V 00 04 * * 7 RScriptVentura.sh Model/Remove_Features.R 11
+# W 00 04 * * 7 RScriptVentura.sh Model/Remove_Features.R 12
+# Y 00 04 * * 7 RScriptVentura.sh Model/Remove_Features.R 13
+# Z 00 04 * * 7 RScriptVentura.sh Model/Remove_Features.R 14
+
+############################################################################################
+### Powerlaw				                                                 ###
+############################################################################################
+# H */15 * * * * RScriptVentura.sh Technicals/PowerLaw.R 1
+V */15 09-12,17-19,22 * * * RScriptVentura.sh Technicals/PowerLaw.R 1 & RScriptVentura.sh Technicals/PowerLaw.R 2
+W */15 09-12,17-19,22 * * * RScriptVentura.sh Technicals/PowerLaw.R 3 & RScriptVentura.sh Technicals/PowerLaw.R 4
+Y */15 09-12,17-19,22 * * * RScriptVentura.sh Technicals/PowerLaw.R 5 & RScriptVentura.sh Technicals/PowerLaw.R 6
+Z */15 09-12,17-19,22 * * * RScriptVentura.sh Technicals/PowerLaw.R 7 & RScriptVentura.sh Technicals/PowerLaw.R 8
+I */15 09-12,17-19,22 * * * RScriptVentura.sh Technicals/PowerLaw.R 9 & RScriptVentura.sh Technicals/PowerLaw.R 10
+
+############################################################################################
+############################################################################################
+### Project: Home data maintenance                                                       ###
+############################################################################################
+############################################################################################
+# M 01 01 * * * /home/fls/Util/user/./backup_photos.sh
+# M 01 02 * * * /home/fls/Util/user/./backup_videos.sh
+# M 01 03 * * * /home/fls/Util/user/./backup_music.sh
+
+
+# M 15 18 * * * castnow "/home/fls/Mount/Multimedia/Videos/Films/Films/Fantomas contre Scotland Yard.mp4"

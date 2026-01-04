@@ -1,0 +1,97 @@
+############################################################################################
+### System Maintenance                                                                   ###   
+### Time set at Hong Kong time                                                           ### 
+############################################################################################
+A SHELL=/bin/sh
+A PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+A 0 * * * * PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+############################################################################################
+### Crontab maintenance                                                                  ###
+############################################################################################
+M 15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_su_M.txt | crontab -
+I 15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_su_I.txt | crontab -
+G 15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_su_G.txt | crontab -
+D 15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_su_D.txt | crontab -
+L 15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_su_L.txt | crontab -
+V 15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_su_V.txt | crontab -
+W 15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_su_W.txt | crontab -
+X 15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_su_X.txt | crontab -
+T 15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_su_T.txt | crontab -
+Y 15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_su_Y.txt | crontab -
+Z 15 * * * * cat /home/fls/Models/Glenorchy/Shared/Data/Crontab/Crontab_su_Z.txt | crontab -
+A 58 23 * * * /home/fls/Util/su/./backup_crontab_su.sh
+
+############################################################################################
+### Track system usage                                                                   ###
+############################################################################################
+A * * * * * /home/fls/Util/su/./track_system_load.sh
+G 31 05 * * * /home/fls/Util/su/./erase_old_track_data.sh
+
+############################################################################################
+### Clean system memory                                                                  ###
+############################################################################################
+V 28 */4 * * * bleachbit --clean system.memory
+W 28 */4 * * * bleachbit --clean system.memory
+X 28 */4 * * * bleachbit --clean system.memory
+Y 28 */4 * * * bleachbit --clean system.memory
+Z 28 */4 * * * bleachbit --clean system.memory
+D 28 */4 * * * bleachbit --clean system.memory
+G 28 */4 * * * bleachbit --clean system.memory
+I 28 */4 * * * bleachbit --clean system.memory
+V 00 * * * * bleachbit --clean system.memory
+W 00 * * * * bleachbit --clean system.memory
+I 00 * * * * bleachbit --clean system.memory
+
+############################################################################################
+### Old files maintenance                                                                ###
+############################################################################################
+G 32 05 * * * /home/fls/Util/su/./erase_older_log_files.sh
+
+############################################################################################
+### Database backups and maintenance                                                     ###
+############################################################################################
+D 30 05 * * * /home/fls/Util/su/./backup_db.sh
+X 30 05 * * * /home/fls/Util/su/./backup_db.sh
+
+############################################################################################
+### R                                                                                    ###
+############################################################################################
+M 00 06 * * * RScriptGlenorchy.sh Maintenance/R_Update_Packages.R
+I 01 06 * * * RScriptGlenorchy.sh Maintenance/R_Update_Packages.R
+G 02 06 * * * RScriptGlenorchy.sh Maintenance/R_Update_Packages.R
+V 03 06 * * * RScriptGlenorchy.sh Maintenance/R_Update_Packages.R
+W 04 06 * * * RScriptGlenorchy.sh Maintenance/R_Update_Packages.R
+X 05 06 * * * RScriptGlenorchy.sh Maintenance/R_Update_Packages.R
+Y 04 06 * * * RScriptGlenorchy.sh Maintenance/R_Update_Packages.R
+Z 05 06 * * * RScriptGlenorchy.sh Maintenance/R_Update_Packages.R
+
+############################################################################################
+### Exit / Restart applications and services, reboot                                     ###
+############################################################################################
+# G 14 * * * * service xrdp restart
+# D 33 02 * * * service mysql stop
+# X 33 02 * * * service mysql stop
+D 34 02 * * * reboot
+G 34 02 * * * reboot
+T 34 02 * * * reboot
+# V 33 09-17,19-23 * * 1-5 reboot
+# W 33 09-17,19-23 * * 1-5 reboot
+# V 33 01-02,04-06 * * 2-6 reboot
+# W 33 01-02,04-06 * * 2-6 reboot
+
+
+# V 00 06,10,17,21 * * * reboot
+# W 00 06,10,17,21 * * * reboot
+# V 01 06 1-5 * * /usr/sbin/rtcwake -m off -s 3600
+# W 01 06 1-5 * * /usr/sbin/rtcwake -m off -s 3600
+# V 01 10,21 1-5 * * /usr/sbin/rtcwake -m off -s 5400
+# W 01 10,21 1-5 * * /usr/sbin/rtcwake -m off -s 5400
+# V 01 17 1-5 * * /usr/sbin/rtcwake -m off -s 9000
+# W 01 17 1-5 * * /usr/sbin/rtcwake -m off -s 9000
+# V 01 01 2-6 * * /usr/sbin/rtcwake -m off -s 9000
+# W 01 01 2-6 * * /usr/sbin/rtcwake -m off -s 9000
+# X 34 02 * * * reboot
+
+A 05 06 * * * (apt-get update && apt-get -y upgrade && bleachbit --clean apt.*) > /dev/null
+

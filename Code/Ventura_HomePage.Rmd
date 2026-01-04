@@ -1,0 +1,19 @@
+---
+title: "Ventura Strats"
+date: "`r paste0('Updated ', format(Sys.Date() - switch(weekdays(Sys.Date()), 'Monday' = 3, 'Sunday' = 2, 1), '%B %d, %Y'))`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Welcome
+
+[Github repo with signals history](https://github.com/Ventura-Strats/Ventura)
+
+[Reporting](https://ventura-strats.github.io/Ventura/Reporting.html)
+
+[Presentation](https://docs.google.com/presentation/d/e/2PACX-1vTpmVHfWmN7yL2ifWSb33ywayU3qzTBroifFaLiMUzuFiV4hbEYiWscsflAaXgQFdN39iTy3BODAqJE/pub?start=false&loop=false&delayms=30000)
+
+[CV](https://ventura-strats.github.io/Ventura/CV_FLS_2020_08.pdf)
