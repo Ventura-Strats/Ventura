@@ -52,7 +52,7 @@ class ibApp(EWrapper, EClient):
         self.histo_data_list = [[] for _ in range(self.nb_assets)]
         self.ticker_already_covered = [False for _ in range(self.nb_assets)]
         
-    def error(self, reqId , errorCode, errorString, advancedOrderRejectJson):
+    def error(self, reqId , errorCode, errorString, advancedOrderRejectJson=""):
         try:
             pair_name = str(self.asset_list["pair"][reqId])
         except:

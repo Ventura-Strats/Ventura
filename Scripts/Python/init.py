@@ -162,18 +162,23 @@ def scriptInit(script_name, max_time_hours = 1):
     return script_status
 
 def scriptFinish(script_name):
+    # Only update DB if script was properly initialized (script_id exists)
+    if 'script_id' not in globals():
+        ut.printBanner("Script finished (DB status not updated - init incomplete)")
+        return
+
     char_end_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     completed_stage = 1
-    sql_q = """UPDATE status_script 
-        SET complete = 1, end = '{}', last_completed_stage = {} 
-        WHERE script_id = {} 
-        AND start = '{}' 
-        AND machine_id = {} 
-        AND run_id = {} 
+    sql_q = """UPDATE status_script
+        SET complete = 1, end = '{}', last_completed_stage = {}
+        WHERE script_id = {}
+        AND start = '{}'
+        AND machine_id = {}
+        AND run_id = {}
         AND pid = {}""".format(
-                char_end_time, 
-                completed_stage, 
-                script_id, 
+                char_end_time,
+                completed_stage,
+                script_id,
                 char_start_time,
                 machine_id,
                 script_run_id,

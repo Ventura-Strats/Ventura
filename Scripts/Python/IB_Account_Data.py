@@ -43,7 +43,7 @@ class IBAppBook(EWrapper, EClient):
         self.account_data = pd.DataFrame()
         self.px_position = pd.DataFrame()
 
-    def error(self, reqId, errorCode, errorString, advancedOrderRejectJson):
+    def error(self, reqId, errorCode, errorString, advancedOrderRejectJson=""):
         print("IB Error ", reqId, " ", errorCode, " ", errorString)
         if errorCode == 502:
             ut.printBanner("Error - Not connected - exiting", False)

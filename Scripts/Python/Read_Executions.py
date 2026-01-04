@@ -50,7 +50,7 @@ class IBAppExec(EWrapper, EClient):
         self.account_id = account_id
         self.executions = pd.DataFrame()
 
-    def error(self, reqId, errorCode, errorString, advancedOrderRejectJson):
+    def error(self, reqId, errorCode, errorString, advancedOrderRejectJson=""):
         print("Error ", reqId, " ", errorCode, " ", errorString)
         if errorCode == 502:
             print("Error - Not connected - exiting")

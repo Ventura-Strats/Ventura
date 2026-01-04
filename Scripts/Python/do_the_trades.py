@@ -88,12 +88,12 @@ class IBAppOrders(EWrapper, EClient):
         self.nb_orders = len(order_list)
         self.nextOrderId = None
                 
-    def error(self, reqId, errorCode, errorString, advancedOrderRejectJson):
+    def error(self, reqId, errorCode, errorString, advancedOrderRejectJson=""):
         print("Error ", reqId, " ", errorCode, " ", errorString)
         if errorCode == 502:
             print("Error - Not connected - exiting")
             self.stop()
-    
+
     def nextValidId(self, orderId):
         self.nextOrderId = orderId
         if not self.started:

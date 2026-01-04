@@ -30,12 +30,12 @@ class IBAppRetrieveLivePrice(EWrapper, EClient):
     def __init__(self):
         EClient.__init__(self, self)
         
-    def error(self, reqId, errorCode, errorString, advancedOrderRejectJson):
+    def error(self, reqId, errorCode, errorString, advancedOrderRejectJson=""):
         print("Error ", reqId, " ", errorCode, " ", errorString)
         if errorCode == 502:
             print("Error - Not connected - exiting")
             self.stop()
-    
+
     def nextValidId(self, orderId):
         self.start()
         

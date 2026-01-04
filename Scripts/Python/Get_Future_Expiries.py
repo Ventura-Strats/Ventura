@@ -47,7 +47,7 @@ class IBAppFutureExpiries(EWrapper, EClient):
         self.notional = [[] for i in range(nb_contracts)]
         self.contract_done = [False for i in range(nb_contracts)]
 
-    def error(self, reqId, errorCode, errorString, advancedOrderRejectJson):
+    def error(self, reqId, errorCode, errorString, advancedOrderRejectJson=""):
         print("Error ", reqId, " ", errorCode, " ", errorString)
         if errorCode == 502:
             print("Error - Not connected - exiting")
