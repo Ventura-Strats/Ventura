@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026010808001,2026-01-08,6,XAGUSD,76.32,flat,0,84.4807397915389,68.15926020846109,2026-01-15,68.1592602084611,84.4807397915389,0.10692793227907371,122.53791023171759,2026-01-08 21:50:28,2026-01-08 21:50:00
