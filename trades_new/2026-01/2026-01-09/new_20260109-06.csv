@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026010906001,2026-01-09,14,EURCZK,24.2747,flat,0,24.3894917128843,24.159908287115698,2026-01-16,24.1599082871157,24.3894917128843,0.004728862267476153,181812.0004771255,2026-01-09 16:50:15,2026-01-09 16:50:00
