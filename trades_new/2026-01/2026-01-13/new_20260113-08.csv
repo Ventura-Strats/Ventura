@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026011308001,2026-01-13,14,GBPCAD,1.8644,flat,0,1.87673372644585,1.8520662735541502,2026-01-20,1.85206627355415,1.87673372644585,0.006615386422361036,112583.69473357746,2026-01-13 21:50:37,2026-01-13 21:50:00
