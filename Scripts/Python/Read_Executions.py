@@ -124,12 +124,18 @@ def findBuySell(ib_buy_sell):
 def formatExecutionTime(execution):
     print("Formatting")
     print(execution.time)
-    print(1)
-    dt = datetime.strptime(execution.time, "%Y%m%d  %H:%M:%S Asia/Hong_Kong")
-    print(2)
+    # Parse timezone dynamically from the time string (e.g., "20260106  06:15:51 Europe/London")
+    parts = execution.time.rsplit(' ', 1)
+    if len(parts) == 2:
+        datetime_str = parts[0].strip()
+        tz_str = parts[1]
+    else:
+        datetime_str = execution.time
+        tz_str = TZ_IB
+    print(f"Datetime: {datetime_str}, TZ: {tz_str}")
+    dt = datetime.strptime(datetime_str, "%Y%m%d  %H:%M:%S")
     print(dt)
-    dt_local = vu.convertDateTimeFromTZToAnotherTZ(dt, TZ_IB, TZ_LOCAL)
-    print(3)
+    dt_local = vu.convertDateTimeFromTZToAnotherTZ(dt, tz_str, TZ_LOCAL)
     print(dt_local)
     return dt_local
 

@@ -122,17 +122,18 @@ Located in `/HD/Scripts/Python/`:
 - `Price_IB.py` - Fetch live prices from IB
 - `Price_IB_Future.py` - Fetch futures prices
 - `Price_IB_Exec.py` - Prices for execution
-- `Read_Executions.py` - **BROKEN** - Read executed trades from IB
+- `Read_Executions.py` - Read executed trades from IB
 - `Execute_Orders.py` - Place orders
 - `Signal_List.py` - Generate signal list for execution
 - `IB_Account_Data.py` - Fetch account data/NAV
 
-## Current Status (Updated 2026-01-04)
+## Current Status (Updated 2026-01-07)
 
 ### Completed
 - **GitHub backup**: Code pushed to `git@github.com:Ventura-Strats/Ventura.git`
 - **IB API error() fix**: Fixed `advancedOrderRejectJson` parameter issue in 10 Python files
 - **init.py fix**: `scriptFinish()` now handles missing `script_id` gracefully
+- **Read_Executions.py fix**: Fixed `formatExecutionTime()` to parse timezone dynamically from IB time string (was hardcoded to `Asia/Hong_Kong`, now handles any timezone like `Europe/London`)
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -174,8 +175,8 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 ## Priorities (Agreed Plan)
 
 1. ~~**Backup to GitHub**~~ - DONE
-2. ~~**Fix IB API error() signature**~~ - DONE (testing in progress)
-3. **Test Read_Executions.py** - Needs a trade execution on weekday
+2. ~~**Fix IB API error() signature**~~ - DONE
+3. ~~**Test Read_Executions.py**~~ - DONE (fixed timezone parsing, tested with EUR.USD execution on account 2)
 4. **Investigate "DB not writable"** - User investigating
 5. **Fix historical data issues** - Improve data pipeline resilience
 6. **Restructure codebase** - Add documentation, tests, logging improvements
