@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026020405001,2026-02-04,2,UKX:IND,10453.66,up,1,10601.8989342398,10305.4210657602,2026-02-11,10305.4210657602,10601.8989342398,0.014180577351836643,4.93615007188015,2026-02-04 15:50:18,2026-02-04 15:50:00
