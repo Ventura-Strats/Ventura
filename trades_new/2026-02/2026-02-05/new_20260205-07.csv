@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026020507001,2026-02-05,1,IBOV:IND,182880.0,up,1,186966.022708569,178793.977291431,2026-02-12,178793.977291431,186966.022708569,0.022342643857004685,1.2856022530133413,2026-02-05 20:50:26,2026-02-05 20:50:00
