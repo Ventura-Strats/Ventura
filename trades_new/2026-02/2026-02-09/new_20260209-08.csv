@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026020908001,2026-02-09,6,USDILS,3.088855,flat,0,3.20097805816989,2.9767319418301104,2026-02-16,2.97673194183011,3.20097805816989,0.036299230028567164,27548.793713062485,2026-02-09 21:50:39,2026-02-09 21:50:00
