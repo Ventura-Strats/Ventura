@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026021305001,2026-02-13,4,SMI:IND,13603.8,down,-1,13393.4499711052,13814.1500288948,2026-02-20,13393.4499711052,13814.1500288948,0.01546259345879819,3.6561915586169826,2026-02-13 15:50:43,2026-02-13 15:50:00
