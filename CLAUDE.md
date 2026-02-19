@@ -116,6 +116,45 @@ source("Init.R"); I.executeScript()
 - Helper scripts: `RScriptVentura.sh`, `PScriptVentura.sh`, `KillScriptVentura.sh`
 - Time zone: London (Europe/London)
 
+### GitHub Setup (Configured 2026-02-19)
+
+**Repository**: `git@github.com:Ventura-Strats/Ventura.git`
+
+**Branches**:
+- `main` - Source code (R modules, Python scripts, Shiny dashboard)
+- `signals` - Trading signals (timestamped CSV files for accountability)
+
+**Local Repos**:
+| Purpose | Local Path | Branch |
+|---------|------------|--------|
+| Code | `/home/fls/Models/Ventura/HD/` | main |
+| Signals | `/home/fls/Data/Ventura/HD/Git/Ventura/` | signals |
+
+**Authentication**: SSH key (no password prompts)
+- Private key: `~/.ssh/id_ed25519`
+- Public key: Added to https://github.com/settings/keys
+
+**Signal Push Workflow**:
+1. `Signal_List.py` generates CSV in `trades_new/YYYY-MM/YYYY-MM-DD/`
+2. Calls `GitPushVentura.sh` (in `/usr/local/bin/`)
+3. Script commits and pushes to `signals` branch
+
+**Quick Reference**:
+```bash
+# Code repo - manual push
+cd /home/fls/Models/Ventura/HD
+git add -A && git commit -m "message" && git push
+
+# Test SSH connection
+ssh -T git@github.com
+
+# If SSH key lost or new machine:
+ssh-keygen -t ed25519 -C "ventura-trading"
+# Then add ~/.ssh/id_ed25519.pub to https://github.com/settings/keys
+```
+
+**Note**: SSH keys don't expire. They work until deleted from GitHub or the local machine.
+
 ## Key Python Scripts (IB API Integration)
 
 Located in `/HD/Scripts/Python/`:
@@ -127,10 +166,10 @@ Located in `/HD/Scripts/Python/`:
 - `Signal_List.py` - Generate signal list for execution
 - `IB_Account_Data.py` - Fetch account data/NAV
 
-## Current Status (Updated 2026-01-18)
+## Current Status (Updated 2026-02-19)
 
 ### Completed
-- **GitHub backup**: Code pushed to `git@github.com:Ventura-Strats/Ventura.git`
+- **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
 - **IB API error() fix**: Fixed `advancedOrderRejectJson` parameter issue in 10 Python files
 - **init.py fix**: `scriptFinish()` now handles missing `script_id` gracefully
 - **Read_Executions.py fix**: Fixed `formatExecutionTime()` to parse timezone dynamically from IB time string (was hardcoded to `Asia/Hong_Kong`, now handles any timezone like `Europe/London`)
@@ -179,7 +218,8 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 1. ~~**Backup to GitHub**~~ - DONE
 2. ~~**Fix IB API error() signature**~~ - DONE
 3. ~~**Test Read_Executions.py**~~ - DONE (fixed timezone parsing, tested with EUR.USD execution on account 2)
-4. **Investigate "DB not writable"** - User investigating
+4. ~~**GitHub signal push**~~ - DONE (SSH auth, signals branch, GitPushVentura.sh fixed)
+5. **Investigate "DB not writable"** - User investigating
 5. **Fix historical data issues** - Improve data pipeline resilience
 6. **Restructure codebase** - Add documentation, tests, logging improvements
 7. **Future: Convert to R package** - Maybe, lower priority
