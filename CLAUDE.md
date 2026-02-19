@@ -127,13 +127,15 @@ Located in `/HD/Scripts/Python/`:
 - `Signal_List.py` - Generate signal list for execution
 - `IB_Account_Data.py` - Fetch account data/NAV
 
-## Current Status (Updated 2026-01-07)
+## Current Status (Updated 2026-01-18)
 
 ### Completed
 - **GitHub backup**: Code pushed to `git@github.com:Ventura-Strats/Ventura.git`
 - **IB API error() fix**: Fixed `advancedOrderRejectJson` parameter issue in 10 Python files
 - **init.py fix**: `scriptFinish()` now handles missing `script_id` gracefully
 - **Read_Executions.py fix**: Fixed `formatExecutionTime()` to parse timezone dynamically from IB time string (was hardcoded to `Asia/Hong_Kong`, now handles any timezone like `Europe/London`)
+- **DB.R pool fix**: Added `validationInterval = 30` to connection pool to prevent "Lost connection to server during query" errors by validating connections before use
+- **Cross-asset correlation matrix**: New function `T.calcHistoricalCorrelationsMatrix()` for min-variance portfolio sizing (see Key Functions Reference)
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -182,6 +184,50 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 6. **Restructure codebase** - Add documentation, tests, logging improvements
 7. **Future: Convert to R package** - Maybe, lower priority
 
+### Completed: Eigenvalue-Based Portfolio Sizing (v2)
+**Goal**: When multiple correlated signals fire together (e.g., "buy all indices" during a crash), recognize this is effectively 1-2 independent bets, not 50, and size accordingly.
+
+**Implementation**:
+- `T.calcHistoricalCorrelationsMatrix(instrument_ids, lookback_weeks, shrinkage, as_of_date)` - weekly return correlation matrix (uses Tuesday close to avoid Friday data release noise)
+- `V.portfolioSizing(dat_signals, cor_matrix, risk_per_bet_pct, max_daily_risk_pct, aum_total, correlation_adjustment, min_weight)` - eigenvalue-based sizing with:
+  - **Antagonist signal netting**: If same asset has buy+sell signals from different strategies, sums directions. Net > 0 → buy, net < 0 → sell, net = 0 → no trade. Prevents optimizer exploiting opposite signals as "free hedge".
+  - Calculates N_effective (effective number of independent bets) from eigenvalues: N_eff = (Σλ)² / Σ(λ²)
+  - Total risk = min(N_effective × risk_per_bet_pct, max_daily_risk_pct)
+  - Trade correlation = direction_i × direction_j × asset_correlation
+  - `correlation_adjustment` parameter: 0 = use historical, 0.2 = inflate correlations by 20%, -0.2 = reduce by 20%
+  - Uses `quadprog::solve.QP` for weight distribution
+- `G.Trades.Table.predict(dat_predict, aum_total, risk_per_bet_pct, max_daily_risk_pct, correlation_adjustment)` - shows sized notionals and N_Eff
+- `G.Trades.Table.correlations(dat_predict)` - shows trade-adjusted correlation matrix in dashboard
+
+**Example behavior**:
+| Scenario | Signals | N_eff | risk/bet | Total Risk |
+|----------|---------|-------|----------|------------|
+| Crash (all indices) | 50 | ~2 | 0.5% | 1% |
+| Mixed day | 4 | ~3.5 | 0.5% | 1.75% |
+| Single signal | 1 | 1 | 0.5% | 0.5% |
+| 20 uncorrelated | 20 | ~15 | 0.5% | 5% (capped) |
+
+**Dashboard**: Trades tab shows Weight_Pct, Sized_Notional, and N_Eff columns, plus correlation matrix below
+
+## Next Priorities
+
+### 2. Automatic Trade Execution (Python)
+- Execute trades automatically via Interactive Brokers API
+- Python script to read signals and place orders
+- Logic to be specified in detail before implementation
+- Previous attempt exists but was written before user knew Python well
+
+### 3. Trade Database Entry Automation
+- After trades execute on IB, automatically log them to trade database
+- Currently done manually - time consuming
+- Should capture: entry time, exit time, targets, etc.
+- Links to `Read_Executions.py` and `B.readTradesFromIB()` workflow
+
+### 4. Python Codebase Cleanup
+- All Python scripts (IB API integration) are poorly written legacy code
+- Need complete refactoring into proper Python style
+- To be done incrementally, with proper specs for each script
+
 ## Key Functions Reference
 
 ### Trade Management
@@ -195,6 +241,7 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - `T.plotPriceSeries()` - Diagnostic plot for price data
 - `T.importInvestingComHistoFile()` - Import historical data from investing.com CSV
 - `T.addAllSplines()` - Add spline-based technical indicators
+- `T.calcHistoricalCorrelationsMatrix(instrument_ids, lookback_weeks, shrinkage, as_of_date)` - Calculate weekly return correlation matrix for portfolio optimization. Defaults: 104 weeks lookback, 0.1 shrinkage toward identity, instruments with `use_for_trading=1`
 
 ### Utilities
 - `U.try(f, default)` - Wrap function with error handling (returns default on error)

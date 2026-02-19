@@ -124,7 +124,8 @@ function (strat_id = 1, start_date = "1995-01-01", end_date = TO_DAY-7,
     if (!is.null(file_import_data_already_done)) {
         res <- "%sBacktestings/%s" %>%
             sprintf(DIRECTORY_DATA_HD, file_import_data_already_done) %>% 
-            U.read.csv
+            U.read.csv %>%
+            filter(date < start_date)
         dates_list <- dates_list[dates_list > max(res$date)] %>% U.debug("dates using data already done")
     }
     
@@ -330,7 +331,7 @@ function (strat_id_list,
     ### Script variables
     ####################################################################################################
     path_backtest <- paste0(DIRECTORY_DATA_HD, "/Backtestings/")
-    file_name_strat <- paste0(path_backtest, "full_backtest_strat_%s.csv")
+    file_name_strat <- paste0(path_backtest, "backtest_strat_%s.csv")
     file_name_strat_w <- gsub(".csv", "_weights.csv", file_name_strat)
     
     ####################################################################################################
@@ -2020,6 +2021,306 @@ function(dat_model) {
     
     var_imp;
 }
+V.portfolioSizing <-
+function(
+    dat_signals,
+    cor_matrix,
+    risk_per_bet_pct = 0.5,
+    max_daily_risk_pct = 5,
+    aum_total = 1000000,
+    correlation_adjustment = 0,
+    min_weight = 0
+) {
+    ####################################################################################################
+    ### Script description:
+    ### Takes trading signals and allocates risk using eigenvalue-based "effective number of bets".
+    ### When many correlated signals fire (e.g., buy all indices in a crash), recognizes this is
+    ### effectively 1-2 bets, not 50, and sizes accordingly.
+    ###
+    ### Inputs:
+    ###   dat_signals: tibble with columns instrument_id, buy_sell (+1/-1), notional (for $1K P&L)
+    ###   cor_matrix: asset correlation matrix from T.calcHistoricalCorrelationsMatrix
+    ###   risk_per_bet_pct: risk per independent bet as % of AUM (e.g., 0.5 = 0.5%)
+    ###   max_daily_risk_pct: maximum total daily risk as % of AUM (e.g., 5 = 5%)
+    ###   aum_total: total AUM in USD
+    ###   correlation_adjustment: adjust correlations from historical (0 = use historical,
+    ###                           0.2 = inflate by 20%, -0.2 = reduce by 20%)
+    ###   min_weight: minimum weight per signal (0 = allow exclusion)
+    ###
+    ### Returns:
+    ###   dat_signals with added columns: weight, sized_notional, risk_contribution_usd, n_effective
+    ####################################################################################################
+
+    ####################################################################################################
+    ### Script variables
+    ####################################################################################################
+    n_signals <- nrow(dat_signals)
+
+    if (n_signals == 0) {
+        warning("No signals provided")
+        return(dat_signals %>% mutate(
+            weight = numeric(0),
+            sized_notional = numeric(0),
+            n_effective = numeric(0)
+        ))
+    }
+
+    if (n_signals == 1) {
+        # Single signal: N_effective = 1, risk = risk_per_bet_pct
+        total_risk_pct <- min(risk_per_bet_pct, max_daily_risk_pct)
+        return(dat_signals %>% mutate(
+            weight = 1,
+            sized_notional = notional * total_risk_pct / 100 * aum_total / 1000,
+            n_effective = 1
+        ))
+    }
+
+    ####################################################################################################
+    ### Sub routines
+    ####################################################################################################
+
+    netAntagonistSignals <- function(signals) {
+        # Net signals on the same asset: if strategies disagree, sum the directions
+        # +1 + +1 + -1 = +1 (net buy)
+        # +1 + -1 = 0 (cancel, remove)
+        # Returns netted signals with mean notional for combined signals
+
+        signals %>%
+            group_by(instrument_id) %>%
+            summarise(
+                buy_sell_sum = sum(buy_sell),
+                notional = mean(notional),
+                n_signals_combined = n(),
+                .groups = "drop"
+            ) %>%
+            filter(buy_sell_sum != 0) %>%
+            mutate(
+                buy_sell = sign(buy_sell_sum)
+            ) %>%
+            select(instrument_id, buy_sell, notional)
+    }
+
+    buildTradeCorrelationMatrix <- function(signals, asset_cor_matrix) {
+        # Build trade correlation matrix: direction_i * direction_j * asset_cor[i,j]
+        # For signals on the same instrument, correlation = 1
+
+        n <- nrow(signals)
+        trade_cor <- matrix(0, nrow = n, ncol = n)
+
+        instrument_ids <- signals$instrument_id
+        directions <- signals$buy_sell
+
+        # Map instrument_id to column index in asset_cor_matrix
+        asset_ids_in_matrix <- as.integer(colnames(asset_cor_matrix))
+
+        for (i in 1:n) {
+            for (j in i:n) {
+                inst_i <- instrument_ids[i]
+                inst_j <- instrument_ids[j]
+                dir_i <- directions[i]
+                dir_j <- directions[j]
+
+                if (inst_i == inst_j) {
+                    # Same instrument: correlation depends on direction
+                    # Same direction = +1, opposite direction = -1
+                    trade_cor[i, j] <- dir_i * dir_j
+                } else {
+                    # Different instruments: look up asset correlation
+                    idx_i <- which(asset_ids_in_matrix == inst_i)
+                    idx_j <- which(asset_ids_in_matrix == inst_j)
+
+                    if (length(idx_i) == 1 && length(idx_j) == 1) {
+                        asset_cor <- asset_cor_matrix[idx_i, idx_j]
+                        trade_cor[i, j] <- dir_i * dir_j * asset_cor
+                    } else {
+                        # Instrument not found in correlation matrix, assume uncorrelated
+                        trade_cor[i, j] <- 0
+                    }
+                }
+                trade_cor[j, i] <- trade_cor[i, j]
+            }
+        }
+
+        trade_cor
+    }
+
+    applyCorrelationAdjustment <- function(trade_cor_matrix, adjustment) {
+        # Adjust off-diagonal correlations by multiplier (1 + adjustment)
+        # adjustment = 0: no change
+        # adjustment = 0.2: inflate correlations by 20%
+        # adjustment = -0.2: reduce correlations by 20%
+        # Bounded to [-1, 1]
+
+        if (adjustment == 0) {
+            return(trade_cor_matrix)
+        }
+
+        n <- nrow(trade_cor_matrix)
+        adjusted <- trade_cor_matrix
+
+        for (i in 1:n) {
+            for (j in 1:n) {
+                if (i != j) {
+                    raw_cor <- trade_cor_matrix[i, j]
+                    scaled_cor <- raw_cor * (1 + adjustment)
+                    # Bound to [-1, 1]
+                    adjusted[i, j] <- sign(scaled_cor) * min(abs(scaled_cor), 1)
+                }
+            }
+        }
+
+        adjusted
+    }
+
+    calcEffectiveNumBets <- function(trade_cor_matrix) {
+        # Calculate effective number of independent bets using eigenvalues
+        # N_eff = (sum of eigenvalues)^2 / sum(eigenvalues^2)
+        # For correlation matrix: sum(eigenvalues) = n
+        # Perfectly correlated: N_eff -> 1
+        # Perfectly uncorrelated: N_eff = n
+
+        eigenvalues <- eigen(trade_cor_matrix, symmetric = TRUE, only.values = TRUE)$values
+        # Clean up numerical issues (small negative eigenvalues)
+        eigenvalues <- pmax(eigenvalues, 0)
+
+        sum_lambda <- sum(eigenvalues)
+        sum_lambda_sq <- sum(eigenvalues^2)
+
+        if (sum_lambda_sq == 0) {
+            return(nrow(trade_cor_matrix))
+        }
+
+        n_eff <- sum_lambda^2 / sum_lambda_sq
+        n_eff
+    }
+
+    solveMinVariance <- function(trade_cor_matrix) {
+        # Solve: minimize w' Σ w
+        # subject to: sum(w) = 1, w >= min_weight
+        #
+        # quadprog::solve.QP format:
+        # minimize: (1/2) x' D x - d' x
+        # subject to: A' x >= b
+        #
+        # D = trade_cor_matrix (using correlation as proxy for covariance - assumes equal vol after notional normalization)
+        # d = 0
+        # Constraints: equality sum(w) = 1 first, then w >= min_weight
+
+        n <- nrow(trade_cor_matrix)
+
+        # Make matrix positive definite by adding small diagonal
+        D <- trade_cor_matrix + diag(1e-8, n)
+        d <- rep(0, n)
+
+        # Constraint matrix: first column is equality (sum = 1), rest are w_i >= min_weight
+        A <- cbind(
+            rep(1, n),           # sum constraint
+            diag(n)              # individual w >= min_weight constraints
+        )
+        b <- c(1, rep(min_weight, n))
+
+        # solve.QP: meq = number of equality constraints (first meq constraints are equalities)
+        result <- U.try(function() {
+            quadprog::solve.QP(Dmat = D, dvec = d, Amat = A, bvec = b, meq = 1)
+        }, NULL)()
+
+        if (is.null(result)) {
+            warning("Optimization failed, falling back to equal weights")
+            return(rep(1/n, n))
+        }
+
+        weights <- result$solution
+        # Clean up numerical issues
+        weights[weights < min_weight] <- min_weight
+        weights <- weights / sum(weights)  # renormalize
+
+        weights
+    }
+
+    ####################################################################################################
+    ### Script
+    ####################################################################################################
+
+    # Net antagonist signals: if same asset has buy and sell, sum them
+    dat_netted <- netAntagonistSignals(dat_signals)
+    n_netted <- nrow(dat_netted)
+
+    # Handle edge cases after netting
+    if (n_netted == 0) {
+        warning("All signals cancelled out after netting antagonist positions")
+        return(dat_signals %>% mutate(
+            weight = 0,
+            sized_notional = 0,
+            risk_contribution_usd = 0,
+            n_effective = 0
+        ))
+    }
+
+    if (n_netted == 1) {
+        # Single signal after netting: N_effective = 1
+        total_risk_pct <- min(risk_per_bet_pct, max_daily_risk_pct)
+        total_risk_usd <- aum_total * total_risk_pct / 100
+
+        # Map back to original signals
+        netted_inst <- dat_netted$instrument_id[1]
+        netted_dir <- dat_netted$buy_sell[1]
+
+        return(dat_signals %>%
+            mutate(
+                is_netted_signal = (instrument_id == netted_inst & sign(buy_sell) == netted_dir),
+                weight = ifelse(is_netted_signal, 1 / sum(is_netted_signal), 0),
+                sized_notional = weight * notional * total_risk_usd / 1000,
+                risk_contribution_usd = weight * total_risk_usd,
+                n_effective = 1
+            ) %>%
+            select(-is_netted_signal)
+        )
+    }
+
+    # Build trade correlation matrix on netted signals
+    trade_cor_matrix <- buildTradeCorrelationMatrix(dat_netted, cor_matrix)
+
+    # Apply correlation adjustment
+    trade_cor_adjusted <- applyCorrelationAdjustment(trade_cor_matrix, correlation_adjustment)
+
+    # Calculate effective number of independent bets
+    n_effective <- calcEffectiveNumBets(trade_cor_adjusted)
+
+    # Calculate total risk based on N_effective
+    # Total risk = N_effective * risk_per_bet, capped at max_daily_risk
+    total_risk_pct <- min(n_effective * risk_per_bet_pct, max_daily_risk_pct)
+    total_risk_usd <- aum_total * total_risk_pct / 100
+
+    # Solve min-variance optimization for weight distribution on netted signals
+    weights_netted <- solveMinVariance(trade_cor_adjusted)
+
+    # Map weights back to original signals
+    # Signals that were netted out (wrong direction) get weight 0
+    # Signals that survived netting share the weight for that asset
+    dat_netted <- dat_netted %>%
+        mutate(weight_netted = weights_netted)
+
+    dat_signals %>%
+        left_join(
+            dat_netted %>% select(instrument_id, buy_sell_netted = buy_sell, weight_netted),
+            by = "instrument_id"
+        ) %>%
+        group_by(instrument_id) %>%
+        mutate(
+            # Only signals matching the netted direction get weight
+            matches_netted = (sign(buy_sell) == buy_sell_netted),
+            n_matching = sum(matches_netted),
+            # Split weight among matching signals for same asset
+            weight = ifelse(matches_netted, weight_netted / n_matching, 0)
+        ) %>%
+        ungroup() %>%
+        mutate(
+            sized_notional = weight * notional * total_risk_usd / 1000,
+            risk_contribution_usd = weight * total_risk_usd,
+            n_effective = n_effective
+        ) %>%
+        select(-buy_sell_netted, -weight_netted, -matches_netted, -n_matching)
+}
 V.pptCharts <-
 function () 
 {
@@ -2561,8 +2862,8 @@ function (strats_list = NULL)
     min_proba_signal <- 0#0.37
     min_proba_signal_plus_flat <- 0#0.75
     
-    start_date <- as.Date("2000-01-01")
-    end_date <- as.Date("2025-04-20")
+    start_date <- as.Date("2024-01-01")
+    end_date <- as.Date("2025-12-31")
     
     pnl_tp_usd <- 0.01
     initial_nav <- 100
@@ -2576,7 +2877,7 @@ function (strats_list = NULL)
     stop_loss_slippage_vs_bid_offer <- 1
     
     path_backtest <- paste0(DIRECTORY_DATA_HD, "Backtestings/")
-    file_name_normal <- "%sbacktest_full_strat_%s.csv"
+    file_name_normal <- "%sbacktest_strat_%s.csv"
     
     tradable_instruments <- filter(INSTRUMENTS, use_for_trading_ib == 1)$instrument_id
     
@@ -2601,7 +2902,7 @@ function (strats_list = NULL)
         'EEMUSD')
     
     limited_instrument_set <- A.getInstrumentId(limited_training_set)
-    #limited_instrument_set <- INSTRUMENTS$instrument_id
+  #  limited_instrument_set <- tradable_instruments
     ####################################################################################################
     ### Script Variables
     ####################################################################################################
@@ -3021,7 +3322,9 @@ function (strats_list = NULL)
                         linetype = "dashed"
                     ) + 
                     scale_y_continuous(labels = comma, trans='log10') + 
-                    scale_x_date(date_breaks = "1 years", date_labels = "%y") +
+                    scale_x_date(
+                        date_breaks = "1 years", date_labels = "%y", limits = c(start_date, end_date)
+                        ) +
                     theme(
                         axis.title = element_blank(),
                         legend.position = "bottom"
@@ -3050,7 +3353,7 @@ function (strats_list = NULL)
     ### Script
     ####################################################################################################
     
-    dat_backtest <- prepareBacktestData() %>% U.debug(1)
+    dat_backtest <- prepareBacktestData()
     
     min_date <- start_date
     date_list <- seq(min_date, end_date, 1)
@@ -3102,7 +3405,17 @@ function (strats_list = NULL)
         mutate(
             drawdown_ratio = rtn / max_drawdown, 
             sharpe = rtn / volatility
-        ) 
+        ) %>% 
+        left_join(
+            dat_backtest %>% 
+                mutate(year = year(date_entry)) %>% 
+                filter(buy_sell != 0) %>%
+                mutate(outcome = sign(buy_sell * (px_exit - px_entry))) %>%
+                group_by(year) %>% 
+                summarize(win_rate = sum(outcome == 1) / n()) %>% 
+                ungroup, 
+            by="year"
+        )
     
     total_years = U.yearFrac(pnl$date[1], tail(pnl$date, 1))
     
@@ -3125,7 +3438,17 @@ function (strats_list = NULL)
         mutate(
             drawdown_ratio = rtn / max_drawdown, 
             sharpe = rtn / volatility
-        ) 
+        ) %>% 
+        left_join(
+            dat_backtest %>% 
+                mutate(year = "Total") %>% 
+                filter(buy_sell != 0) %>%
+                mutate(outcome = sign(buy_sell * (px_exit - px_entry))) %>%
+                group_by(year) %>%
+                summarize(win_rate = sum(outcome == 1) / n()) %>% 
+                ungroup, 
+            by="year"
+        )
     
     dat_summary <- rbind(dat_summary, dat_summary_total)
     
@@ -3568,9 +3891,9 @@ function (import_live = FALSE, import_model = FALSE, import_technicals = FALSE,
 
     U.printBanner("All done...")
     dat_run;
-    
-    
-    
+
+
+
 }
 V.save <-
 function() {

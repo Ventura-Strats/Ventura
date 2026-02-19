@@ -18,6 +18,9 @@ shinyServer(function(input, output, session) {
   ####################################################################################################
   Trades.Table.predict <- reactive(G.Trades.Table.predict(Predict.Data.predict()))
   output$Trades.Table.predict <- renderRHandsontable(Trades.Table.predict())
+
+  Trades.Table.correlations <- reactive(G.Trades.Table.correlations(Predict.Data.predict()))
+  output$Trades.Table.correlations <- renderTable(Trades.Table.correlations())
   
   ####################################################################################################
   ### Tab 3: Instrument

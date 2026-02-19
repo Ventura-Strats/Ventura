@@ -24,7 +24,7 @@ whichPairsToDo <- function() {
     arrange(max_date_technicals)
   
   rbind(dat_no_date, dat_no_full, dat_date_calc, dat_date_tech) %>% 
-    head(10) %>% U.debug("List") %>%
+    head(20) %>% U.debug("List") %>%
     sample_n(1) %>% U.debug("Item") %>%
     .$pair
 

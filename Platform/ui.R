@@ -24,7 +24,10 @@ shinyUI(
         fluidRow(
           column(2, actionButton("Trades.Button.refresh", "Refresh", styleclass = "primary")),
           hr(),
-          rHandsontableOutput("Trades.Table.predict")
+          rHandsontableOutput("Trades.Table.predict"),
+          hr(),
+          h4("Correlation Matrix (Trade-Adjusted)"),
+          tableOutput("Trades.Table.correlations")
         )
       ),
       tabPanel(

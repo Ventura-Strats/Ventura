@@ -7,11 +7,11 @@ function (db_name = "Ventura") {
 
     db_host <- "192.168.0.37";     #DB Machine
     db_host_local <- "127.0.0.1";   #localhost for remote connection
-    
+
     if (THIS_COMPUTER == "L") {
         db_host <- db_host_local;
     }
-    
+
     db_user <- "ventura"
     db_password <- "psuY2oF4qq7B$Lw8U!If"
     db_name <- "Ventura"
@@ -20,43 +20,37 @@ function (db_name = "Ventura") {
     ### Script sub functions
     ####################################################################################################
 
-    alreadyConnected <- function() {
-        U.variableExists(dbCon);
+    poolIsValid <- function() {
+        U.variableExists(dbCon) && inherits(dbCon, "Pool") && pool::dbIsValid(dbCon)
     }
 
-    connectFromDesktop <- function() {
-        dbConnect(
-            RMySQL::MySQL(), 
-            host = db_host, 
-            dbname = db_name, 
-            user = db_user, 
-            password = db_password
-        );
+    createPool <- function(host) {
+        pool::dbPool(
+            RMySQL::MySQL(),
+            host = host,
+            dbname = db_name,
+            user = db_user,
+            password = db_password,
+            minSize = 1,
+            maxSize = 1,
+            idleTimeout = 3600,         # close idle connections after 1 hour
+            validationInterval = 30     # validate connection every 30 seconds before use
+        )
     }
 
-    connectFromDesktopRemote <- function() {
-        dbConnect(
-            RMySQL::MySQL(), 
-            host = db_host_local, 
-            dbname = db_name, 
-            user = db_user, 
-            password = db_password
-        );
-    }
-    
     ####################################################################################################
-    ### Script 
+    ### Script
     ####################################################################################################
-    
-    if (!alreadyConnected()) {
+
+    if (!poolIsValid()) {
         library(DBI)
         library(RMySQL)
-        
-        dbCon <<- U.try(connectFromDesktop, NULL)();
-        #    dbDCon <<- connectDPLYRFromDesktop();
-        
+        library(pool)
+
+        dbCon <<- U.try(createPool, NULL)(db_host)
+
         if (is.null(dbCon)) {
-            dbCon <<- connectFromDesktopRemote();
+            dbCon <<- createPool(db_host_local)
         }
     }
 }
@@ -90,6 +84,13 @@ function (this_df)
     }
     U.tryNull(createTbl, this_df);
 
+}
+D.disconnect <-
+function () {
+    if (U.variableExists(dbCon) && inherits(dbCon, "Pool") && pool::dbIsValid(dbCon)) {
+        pool::poolClose(dbCon)
+        rm(dbCon, envir = .GlobalEnv)
+    }
 }
 D.dropTable <-
 function (db_table_name) D.SQL(sprintf("DROP TABLE %s", db_table_name))

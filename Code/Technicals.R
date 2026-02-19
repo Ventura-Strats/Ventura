@@ -2049,6 +2049,147 @@ function (dat_px)
 
     
 }
+T.calcHistoricalCorrelationsMatrix <-
+function(
+    instrument_ids = NULL,
+    lookback_weeks = 104,
+    shrinkage = 0.1,
+    as_of_date = NULL
+) {
+    ####################################################################################################
+    ### Script description:
+    ### Calculates a correlation matrix of weekly returns across instruments.
+    ### Uses Friday-to-Friday returns to handle asynchronous market closes (Tokyo/London/NY).
+    ### Applies shrinkage toward identity matrix for numerical stability in optimization.
+    ####################################################################################################
+
+    ####################################################################################################
+    ### Script variables
+    ####################################################################################################
+    if (is.null(as_of_date)) {
+        as_of_date <- YESTERDAY
+    }
+
+    lookback_days <- lookback_weeks * 7 + 30  # extra buffer for weekends/holidays
+    start_date <- as_of_date - lookback_days
+
+    ####################################################################################################
+    ### Sub routines
+    ####################################################################################################
+
+    loadPrices <- function() {
+        sql <- "SELECT instrument_id, date, close
+                FROM histo_px_daily
+                WHERE date >= '%s' AND date <= '%s'" %>%
+            sprintf(start_date, as_of_date)
+
+        dat <- D.select(sql)
+
+        if (!is.null(instrument_ids)) {
+            dat <- dat %>% filter(instrument_id %in% instrument_ids)
+        }
+
+        dat
+    }
+
+    calcWeeklyReturns <- function(dat_prices) {
+        # Prefer Tuesday (weekday 2) to avoid Friday data release noise
+        # Fall back to closest available day if Tuesday not available
+        dat_prices %>%
+            mutate(
+                weekday = lubridate::wday(date, week_start = 1),
+                year_week = format(date, "%Y-%W")
+            ) %>%
+            group_by(instrument_id, year_week) %>%
+            # Prefer Tuesday (weekday 2), else closest day to Tuesday
+            mutate(dist_to_tuesday = abs(weekday - 2)) %>%
+            filter(dist_to_tuesday == min(dist_to_tuesday)) %>%
+            # If tie (e.g., Mon and Wed both dist=1), take later day
+            filter(date == max(date)) %>%
+            ungroup() %>%
+            select(-dist_to_tuesday) %>%
+            arrange(instrument_id, date) %>%
+            group_by(instrument_id) %>%
+            mutate(
+                close_prev = lag(close),
+                weekly_return = log(close / close_prev)
+            ) %>%
+            ungroup() %>%
+            filter(!is.na(weekly_return)) %>%
+            select(instrument_id, year_week, date, weekly_return)
+    }
+
+    pivotToWideFormat <- function(dat_returns) {
+        # Create wide matrix: rows = weeks, cols = instruments
+        dat_returns %>%
+            select(year_week, instrument_id, weekly_return) %>%
+            pivot_wider(
+                names_from = instrument_id,
+                values_from = weekly_return
+            ) %>%
+            arrange(year_week) %>%
+            select(-year_week)
+    }
+
+    calcCorrelationMatrix <- function(dat_wide) {
+        # Only keep instruments with sufficient data (at least 50% of weeks)
+        min_obs <- nrow(dat_wide) * 0.5
+        cols_with_data <- colSums(!is.na(dat_wide)) >= min_obs
+        dat_filtered <- dat_wide[, cols_with_data, drop = FALSE]
+
+        if (ncol(dat_filtered) < 2) {
+            warning("Not enough instruments with sufficient data for correlation matrix")
+            return(NULL)
+        }
+
+        # Pairwise complete correlation
+        cor_matrix <- cor(dat_filtered, use = "pairwise.complete.obs")
+
+        # Handle any remaining NAs (set to 0 = uncorrelated)
+        cor_matrix[is.na(cor_matrix)] <- 0
+
+        cor_matrix
+    }
+
+    applyShrinkage <- function(cor_matrix, shrinkage_factor) {
+        # Shrink toward identity: (1 - shrinkage) * cor + shrinkage * I
+        n <- nrow(cor_matrix)
+        identity_matrix <- diag(n)
+
+        shrunk_matrix <- (1 - shrinkage_factor) * cor_matrix + shrinkage_factor * identity_matrix
+
+        # Preserve row/col names
+        rownames(shrunk_matrix) <- rownames(cor_matrix)
+        colnames(shrunk_matrix) <- colnames(cor_matrix)
+
+        shrunk_matrix
+    }
+
+    ####################################################################################################
+    ### Script
+    ####################################################################################################
+
+    dat_prices <- loadPrices()
+
+    if (is.null(dat_prices) || nrow(dat_prices) == 0) {
+        warning("No price data found for correlation calculation")
+        return(NULL)
+    }
+
+    dat_weekly <- calcWeeklyReturns(dat_prices)
+    dat_wide <- pivotToWideFormat(dat_weekly)
+    cor_matrix <- calcCorrelationMatrix(dat_wide)
+
+    if (is.null(cor_matrix)) {
+        return(NULL)
+    }
+
+    if (shrinkage > 0) {
+        cor_matrix <- applyShrinkage(cor_matrix, shrinkage)
+    }
+
+    cor_matrix
+}
 T.calcPareto <-
 function(dat_ohlc, nb_days, use_already_done = TRUE) {
     
@@ -5131,6 +5272,7 @@ function (pair_list, live_or_close = "close")
     ####################################################################################################
 
     pair_list %>%
+        setdiff(c("XAUUSD", "XAGUSD")) %>% # spot basis, edited Jan26
         lapply(getIBFile) %>%
         bind_rows
 }
@@ -6029,9 +6171,24 @@ function (this_pair, save_to_db=FALSE)
     #    Sys.sleep(2)
     # }
     
-    #fx_pair <- "CHFSEK";
+    #dat <- filter(INSTRUMENTS, use_for_trading + use_for_training >= 1) %>% 
+    #    arrange(asset_class, pair) %>% 
+    #    filter(use_for_trading + use_for_training >= 1)
+    
+    
+    #i <- i+1; 
+    #i;
+    #fx_pair <- dat$pair[i];
+    #dat[i,];
+    #list.files("/home/fls/Downloads", full.names = TRUE) %>% 
+    #    keep(~ str_detect(.x, "Historical Data") && str_detect(.x, paste0(U.left(fx_pair,3), "_", U.right(fx_pair, 3))) && str_ends(.x, ".csv")) %>% 
+    #    unlink
+    #T.plotPriceSeries(fx_pair, 2020);
+    
+    # Manually get file /Downloads/EUR_USD Historical Data.csv starting 2y ago
+    
     #instrument_id <- filter(INSTRUMENTS, pair == fx_pair)$instrument_id; print(instrument_id);
-    #"DELETE FROM histo_px_daily WHERE instrument_id = %s AND date >= '2022-03-31'" %>% sprintf(instrument_id) %>% D.SQL;
+    #"DELETE FROM histo_px_daily WHERE instrument_id = %s AND date >= '2024-01-01'" %>% sprintf(instrument_id) %>% D.SQL;
     #T.importInvestingComHistoFile(fx_pair, TRUE);
     
     ####################################################################################################
@@ -6190,6 +6347,9 @@ function (this_pair, save_to_db=FALSE)
                     end_date = max(date)
                 ) %>% 
                 ungroup %>%
+                left_join(select(INSTRUMENTS, pair, asset_class), by="pair") %>% 
+                arrange(asset_class, pair) %>% 
+                select(asset_class, pair, max_days, max_day, start_date, end_date) %>%
                 #     filter(start_date > "2022-01-01") %>%
                 data.frame
         )
@@ -7745,14 +7905,14 @@ function (instrument, year_start = 1800, year_end = 2100)
     ####################################################################################################
     ### Script 
     ####################################################################################################
-    
-    year_end <- min(c(year_end, year(Sys.Date())))
+    year_start <- min(c(year_start, year(TO_DAY) - 1))
+    year_end <- min(c(year_end, year(TO_DAY)))
     
     date_from <- as.Date(paste0(year_start, "-01-01"))
-    date_to <- as.Date(paste0(year_end, "-12-31"))
-
+    date_to <- min(c(as.Date(paste0(year_end, "-12-31")), TO_DAY))
+    
     dat <- T.getHistoPx(instrument, date_from, date_to)
-  
+    
     year_start <- min(dat$year)
     year_end <- max(dat$year)
     duration_series <- (year_end - year_start)

@@ -2021,30 +2021,155 @@ function (fx_pair)
         select(which(U.vectorize(summarise_each(., function(this_col) !all(is.na(this_col)))))) %>%
         gvisTable(formats = list(price = U.formatPrice(.$price[ceiling(nrow(.) / 2)])))
 }
+G.Trades.Table.correlations <-
+function(dat_predict) {
+    ####################################################################################################
+    ### Script description:
+    ### Returns trade-adjusted correlation matrix for signals, labeled by pair
+    ####################################################################################################
+
+    dat_signals <- dat_predict %>%
+        left_join(select(INSTRUMENTS, pair, instrument_id), by = "pair") %>%
+        mutate(buy_sell = (predict == "up") - (predict == "down")) %>%
+        filter(signal_ok)
+
+    if (nrow(dat_signals) == 0) {
+        return(data.frame(Message = "No signals"))
+    }
+
+    # Get unique instruments and their directions
+    dat_unique <- dat_signals %>%
+        distinct(instrument_id, pair, buy_sell)
+
+    if (nrow(dat_unique) < 2) {
+        return(data.frame(Message = "Need at least 2 instruments for correlation matrix"))
+    }
+
+    # Compute asset correlation matrix
+    cor_matrix <- T.calcHistoricalCorrelationsMatrix(
+        instrument_ids = dat_unique$instrument_id,
+        shrinkage = 0
+    )
+
+    # Build trade correlation matrix (direction-adjusted)
+    n <- nrow(dat_unique)
+    trade_cor <- matrix(0, nrow = n, ncol = n)
+
+    for (i in 1:n) {
+        for (j in 1:n) {
+            inst_i <- dat_unique$instrument_id[i]
+            inst_j <- dat_unique$instrument_id[j]
+            dir_i <- dat_unique$buy_sell[i]
+            dir_j <- dat_unique$buy_sell[j]
+
+            idx_i <- which(as.integer(colnames(cor_matrix)) == inst_i)
+            idx_j <- which(as.integer(colnames(cor_matrix)) == inst_j)
+
+            if (length(idx_i) == 1 && length(idx_j) == 1) {
+                trade_cor[i, j] <- dir_i * dir_j * cor_matrix[idx_i, idx_j]
+            }
+        }
+    }
+
+    # Format as data frame with pair names
+    trade_cor_df <- as.data.frame(round(trade_cor, 2))
+    colnames(trade_cor_df) <- dat_unique$pair
+    trade_cor_df <- cbind(Pair = dat_unique$pair, trade_cor_df)
+    trade_cor_df
+}
 G.Trades.Table.predict <-
-function (dat_predict) 
+function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0)
 {
     ####################################################################################################
     ### Script Variables
     ####################################################################################################
+
+    tradable_instruments <- c(
+        'A50CNY', 'ASXAUD', 'AUDCAD', 
+        'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD', 
+        'CADJPY', 'CHFJPY', 'CHFSEK', 'DAXEUR', 
+        'DJIUSD', 'EURAUD', 'EURCAD', 'EURCHF', 'EURCZK', 'EURGBP', 'EURHUF', 
+        'EURJPY', 'EURNOK', 'EURNZD', 'EURPLN', 'EURSEK', 'EURUSD', 
+        'FTSGBP', 'GBPAUD', 'GBPCAD', 'GBPCHF', 
+        'GBPJPY', 'GBPNZD', 'GBPSEK', 'GBPUSD', 'HSIHKD', 'IBXEUR',
+        'KSPKRW', 'MIBEUR', 
+        'NDXUSD', 'NKYJPY', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD', 
+        'PX1EUR', 'RUTUSD', 'SEKJPY', 'SMICHF', 'SPXUSD', 'SSECNY', 
+        'STXEUR', 'TPXJPY', 'TSXCAD',
+        'USDBRL', 'USDCAD', 'USDCHF', 'USDCLP', 
+        'USDINR', 'USDJPY', 'USDMXN', 'USDNOK', 'USDSEK', 
+        'USDSGD', 'USDZAR', 'XAGUSD', 'XAUUSD', 
+        'CHFNOK', 'GBPNOK', 'GBPPLN', 'NOKSEK', 
+        'EEMUSD')
     
-    dat_predict %>%
-        left_join(select(INSTRUMENTS, pair, asset), by="pair") %>%
+    dat_signals <- dat_predict %>%
+        left_join(select(INSTRUMENTS, pair, asset, instrument_id), by = "pair") %>%
+        filter(pair %in% tradable_instruments) %>%
         mutate(
             asset = case_when(
                 asset_class %in% c("index", "bond") ~ asset,
                 TRUE ~ pair
-            )
+            ),
+            buy_sell = (predict == "up") - (predict == "down")
         ) %>%
-        filter(signal_ok) %>%
+        filter(signal_ok)
+
+    if (nrow(dat_signals) == 0) {
+        return(
+            dat_signals %>%
+                select(
+                    region, asset_class, strategy_id, ticker, asset,
+                    price, predict, target, stop, tp_pct, notional
+                ) %>%
+                mutate(sized_notional = numeric(0), weight_pct = numeric(0), n_eff = numeric(0)) %>%
+                rename(
+                    Region = region, Asset_Class = asset_class, Strategy = strategy_id,
+                    Ticker = ticker, Name = asset, Price = price, Predict = predict,
+                    Target = target, Stop = stop, Target_Pct = tp_pct,
+                    Notional_for_1k_PnL = notional, Sized_Notional = sized_notional,
+                    Weight_Pct = weight_pct, N_Eff = n_eff
+                ) %>%
+                rhandsontable(rowHeaders = NULL)
+        )
+    }
+
+    ####################################################################################################
+    ### Compute correlation matrix and portfolio sizing
+    ####################################################################################################
+
+    instrument_ids <- unique(dat_signals$instrument_id)
+    cor_matrix <- T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0)
+
+    dat_sized <- V.portfolioSizing(
+        dat_signals %>% select(instrument_id, buy_sell, notional),
+        cor_matrix = cor_matrix,
+        risk_per_bet_pct = risk_per_bet_pct,
+        max_daily_risk_pct = max_daily_risk_pct,
+        aum_total = aum_total,
+        correlation_adjustment = correlation_adjustment
+    )
+
+    ####################################################################################################
+    ### Format output table
+    ####################################################################################################
+
+    n_effective <- dat_sized$n_effective[1]
+
+    dat_signals %>%
+        mutate(
+            weight = dat_sized$weight,
+            sized_notional = dat_sized$sized_notional,
+            weight_pct = weight * 100,
+            n_eff = n_effective
+        ) %>%
         select(
-            region, asset_class, strategy_id, ticker, asset, 
-            price, predict, target, stop, tp_pct, notional
+            region, asset_class, strategy_id, ticker, asset,
+            price, predict, target, stop, tp_pct, notional, weight_pct, sized_notional, n_eff
         ) %>%
         rename(
             Region = region,
             Asset_Class = asset_class,
-            Strategy = strategy_id, 
+            Strategy = strategy_id,
             Ticker = ticker,
             Name = asset,
             Price = price,
@@ -2052,9 +2177,14 @@ function (dat_predict)
             Target = target,
             Stop = stop,
             Target_Pct = tp_pct,
-            Notional_for_1k_PnL = notional
+            Notional_for_1k_PnL = notional,
+            Weight_Pct = weight_pct,
+            Sized_Notional = sized_notional,
+            N_Eff = n_eff
         ) %>%
-       rhandsontable(rowHeaders = NULL) %>%
-       hot_col(c("Price", "Target", "Stop", "Notional_for_1k_PnL"), format = "0,000.000000") %>%
-       hot_col("Target_Pct", format = "0.000%")
+        rhandsontable(rowHeaders = NULL) %>%
+        hot_col(c("Price", "Target", "Stop", "Notional_for_1k_PnL", "Sized_Notional"), format = "0,000.000000") %>%
+        hot_col("Target_Pct", format = "0.000%") %>%
+        hot_col("Weight_Pct", format = "0.00") %>%
+        hot_col("N_Eff", format = "0.00")
 }
