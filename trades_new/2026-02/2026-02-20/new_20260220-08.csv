@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026022008001,2026-02-20,9,NZDCAD,0.81753,flat,0,0.824966273872947,0.810093726127053,2026-02-27,0.810093726127053,0.824966273872947,0.009096025678503539,183938.36958185578,2026-02-20 21:50:30,2026-02-20 21:50:00
