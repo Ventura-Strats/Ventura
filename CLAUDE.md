@@ -166,7 +166,7 @@ Located in `/HD/Scripts/Python/`:
 - `Signal_List.py` - Generate signal list for execution
 - `IB_Account_Data.py` - Fetch account data/NAV
 
-## Current Status (Updated 2026-02-19)
+## Current Status (Updated 2026-02-21)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -175,6 +175,7 @@ Located in `/HD/Scripts/Python/`:
 - **Read_Executions.py fix**: Fixed `formatExecutionTime()` to parse timezone dynamically from IB time string (was hardcoded to `Asia/Hong_Kong`, now handles any timezone like `Europe/London`)
 - **DB.R pool fix**: Added `validationInterval = 30` to connection pool to prevent "Lost connection to server during query" errors by validating connections before use
 - **Cross-asset correlation matrix**: New function `T.calcHistoricalCorrelationsMatrix()` for min-variance portfolio sizing (see Key Functions Reference)
+- **Trade workflow automation** (2026-02-21): New functions `B.generateOrders()`, `B.matchLegsToTrades()`, `B.confirmLegMatch()`, `B.confirmSingleLeg()` for end-to-end trade lifecycle (see Session_Notes/2026-02-21_trade_workflow_automation.md)
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -251,17 +252,18 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 
 ## Next Priorities
 
-### 2. Automatic Trade Execution (Python)
-- Execute trades automatically via Interactive Brokers API
-- Python script to read signals and place orders
-- Logic to be specified in detail before implementation
-- Previous attempt exists but was written before user knew Python well
+### 2. Automatic Trade Execution (Python) - PARTIALLY DONE
+- **DONE**: `B.generateOrders()` converts signals to sized orders, exports CSV for Execute_Orders.py
+- **DONE**: Uses V.portfolioSizing() for eigenvalue-based N_effective sizing
+- **DONE**: Scales orders by account NAV from book_nav table
+- **TODO**: Enable actual order placement in Execute_Orders.py (currently commented out)
+- **TODO**: Test full flow: B.generateOrders() -> CSV -> Execute_Orders.py -> IB
 
-### 3. Trade Database Entry Automation
-- After trades execute on IB, automatically log them to trade database
-- Currently done manually - time consuming
-- Should capture: entry time, exit time, targets, etc.
-- Links to `Read_Executions.py` and `B.readTradesFromIB()` workflow
+### 3. Trade Database Entry Automation - DONE
+- **DONE**: `B.matchLegsToTrades()` matches execution legs to trades (ENTRY/TARGET/STOP/MATURITY)
+- **DONE**: `B.confirmLegMatch()` creates/closes trades after user review
+- **DONE**: `B.confirmSingleLeg()` for manual single-leg confirmation
+- Flow: Read_Executions.py -> book_trade_leg -> B.matchLegsToTrades() -> review -> B.confirmLegMatch()
 
 ### 4. Python Codebase Cleanup
 - All Python scripts (IB API integration) are poorly written legacy code
@@ -276,6 +278,12 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - `B.createNewTradeIDFromLegs(trade_date, strategy_id, tp_pct, leg_id_list)` - Create trade record
 - `B.closeTradeFromLegs(trade_id, exit_type, exit_date, leg_id_list)` - Close trade
 - `B.readTradesFromDB()` - Load all trades from database
+
+### Order Generation & Execution Matching (NEW - 2026-02-20)
+- `B.generateOrders(dat_predict, risk_per_bet_pct, max_daily_risk_pct, correlation_adjustment, account_ids, export_csv)` - Convert signals to sized orders for execution. Uses V.portfolioSizing() for eigenvalue-based N_effective sizing. Returns orders for multiple accounts scaled by NAV, exports CSV for Execute_Orders.py
+- `B.matchLegsToTrades(lookback_days, price_tolerance_pct, timestamp_tolerance_minutes)` - Match execution legs to trades. Determines if each leg is ENTRY, TARGET, STOP, or MATURITY. Returns summary for manual review
+- `B.confirmLegMatch(match_summary, confirm_types, dry_run)` - Execute matches after review. Creates trades via B.createNewTradeIDFromLegs() or closes via B.closeTradeFromLegs()
+- `B.confirmSingleLeg(leg_id, match_type, trade_id, strategy_id, tp_pct, dry_run)` - Manually confirm a single leg when automatic matching fails
 
 ### Technical Analysis
 - `T.plotPriceSeries()` - Diagnostic plot for price data
@@ -295,3 +303,10 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - Only look at .R files in Code/ (ignore other file types)
 - The Shiny dashboard works well - low priority for changes
 - Owner is self-taught in R, professional Python developer
+
+### Session Notes Practice
+- Create one session notes file per session in `Session_Notes/` folder
+- Naming: `YYYY-MM-DD_brief_description.md`
+- Create when user asks to update CLAUDE.md (indicates end of meaningful work)
+- Include: summary of changes, usage examples, testing checklist, next steps
+- **Must be committed to GitHub** along with code changes

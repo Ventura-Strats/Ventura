@@ -1049,5 +1049,871 @@ function () {
         bind_rows
     D.replaceDataIntoTable("book_nav", dat, FALSE)
     dat
-    
+
+}
+B.generateOrders <-
+function(
+    dat_predict = NULL,
+    risk_per_bet_pct = 0.5,
+    max_daily_risk_pct = 5,
+    correlation_adjustment = 0,
+    account_ids = c(1, 2),
+    export_csv = TRUE,
+    export_path = NULL
+) {
+    ####################################################################################################
+    ### Script description:
+    ### Converts signals to sized orders for execution via IB.
+    ### Uses V.portfolioSizing() for eigenvalue-based N_effective sizing.
+    ### Generates orders for multiple accounts, scaled by each account's NAV.
+    ###
+    ### Returns a list with:
+    ###   orders_all: all orders combined
+    ###   orders_by_account: list of tibbles, one per account
+    ###   nav_data: NAV used for each account
+    ###   sizing_metadata: N_effective, total_risk, correlation matrix
+    ####################################################################################################
+
+    ####################################################################################################
+    ### Script variables
+    ####################################################################################################
+    if (is.null(export_path)) {
+        export_path <- DIRECTORY_DATA_HD
+    }
+
+    FUTURES_ACTIVE <- D.loadTableLocal("future_active")
+    FUTURES_EXPIRY <- D.loadTableLocal("future_expiry")
+    FUTURES <- D.loadTableLocal("future_contract")
+    TICK_SIZES <- D.loadTableLocal("instrument_attribute_dbl") %>%
+        filter(attribute_id == 4) %>%
+        select(instrument_id, tick_size = value)
+
+    tradable_instruments <- c(
+        'A50CNY', 'ASXAUD', 'AUDCAD', 'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD',
+        'CADJPY', 'CHFJPY', 'CHFSEK', 'DAXEUR', 'DJIUSD', 'EURAUD', 'EURCAD',
+        'EURCHF', 'EURCZK', 'EURGBP', 'EURHUF', 'EURJPY', 'EURNOK', 'EURNZD',
+        'EURPLN', 'EURSEK', 'EURUSD', 'FTSGBP', 'GBPAUD', 'GBPCAD', 'GBPCHF',
+        'GBPJPY', 'GBPNZD', 'GBPSEK', 'GBPUSD', 'HSIHKD', 'IBXEUR', 'KSPKRW',
+        'MIBEUR', 'NDXUSD', 'NKYJPY', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD',
+        'PX1EUR', 'RUTUSD', 'SEKJPY', 'SMICHF', 'SPXUSD', 'SSECNY', 'STXEUR',
+        'TPXJPY', 'TSXCAD', 'USDBRL', 'USDCAD', 'USDCHF', 'USDCLP', 'USDINR',
+        'USDJPY', 'USDMXN', 'USDNOK', 'USDSEK', 'USDSGD', 'USDZAR', 'XAGUSD',
+        'XAUUSD', 'CHFNOK', 'GBPNOK', 'GBPPLN', 'NOKSEK', 'EEMUSD'
+    )
+
+    ####################################################################################################
+    ### Sub routines
+    ####################################################################################################
+
+    loadSignals <- function() {
+        if (is.null(dat_predict)) {
+            G.Predict.Data.predict()
+        } else {
+            dat_predict
+        }
+    }
+
+    getLatestNAV <- function() {
+        "SELECT N.account_id, N.nav_ccy, N.nav_usd
+        FROM book_nav N
+        INNER JOIN (
+            SELECT account_id, MAX(timestamp) as max_ts
+            FROM book_nav
+            WHERE date < '%s'
+            GROUP BY account_id
+        ) M ON N.account_id = M.account_id AND N.timestamp = M.max_ts" %>%
+            sprintf(TO_DAY) %>%
+            D.SQL
+    }
+
+    applyPortfolioSizing <- function(dat_signals) {
+        instrument_ids <- unique(dat_signals$instrument_id)
+        cor_matrix <- T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0)
+
+        dat_for_sizing <- dat_signals %>%
+            select(instrument_id, buy_sell, notional)
+
+        dat_sized <- V.portfolioSizing(
+            dat_for_sizing,
+            cor_matrix = cor_matrix,
+            risk_per_bet_pct = risk_per_bet_pct,
+            max_daily_risk_pct = max_daily_risk_pct,
+            aum_total = sum(nav_data$nav_usd),
+            correlation_adjustment = correlation_adjustment
+        )
+
+        list(
+            dat_sized = dat_signals %>%
+                mutate(
+                    weight = dat_sized$weight,
+                    sized_notional = dat_sized$sized_notional,
+                    n_effective = dat_sized$n_effective[1]
+                ),
+            cor_matrix = cor_matrix,
+            n_effective = dat_sized$n_effective[1]
+        )
+    }
+
+    addInstrumentDetails <- function(dat_orders) {
+        dat_orders %>%
+            left_join(
+                INSTRUMENTS %>%
+                    select(instrument_id, pair, ticker, asset_class, conid_spot, trade_instrument_type),
+                by = "instrument_id"
+            ) %>%
+            left_join(
+                FUTURES_ACTIVE %>%
+                    select(future_id, conid_active = conid),
+                by = c("instrument_id" = "future_id")
+            ) %>%
+            left_join(
+                FUTURES_EXPIRY %>%
+                    select(conid, expiry),
+                by = c("conid_active" = "conid")
+            ) %>%
+            left_join(TICK_SIZES, by = "instrument_id") %>%
+            mutate(
+                future_id = case_when(
+                    asset_class %in% c("index", "bond", "metal") ~ instrument_id,
+                    TRUE ~ NA_integer_
+                ),
+                conid = case_when(
+                    !is.na(conid_active) ~ conid_active,
+                    TRUE ~ conid_spot
+                )
+            ) %>%
+            select(-conid_spot, -conid_active)
+    }
+
+    calculateTargetsAndStops <- function(dat_orders) {
+        dat_orders %>%
+            mutate(
+                date_entry = TO_DAY,
+                date_exit_latest = TO_DAY + 7
+            )
+    }
+
+    scaleOrdersByAccountNAV <- function(dat_orders, account_id_this, nav_this) {
+        total_nav <- sum(nav_data$nav_usd)
+        nav_ratio <- nav_this / total_nav
+
+        dat_orders %>%
+            mutate(
+                account_id = account_id_this,
+                size_to_do = round(sized_notional * nav_ratio, 0)
+            ) %>%
+            filter(size_to_do > 0)
+    }
+
+    formatForExecution <- function(dat_orders) {
+        dat_orders %>%
+            mutate(
+                order_id = row_number(),
+                ib_order_id = NA_integer_,
+                contract = NA_character_,
+                buy_sell_action = case_when(buy_sell == 1 ~ "BUY", TRUE ~ "SELL"),
+                px_order = price,
+                px_live = NA_real_,
+                px_avg = NA_real_,
+                initial_position = 0L,
+                position = 0L,
+                filled = 0L,
+                remaining = size_to_do,
+                status = "not yet started",
+                ib_status = ""
+            ) %>%
+            select(
+                order_id, ib_order_id, account_id, instrument_id, ticker,
+                future_id, conid, contract, tick_size,
+                buy_sell, buy_sell_action, size_to_do, px_order, px_live, px_avg,
+                initial_position, position, filled, remaining, status, ib_status
+            )
+    }
+
+    exportOrdersCSV <- function(dat_orders, account_id_this) {
+        date_str <- format(TO_DAY, "%Y%m%d")
+        hour_str <- format(Sys.time(), "%H")
+
+        dir_path <- paste0(
+            export_path, "Orders/Combined/",
+            format(TO_DAY, "%Y-%m"), "/",
+            format(TO_DAY, "%Y-%m-%d"), "/"
+        )
+
+        if (!dir.exists(dir_path)) {
+            dir.create(dir_path, recursive = TRUE)
+        }
+
+        file_name <- sprintf("combined_orders_%s_%s-%s.csv", account_id_this, date_str, hour_str)
+        file_path <- paste0(dir_path, file_name)
+
+        U.write.csv(dat_orders, file_path)
+        U.printBanner(sprintf("Exported orders to: %s", file_path), FALSE)
+
+        file_path
+    }
+
+    ####################################################################################################
+    ### Script
+    ####################################################################################################
+
+    dat_signals <- loadSignals() %>%
+        filter(
+            signal_ok == TRUE,
+            pair %in% tradable_instruments,
+            buy_sell != 0
+        ) %>%
+        left_join(select(INSTRUMENTS, pair, instrument_id), by = "pair")
+
+    if (nrow(dat_signals) == 0) {
+        warning("No valid signals to generate orders")
+        return(list(
+            orders_all = tibble(),
+            orders_by_account = list(),
+            nav_data = tibble(),
+            sizing_metadata = list()
+        ))
+    }
+
+    nav_data <<- getLatestNAV() %>%
+        filter(account_id %in% account_ids)
+
+    if (nrow(nav_data) == 0) {
+        stop("No NAV data found for specified accounts")
+    }
+
+    sizing_result <- applyPortfolioSizing(dat_signals)
+    dat_sized <- sizing_result$dat_sized
+
+    dat_orders_base <- dat_sized %>%
+        addInstrumentDetails %>%
+        calculateTargetsAndStops
+
+    orders_by_account <- list()
+    exported_files <- c()
+
+    for (acc_id in account_ids) {
+        nav_this <- filter(nav_data, account_id == acc_id)$nav_usd
+        if (length(nav_this) == 0) {
+            warning(sprintf("No NAV found for account %s, skipping", acc_id))
+            next
+        }
+
+        dat_acc <- dat_orders_base %>%
+            scaleOrdersByAccountNAV(acc_id, nav_this) %>%
+            formatForExecution
+
+        orders_by_account[[as.character(acc_id)]] <- dat_acc
+
+        if (export_csv && nrow(dat_acc) > 0) {
+            file_path <- exportOrdersCSV(dat_acc, acc_id)
+            exported_files <- c(exported_files, file_path)
+        }
+    }
+
+    orders_all <- bind_rows(orders_by_account)
+
+    U.printBanner(sprintf(
+        "Generated %d orders across %d accounts (N_eff = %.2f)",
+        nrow(orders_all),
+        length(orders_by_account),
+        sizing_result$n_effective
+    ))
+
+    list(
+        orders_all = orders_all,
+        orders_by_account = orders_by_account,
+        nav_data = nav_data,
+        sizing_metadata = list(
+            n_effective = sizing_result$n_effective,
+            total_risk_pct = min(sizing_result$n_effective * risk_per_bet_pct, max_daily_risk_pct),
+            correlation_matrix = sizing_result$cor_matrix
+        ),
+        exported_files = exported_files,
+        signals_used = dat_orders_base %>%
+            select(
+                strategy_id, instrument_id, pair, ticker, asset_class,
+                price, predict, target, stop, tp_pct,
+                buy_sell, notional, weight, sized_notional, n_effective,
+                date_entry, date_exit_latest
+            )
+    )
+}
+B.matchLegsToTrades <-
+function(
+    lookback_days = 7,
+    price_tolerance_pct = 0.01,
+    timestamp_tolerance_minutes = 60
+) {
+    ####################################################################################################
+    ### Script description:
+    ### Matches execution legs (from book_trade_leg) to trades.
+    ### Determines if each leg is: ENTRY, TARGET, STOP, or MATURITY exit.
+    ### Returns a summary for manual review before confirmation.
+    ###
+    ### Match types:
+    ###   ENTRY: leg matches signal instrument_id + buy_sell, timestamp within tolerance
+    ###   TARGET: closes live trade, price within tolerance of target
+    ###   STOP: closes live trade, price within tolerance of stop
+    ###   MATURITY: closes live trade, date >= date_exit_latest (7 days after entry)
+    ####################################################################################################
+
+    ####################################################################################################
+    ### Script variables
+    ####################################################################################################
+
+    ####################################################################################################
+    ### Sub routines
+    ####################################################################################################
+
+    getUnmatchedLegs <- function() {
+        "SELECT L.*, I.pair, I.asset_class
+        FROM book_trade_leg L
+        LEFT JOIN (
+            SELECT instrument_id, pair, asset_class,
+                CASE WHEN asset_class IN ('fx_dm', 'fx_em') THEN instrument_id ELSE conid_spot END AS identifier
+            FROM instrument
+        ) I ON L.identifier = I.identifier
+        WHERE L.leg_id NOT IN (SELECT leg_id FROM book_trade_map)
+        AND L.timestamp >= '%s'" %>%
+            sprintf(TO_DAY - lookback_days) %>%
+            D.SQL %>%
+            mutate(
+                timestamp = as.POSIXct(timestamp, tz = TZ_LOCAL)
+            )
+    }
+
+    getLiveTrades <- function() {
+        "SELECT T.trade_id, T.strategy_id, T.date_entry, T.target_pct,
+                M.leg_id AS entry_leg_id, L.identifier, L.buy_sell AS entry_buy_sell,
+                L.price AS entry_price, L.size AS entry_size, L.account_id,
+                I.pair, I.asset_class
+        FROM book_trade T
+        JOIN book_trade_map M ON M.trade_id = T.trade_id AND M.trade_category_id = 1
+        JOIN book_trade_leg L ON L.leg_id = M.leg_id
+        LEFT JOIN (
+            SELECT instrument_id, pair, asset_class,
+                CASE WHEN asset_class IN ('fx_dm', 'fx_em') THEN instrument_id ELSE conid_spot END AS identifier
+            FROM instrument
+        ) I ON L.identifier = I.identifier
+        WHERE T.trade_outcome_id = 0 AND T.date_exit IS NULL" %>%
+            D.SQL %>%
+            mutate(
+                date_entry = as.Date(date_entry),
+                date_exit_latest = date_entry + 7,
+                target_pct = target_pct / 100,
+                target_price = entry_price * (1 + entry_buy_sell * target_pct),
+                stop_price = 2 * entry_price - target_price
+            )
+    }
+
+    getRecentSignals <- function() {
+        instruments_with_identifier <- INSTRUMENTS %>%
+            mutate(
+                identifier = case_when(
+                    asset_class %in% c("fx_dm", "fx_em") ~ instrument_id,
+                    TRUE ~ conid_spot
+                )
+            ) %>%
+            select(instrument_id, pair, asset_class, identifier)
+
+        "SELECT strategy_id, instrument_id, timestamp, timestamp_px,
+                close AS price, t_up, t_dn, outcome_id
+        FROM live_predict
+        WHERE date >= '%s'
+        AND use_weights = 0" %>%
+            sprintf(YESTERDAY) %>%
+            D.SQL %>%
+            left_join(TRADE_OUTCOMES, by = "outcome_id") %>%
+            rename(predict = outcome) %>%
+            mutate(
+                timestamp = as.POSIXct(timestamp, tz = TZ_LOCAL),
+                buy_sell = (predict == "up") - (predict == "down"),
+                target = price + buy_sell * (t_up - price),
+                stop = 2 * price - target,
+                tp_pct = t_up / price - 1
+            ) %>%
+            left_join(instruments_with_identifier, by = "instrument_id")
+    }
+
+    matchLegToEntry <- function(leg, signals) {
+        matching_signals <- signals %>%
+            filter(
+                identifier == leg$identifier,
+                buy_sell == leg$buy_sell,
+                abs(difftime(timestamp, leg$timestamp, units = "mins")) <= timestamp_tolerance_minutes
+            ) %>%
+            mutate(
+                time_diff_minutes = abs(as.numeric(difftime(timestamp, leg$timestamp, units = "mins")))
+            ) %>%
+            arrange(time_diff_minutes)
+
+        if (nrow(matching_signals) == 0) {
+            return(NULL)
+        }
+
+        best_match <- matching_signals[1, ]
+
+        confidence <- case_when(
+            best_match$time_diff_minutes <= 5 ~ "HIGH",
+            best_match$time_diff_minutes <= 15 ~ "MEDIUM",
+            best_match$time_diff_minutes <= 30 ~ "LOW",
+            TRUE ~ "VERY_LOW"
+        )
+
+        tibble(
+            match_type = "ENTRY",
+            suggested_trade_id = NA_integer_,
+            suggested_strategy_id = best_match$strategy_id,
+            confidence = confidence,
+            price_diff_pct = NA_real_,
+            time_diff_minutes = best_match$time_diff_minutes,
+            expected_target = best_match$target,
+            expected_stop = best_match$stop,
+            tp_pct = best_match$tp_pct
+        )
+    }
+
+    matchLegToExit <- function(leg, live_trades) {
+        matching_trades <- live_trades %>%
+            filter(
+                identifier == leg$identifier,
+                entry_buy_sell == -leg$buy_sell,
+                account_id == leg$account_id
+            )
+
+        if (nrow(matching_trades) == 0) {
+            return(NULL)
+        }
+
+        results <- matching_trades %>%
+            mutate(
+                price_diff_from_target = abs(leg$price - target_price) / entry_price,
+                price_diff_from_stop = abs(leg$price - stop_price) / entry_price,
+                is_past_maturity = as.Date(leg$timestamp) >= date_exit_latest
+            )
+
+        best_match <- results %>%
+            mutate(
+                exit_type = case_when(
+                    price_diff_from_target <= price_tolerance_pct ~ "TARGET",
+                    price_diff_from_stop <= price_tolerance_pct ~ "STOP",
+                    is_past_maturity ~ "MATURITY",
+                    TRUE ~ "UNKNOWN"
+                ),
+                price_diff_pct = case_when(
+                    exit_type == "TARGET" ~ price_diff_from_target,
+                    exit_type == "STOP" ~ price_diff_from_stop,
+                    TRUE ~ pmin(price_diff_from_target, price_diff_from_stop)
+                )
+            ) %>%
+            filter(exit_type != "UNKNOWN" | price_diff_pct <= 0.05) %>%
+            arrange(price_diff_pct) %>%
+            head(1)
+
+        if (nrow(best_match) == 0) {
+            return(NULL)
+        }
+
+        confidence <- case_when(
+            best_match$exit_type == "MATURITY" ~ "HIGH",
+            best_match$price_diff_pct <= 0.0025 ~ "HIGH",
+            best_match$price_diff_pct <= 0.005 ~ "MEDIUM",
+            best_match$price_diff_pct <= 0.01 ~ "LOW",
+            TRUE ~ "VERY_LOW"
+        )
+
+        tibble(
+            match_type = best_match$exit_type,
+            suggested_trade_id = best_match$trade_id,
+            suggested_strategy_id = best_match$strategy_id,
+            confidence = confidence,
+            price_diff_pct = best_match$price_diff_pct * 100,
+            time_diff_minutes = NA_real_,
+            expected_target = best_match$target_price,
+            expected_stop = best_match$stop_price,
+            tp_pct = best_match$target_pct
+        )
+    }
+
+    buildInstruction <- function(match_row) {
+        if (match_row$match_type == "ENTRY") {
+            sprintf(
+                "B.createNewTradeIDFromLegs('%s', %d, %.4f, c(%d))",
+                as.character(as.Date(match_row$timestamp)),
+                match_row$suggested_strategy_id,
+                match_row$tp_pct,
+                match_row$leg_id
+            )
+        } else if (match_row$match_type %in% c("TARGET", "STOP", "MATURITY")) {
+            exit_type <- tolower(match_row$match_type)
+            if (exit_type == "maturity") exit_type <- "exit_maturity"
+            sprintf(
+                "B.closeTradeFromLegs(%d, '%s', '%s', c(%d))",
+                match_row$suggested_trade_id,
+                exit_type,
+                as.character(as.Date(match_row$timestamp)),
+                match_row$leg_id
+            )
+        } else {
+            "# UNKNOWN - manual review required"
+        }
+    }
+
+    ####################################################################################################
+    ### Script
+    ####################################################################################################
+
+    unmatched_legs <- getUnmatchedLegs()
+
+    if (nrow(unmatched_legs) == 0) {
+        U.printBanner("No unmatched legs found")
+        return(tibble(
+            leg_id = integer(),
+            account_id = integer(),
+            pair = character(),
+            timestamp = as.POSIXct(character()),
+            buy_sell = integer(),
+            size = numeric(),
+            price = numeric(),
+            match_type = character(),
+            confidence = character(),
+            suggested_trade_id = integer(),
+            suggested_strategy_id = integer(),
+            price_diff_pct = numeric(),
+            time_diff_minutes = numeric(),
+            expected_target = numeric(),
+            expected_stop = numeric(),
+            instruction = character()
+        ))
+    }
+
+    live_trades <- getLiveTrades()
+    recent_signals <- getRecentSignals()
+
+    U.printBanner(sprintf(
+        "Matching %d unmatched legs against %d live trades and recent signals",
+        nrow(unmatched_legs),
+        nrow(live_trades)
+    ))
+
+    results <- list()
+
+    for (i in 1:nrow(unmatched_legs)) {
+        leg <- unmatched_legs[i, ]
+
+        exit_match <- matchLegToExit(leg, live_trades)
+        if (!is.null(exit_match)) {
+            match_info <- exit_match
+        } else {
+            entry_match <- matchLegToEntry(leg, recent_signals)
+            if (!is.null(entry_match)) {
+                match_info <- entry_match
+            } else {
+                match_info <- tibble(
+                    match_type = "UNKNOWN",
+                    suggested_trade_id = NA_integer_,
+                    suggested_strategy_id = NA_integer_,
+                    confidence = "NONE",
+                    price_diff_pct = NA_real_,
+                    time_diff_minutes = NA_real_,
+                    expected_target = NA_real_,
+                    expected_stop = NA_real_,
+                    tp_pct = NA_real_
+                )
+            }
+        }
+
+        results[[i]] <- tibble(
+            leg_id = leg$leg_id,
+            account_id = leg$account_id,
+            pair = leg$pair,
+            timestamp = leg$timestamp,
+            buy_sell = leg$buy_sell,
+            size = leg$size,
+            price = leg$price
+        ) %>%
+            bind_cols(match_info)
+    }
+
+    match_summary <- bind_rows(results) %>%
+        rowwise() %>%
+        mutate(instruction = buildInstruction(cur_data())) %>%
+        ungroup() %>%
+        arrange(
+            factor(confidence, levels = c("HIGH", "MEDIUM", "LOW", "VERY_LOW", "NONE")),
+            match_type,
+            timestamp
+        )
+
+    summary_counts <- match_summary %>%
+        group_by(match_type, confidence) %>%
+        summarise(n = n(), .groups = "drop")
+
+    U.printBanner("Match Summary:")
+    print(summary_counts)
+
+    match_summary
+}
+B.confirmLegMatch <-
+function(
+    match_summary,
+    confirm_types = c("HIGH"),
+    dry_run = TRUE
+) {
+    ####################################################################################################
+    ### Script description:
+    ### Executes leg-to-trade matches after user review.
+    ### For ENTRY matches: creates new trades via B.createNewTradeIDFromLegs()
+    ### For EXIT matches: closes trades via B.closeTradeFromLegs()
+    ###
+    ### Parameters:
+    ###   match_summary: output from B.matchLegsToTrades()
+    ###   confirm_types: which confidence levels to auto-confirm (default: only "HIGH")
+    ###   dry_run: if TRUE, only show what would happen (default: TRUE)
+    ###
+    ### Returns:
+    ###   Summary of actions taken (or would be taken if dry_run=TRUE)
+    ####################################################################################################
+
+    ####################################################################################################
+    ### Script variables
+    ####################################################################################################
+
+    ####################################################################################################
+    ### Sub routines
+    ####################################################################################################
+
+    confirmEntry <- function(match_row) {
+        trade_date <- as.character(as.Date(match_row$timestamp))
+        strategy_id <- match_row$suggested_strategy_id
+        tp_pct <- match_row$tp_pct
+        leg_id <- match_row$leg_id
+
+        if (dry_run) {
+            return(tibble(
+                action = "CREATE_TRADE",
+                leg_id = leg_id,
+                trade_id = NA_integer_,
+                status = "DRY_RUN",
+                message = sprintf(
+                    "Would create trade: strategy=%d, tp_pct=%.4f, leg=%d",
+                    strategy_id, tp_pct, leg_id
+                )
+            ))
+        }
+
+        tryCatch({
+            new_trade_id <- B.createNewTradeIDFromLegs(
+                trade_date = trade_date,
+                strategy_id = strategy_id,
+                tp_pct = tp_pct,
+                leg_id_list = c(leg_id)
+            )
+
+            tibble(
+                action = "CREATE_TRADE",
+                leg_id = leg_id,
+                trade_id = new_trade_id,
+                status = "SUCCESS",
+                message = sprintf("Created trade_id=%d", new_trade_id)
+            )
+        }, error = function(e) {
+            tibble(
+                action = "CREATE_TRADE",
+                leg_id = leg_id,
+                trade_id = NA_integer_,
+                status = "ERROR",
+                message = as.character(e$message)
+            )
+        })
+    }
+
+    confirmExit <- function(match_row) {
+        trade_id <- match_row$suggested_trade_id
+        exit_type <- tolower(match_row$match_type)
+        if (exit_type == "maturity") exit_type <- "exit_maturity"
+        exit_date <- as.character(as.Date(match_row$timestamp))
+        leg_id <- match_row$leg_id
+
+        if (dry_run) {
+            return(tibble(
+                action = "CLOSE_TRADE",
+                leg_id = leg_id,
+                trade_id = trade_id,
+                status = "DRY_RUN",
+                message = sprintf(
+                    "Would close trade_id=%d with exit_type='%s', leg=%d",
+                    trade_id, exit_type, leg_id
+                )
+            ))
+        }
+
+        tryCatch({
+            B.closeTradeFromLegs(
+                trade_id = trade_id,
+                exit_type = exit_type,
+                exit_date = exit_date,
+                leg_id_list = c(leg_id)
+            )
+
+            tibble(
+                action = "CLOSE_TRADE",
+                leg_id = leg_id,
+                trade_id = trade_id,
+                status = "SUCCESS",
+                message = sprintf("Closed trade_id=%d with exit_type='%s'", trade_id, exit_type)
+            )
+        }, error = function(e) {
+            tibble(
+                action = "CLOSE_TRADE",
+                leg_id = leg_id,
+                trade_id = trade_id,
+                status = "ERROR",
+                message = as.character(e$message)
+            )
+        })
+    }
+
+    ####################################################################################################
+    ### Script
+    ####################################################################################################
+
+    to_confirm <- match_summary %>%
+        filter(
+            confidence %in% confirm_types,
+            match_type != "UNKNOWN"
+        )
+
+    if (nrow(to_confirm) == 0) {
+        U.printBanner("No matches to confirm with specified confidence levels")
+        return(tibble(
+            action = character(),
+            leg_id = integer(),
+            trade_id = integer(),
+            status = character(),
+            message = character()
+        ))
+    }
+
+    U.printBanner(sprintf(
+        "%s: Processing %d matches with confidence in [%s]",
+        ifelse(dry_run, "DRY RUN", "EXECUTING"),
+        nrow(to_confirm),
+        paste(confirm_types, collapse = ", ")
+    ))
+
+    entries <- to_confirm %>% filter(match_type == "ENTRY")
+    exits <- to_confirm %>% filter(match_type %in% c("TARGET", "STOP", "MATURITY"))
+
+    results <- list()
+
+    if (nrow(entries) > 0) {
+        U.printBanner(sprintf("Processing %d ENTRY matches", nrow(entries)), FALSE)
+        for (i in 1:nrow(entries)) {
+            results[[length(results) + 1]] <- confirmEntry(entries[i, ])
+        }
+    }
+
+    if (nrow(exits) > 0) {
+        U.printBanner(sprintf("Processing %d EXIT matches", nrow(exits)), FALSE)
+        for (i in 1:nrow(exits)) {
+            results[[length(results) + 1]] <- confirmExit(exits[i, ])
+        }
+    }
+
+    result_summary <- bind_rows(results)
+
+    U.printBanner("Confirmation Results:")
+    print(result_summary)
+
+    if (dry_run) {
+        U.printBanner("This was a DRY RUN. To execute, call with dry_run=FALSE")
+    }
+
+    result_summary
+}
+B.confirmSingleLeg <-
+function(
+    leg_id,
+    match_type,
+    trade_id = NULL,
+    strategy_id = NULL,
+    tp_pct = NULL,
+    dry_run = TRUE
+) {
+    ####################################################################################################
+    ### Script description:
+    ### Manually confirm a single leg match when automatic matching fails or needs override.
+    ###
+    ### For ENTRY: requires strategy_id and tp_pct
+    ### For TARGET/STOP/MATURITY: requires trade_id
+    ####################################################################################################
+
+    ####################################################################################################
+    ### Script
+    ####################################################################################################
+
+    leg <- "SELECT * FROM book_trade_leg WHERE leg_id = %d" %>%
+        sprintf(leg_id) %>%
+        D.SQL
+
+    if (nrow(leg) == 0) {
+        stop(sprintf("Leg %d not found", leg_id))
+    }
+
+    match_type <- toupper(match_type)
+
+    if (match_type == "ENTRY") {
+        if (is.null(strategy_id) || is.null(tp_pct)) {
+            stop("ENTRY match requires strategy_id and tp_pct")
+        }
+
+        if (dry_run) {
+            U.printBanner(sprintf(
+                "DRY RUN: Would create trade for leg %d (strategy=%d, tp_pct=%.4f)",
+                leg_id, strategy_id, tp_pct
+            ))
+            return(invisible(NULL))
+        }
+
+        trade_date <- as.character(as.Date(leg$timestamp))
+        new_trade_id <- B.createNewTradeIDFromLegs(
+            trade_date = trade_date,
+            strategy_id = strategy_id,
+            tp_pct = tp_pct,
+            leg_id_list = c(leg_id)
+        )
+        U.printBanner(sprintf("Created trade_id=%d for leg %d", new_trade_id, leg_id))
+        return(new_trade_id)
+
+    } else if (match_type %in% c("TARGET", "STOP", "MATURITY")) {
+        if (is.null(trade_id)) {
+            stop(sprintf("%s match requires trade_id", match_type))
+        }
+
+        exit_type <- tolower(match_type)
+        if (exit_type == "maturity") exit_type <- "exit_maturity"
+
+        if (dry_run) {
+            U.printBanner(sprintf(
+                "DRY RUN: Would close trade %d with %s for leg %d",
+                trade_id, exit_type, leg_id
+            ))
+            return(invisible(NULL))
+        }
+
+        exit_date <- as.character(as.Date(leg$timestamp))
+        B.closeTradeFromLegs(
+            trade_id = trade_id,
+            exit_type = exit_type,
+            exit_date = exit_date,
+            leg_id_list = c(leg_id)
+        )
+        U.printBanner(sprintf("Closed trade_id=%d with %s for leg %d", trade_id, exit_type, leg_id))
+        return(trade_id)
+
+    } else {
+        stop(sprintf("Unknown match_type: %s. Use ENTRY, TARGET, STOP, or MATURITY", match_type))
+    }
 }
