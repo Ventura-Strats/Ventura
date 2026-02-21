@@ -12,9 +12,15 @@ function (db_name = "Ventura") {
         db_host <- db_host_local;
     }
 
-    db_user <- "ventura"
-    db_password <- "psuY2oF4qq7B$Lw8U!If"
+    db_user <- Sys.getenv("VENTURA_DB_USER", "ventura")
+    db_password <- Sys.getenv("VENTURA_DB_PASSWORD")
     db_name <- "Ventura"
+
+    if (db_password == "") {
+        stop("VENTURA_DB_PASSWORD environment variable not set. Add to ~/.bashrc:
+  export VENTURA_DB_USER='ventura'
+  export VENTURA_DB_PASSWORD='your_password'")
+    }
 
     ####################################################################################################
     ### Script sub functions

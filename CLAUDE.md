@@ -212,7 +212,10 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - `B.createNewTradeIDFromLegs()` creates trade records manually
 
 ### Security Note
-- DB.R (line 16) has database password in plaintext - should move to environment variable
+- ~~DB.R (line 16) has database password in plaintext~~ - FIXED (2026-02-21)
+- Credentials now in environment variables: `VENTURA_DB_USER`, `VENTURA_DB_PASSWORD`, `VENTURA_DB_HOST`
+- Set in `~/.bashrc` (not committed to git)
+- Both R (`DB.R`) and Python (`db.py`) read from env vars
 
 ## Priorities (Agreed Plan)
 

@@ -23,8 +23,19 @@ with open(DIRECTORY_HOME + "Data/System/Location_Projects.txt") as location_proj
     DIRECTORY_CODE = (location_projects.read() + "Ventura/HD/").replace("\n", "")
 with open(DIRECTORY_HOME + "Data/System/Location_Data.txt") as location_data:
     DIRECTORY_DATA_HD = (location_data.read() + "Ventura/HD/").replace("\n", "")
-    
-DB_CONNECT_STR = 'mysql+pymysql://ventura:psuY2oF4qq7B$Lw8U!If@192.168.0.37/Ventura'
+
+DB_USER = os.environ.get("VENTURA_DB_USER", "ventura")
+DB_PASSWORD = os.environ.get("VENTURA_DB_PASSWORD")
+DB_HOST = os.environ.get("VENTURA_DB_HOST", "192.168.0.37")
+
+if not DB_PASSWORD:
+    raise EnvironmentError(
+        "VENTURA_DB_PASSWORD environment variable not set. Add to ~/.bashrc:\n"
+        "  export VENTURA_DB_USER='ventura'\n"
+        "  export VENTURA_DB_PASSWORD='your_password'"
+    )
+
+DB_CONNECT_STR = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/Ventura'
 
 ####################################################################################################
 ### Sub routines

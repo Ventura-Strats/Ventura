@@ -54,10 +54,12 @@ Thumbs.db
 *.log
 logs/
 
-# Credentials - IMPORTANT: DB.R has credentials, consider using env vars
-# For now, we'll track DB.R but you should move credentials to env vars
-# .env
-# credentials.json
+# Credentials - DB.R and db.py now use environment variables (VENTURA_DB_*)
+# Never commit files with plaintext credentials
+.env
+credentials.json
+*.pem
+*.key
 
 # Temporary files
 tmp/
