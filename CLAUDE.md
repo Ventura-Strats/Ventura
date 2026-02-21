@@ -305,8 +305,12 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - Owner is self-taught in R, professional Python developer
 
 ### Session Notes Practice
-- Create one session notes file per session in `Session_Notes/` folder
-- Naming: `YYYY-MM-DD_brief_description.md`
-- Create when user asks to update CLAUDE.md (indicates end of meaningful work)
-- Include: summary of changes, usage examples, testing checklist, next steps
-- **Must be committed to GitHub** along with code changes
+When user asks to "update CLAUDE.md" (indicates end of session):
+1. Create session notes file in `Session_Notes/YYYY-MM-DD_brief_description.md`
+2. Include: summary of changes, usage examples, testing checklist, next steps
+3. Update CLAUDE.md with session status
+4. Commit all changes with descriptive message
+5. Create a git tag: `vX.Y-brief-description`
+6. Push commit and tag to GitHub
+
+**Tag format**: Increment minor version (v1.1, v1.2, v1.3...) for each session. Major version for breaking changes.
