@@ -2188,3 +2188,44 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
         hot_col("Weight_Pct", format = "0.00") %>%
         hot_col("N_Eff", format = "0.00")
 }
+G.Trades.Table.orders <-
+function (dat_predict, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0, account_ids = c(1, 2))
+{
+    empty_cols <- c(
+        "order_id", "ib_order_id", "account_id", "instrument_id", "ticker",
+        "future_id", "conid", "contract", "tick_size",
+        "buy_sell", "buy_sell_action", "size_to_do", "px_order", "px_live", "px_avg",
+        "initial_position", "position", "filled", "remaining", "status", "ib_status"
+    )
+
+    result <- U.try(function() {
+        B.generateOrders(
+            dat_predict = dat_predict,
+            risk_per_bet_pct = risk_per_bet_pct,
+            max_daily_risk_pct = max_daily_risk_pct,
+            correlation_adjustment = correlation_adjustment,
+            account_ids = account_ids,
+            export_csv = FALSE
+        )
+    }, default = NULL)()
+
+    if (is.null(result) || nrow(result$orders_all) == 0) {
+        empty_tbl <- tibble(
+            order_id = integer(0), ib_order_id = integer(0), account_id = integer(0),
+            instrument_id = integer(0), ticker = character(0),
+            future_id = integer(0), conid = integer(0), contract = character(0),
+            tick_size = numeric(0), buy_sell = integer(0), buy_sell_action = character(0),
+            size_to_do = integer(0), px_order = numeric(0), px_live = numeric(0),
+            px_avg = numeric(0), initial_position = integer(0), position = integer(0),
+            filled = integer(0), remaining = integer(0), status = character(0),
+            ib_status = character(0)
+        )
+        return(rhandsontable(empty_tbl, rowHeaders = NULL))
+    }
+
+    result$orders_all %>%
+        rhandsontable(rowHeaders = NULL) %>%
+        hot_col("px_order", format = "0,000.000000") %>%
+        hot_col("tick_size", format = "0.00000") %>%
+        hot_col(c("size_to_do", "filled", "remaining"), format = "0,000")
+}

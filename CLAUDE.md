@@ -98,15 +98,13 @@ source("Init.R"); I.executeScript()
 
 ### Network Machines
 ```
-192.168.0.33  - Main (Big)              [DOWN]
-192.168.0.34  - Home (New)              [ACTIVE - dev machine]
-192.168.0.37  - DB / VENTURA3           [ACTIVE - database only, no code]
-192.168.0.38  - VENTURA5                [ACTIVE]
-192.168.0.39  - VENTURA2                [ACTIVE]
-192.168.0.40  - VENTURA1                [ACTIVE]
-192.168.0.41  - VENTURA4                [ACTIVE]
-192.168.0.42  - IB (Interactive Brokers)[ACTIVE]
-192.168.0.44  - GLENORCHY               [DOWN - different project]
+192.168.0.34  - Home (dev machine, largest RAM)
+192.168.0.37  - Database server (MySQL only, no code execution)
+192.168.0.38  - VENTURA5 (processing)
+192.168.0.39  - VENTURA2 (processing)
+192.168.0.40  - VENTURA1 (processing)
+192.168.0.41  - VENTURA4 (processing)
+192.168.0.42  - IB (Interactive Brokers API interface)
 ```
 
 **Note**: Code runs from shared NAS drive. Git pull only needed on one machine.
@@ -177,6 +175,7 @@ Located in `/HD/Scripts/Python/`:
 - **DB.R pool fix**: Added `validationInterval = 30` to connection pool to prevent "Lost connection to server during query" errors by validating connections before use
 - **Cross-asset correlation matrix**: New function `T.calcHistoricalCorrelationsMatrix()` for min-variance portfolio sizing (see Key Functions Reference)
 - **Trade workflow automation** (2026-02-21): New functions `B.generateOrders()`, `B.matchLegsToTrades()`, `B.confirmLegMatch()`, `B.confirmSingleLeg()` for end-to-end trade lifecycle (see Session_Notes/2026-02-21_trade_workflow_automation.md)
+- **Dashboard orders table** (2026-02-21): New `G.Trades.Table.orders()` displays execution orders in the Trades tab before they're sent to IB (see Session_Notes/2026-02-21_dashboard_orders_table.md)
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -214,8 +213,10 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 
 ### Security Note
 - ~~DB.R (line 16) has database password in plaintext~~ - FIXED (2026-02-21)
-- Credentials now in environment variables: `VENTURA_DB_USER`, `VENTURA_DB_PASSWORD`, `VENTURA_DB_HOST`
-- Set in `~/.bashrc` (not committed to git)
+- Credentials in environment variables: `VENTURA_DB_USER`, `VENTURA_DB_PASSWORD`, `VENTURA_DB_HOST`
+- **Source files** (on shared NAS, gitignored):
+  - `/home/fls/Models/Ventura/HD/.ventura_env` - sourced by wrapper scripts and `~/.bashrc`
+  - `/home/fls/Models/Ventura/HD/Code/.Renviron` - for RStudio (dev machine only)
 - Both R (`DB.R`) and Python (`db.py`) read from env vars
 
 ## Priorities (Agreed Plan)
@@ -243,6 +244,7 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
   - Uses `quadprog::solve.QP` for weight distribution
 - `G.Trades.Table.predict(dat_predict, aum_total, risk_per_bet_pct, max_daily_risk_pct, correlation_adjustment)` - shows sized notionals and N_Eff
 - `G.Trades.Table.correlations(dat_predict)` - shows trade-adjusted correlation matrix in dashboard
+- `G.Trades.Table.orders(dat_predict, risk_per_bet_pct, max_daily_risk_pct, correlation_adjustment, account_ids)` - shows execution orders from B.generateOrders() in dashboard Trades tab (all 21 columns, all accounts)
 
 **Example behavior**:
 | Scenario | Signals | N_eff | risk/bet | Total Risk |

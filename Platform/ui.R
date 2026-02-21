@@ -26,6 +26,9 @@ shinyUI(
           hr(),
           rHandsontableOutput("Trades.Table.predict"),
           hr(),
+          h4("Execution Orders"),
+          rHandsontableOutput("Trades.Table.orders"),
+          hr(),
           h4("Correlation Matrix (Trade-Adjusted)"),
           tableOutput("Trades.Table.correlations")
         )
