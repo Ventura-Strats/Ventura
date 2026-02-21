@@ -94,21 +94,22 @@ source("Init.R"); I.executeScript()
 - MySQL on 192.168.0.37
 - Database name: `Ventura`
 - Connection via `D.connect()` in DB.R
-- Note: Credentials currently in plaintext in DB.R (needs securing)
+- Credentials in environment variables (`VENTURA_DB_USER`, `VENTURA_DB_PASSWORD`, `VENTURA_DB_HOST`)
 
 ### Network Machines
 ```
-192.168.0.33  - Main (Big)
-192.168.0.34  - Home (New)
-192.168.0.37  - DB / VENTURA3
-192.168.0.38  - VENTURA5
-192.168.0.39  - VENTURA2
-192.168.0.40  - VENTURA1
-192.168.0.41  - VENTURA4
-192.168.0.42  - IB (Interactive Brokers gateway)
-192.168.0.43  - DB
-192.168.0.44  - GLENORCHY
+192.168.0.33  - Main (Big)              [DOWN]
+192.168.0.34  - Home (New)              [ACTIVE - dev machine]
+192.168.0.37  - DB / VENTURA3           [ACTIVE - database only, no code]
+192.168.0.38  - VENTURA5                [ACTIVE]
+192.168.0.39  - VENTURA2                [ACTIVE]
+192.168.0.40  - VENTURA1                [ACTIVE]
+192.168.0.41  - VENTURA4                [ACTIVE]
+192.168.0.42  - IB (Interactive Brokers)[ACTIVE]
+192.168.0.44  - GLENORCHY               [DOWN - different project]
 ```
+
+**Note**: Code runs from shared NAS drive. Git pull only needed on one machine.
 
 ### Crontab
 - Jobs distributed across machines
