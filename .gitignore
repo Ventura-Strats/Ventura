@@ -60,6 +60,8 @@ logs/
 credentials.json
 *.pem
 *.key
+.ventura_env
+.Renviron
 
 # Temporary files
 tmp/

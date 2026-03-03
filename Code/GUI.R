@@ -2138,7 +2138,7 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
     ####################################################################################################
 
     instrument_ids <- unique(dat_signals$instrument_id)
-    cor_matrix <- T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0)
+    cor_matrix <- T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0, floor_at_zero = TRUE)
 
     dat_sized <- V.portfolioSizing(
         dat_signals %>% select(instrument_id, buy_sell, notional),
@@ -2207,7 +2207,7 @@ function (dat_predict, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlati
             account_ids = account_ids,
             export_csv = FALSE
         )
-    }, default = NULL)()
+    })()
 
     if (is.null(result) || nrow(result$orders_all) == 0) {
         empty_tbl <- tibble(

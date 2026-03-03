@@ -104,7 +104,7 @@ source("Init.R"); I.executeScript()
 192.168.0.39  - VENTURA2 (processing)
 192.168.0.40  - VENTURA1 (processing)
 192.168.0.41  - VENTURA4 (processing)
-192.168.0.42  - IB (Interactive Brokers API interface)
+192.168.0.42  - IB (Interactive Brokers IB Gateway, ports 7497/7498 for accounts 1/2)
 ```
 
 **Note**: Code runs from shared NAS drive. Git pull only needed on one machine.
@@ -165,7 +165,7 @@ Located in `/HD/Scripts/Python/`:
 - `Signal_List.py` - Generate signal list for execution
 - `IB_Account_Data.py` - Fetch account data/NAV
 
-## Current Status (Updated 2026-02-21)
+## Current Status (Updated 2026-03-03)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -176,6 +176,10 @@ Located in `/HD/Scripts/Python/`:
 - **Cross-asset correlation matrix**: New function `T.calcHistoricalCorrelationsMatrix()` for min-variance portfolio sizing (see Key Functions Reference)
 - **Trade workflow automation** (2026-02-21): New functions `B.generateOrders()`, `B.matchLegsToTrades()`, `B.confirmLegMatch()`, `B.confirmSingleLeg()` for end-to-end trade lifecycle (see Session_Notes/2026-02-21_trade_workflow_automation.md)
 - **Dashboard orders table** (2026-02-21): New `G.Trades.Table.orders()` displays execution orders in the Trades tab before they're sent to IB (see Session_Notes/2026-02-21_dashboard_orders_table.md)
+- **Correlation floor at zero** (2026-03-03): `T.calcHistoricalCorrelationsMatrix()` now has `floor_at_zero` parameter. Enabled for sizing (`B.generateOrders`, `G.Trades.Table.predict`), not for display (`G.Trades.Table.correlations`)
+- **G.Trades.Table.orders fix** (2026-03-03): Fixed `unused argument (default = NULL)` error - `U.try()` parameter is `f_rtn`, not `default`
+- **IB Gateway move** (2026-03-03): IB API calls moved from machine H (34) to machine I (42) using IB Gateway. Ports: 7497 (account 1), 7498 (account 2). No code change needed
+- **First live trades** (2026-03-02): 3 trades executed manually from signals. Manual workflow used pending full automation testing
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -295,7 +299,7 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - `T.plotPriceSeries()` - Diagnostic plot for price data
 - `T.importInvestingComHistoFile()` - Import historical data from investing.com CSV
 - `T.addAllSplines()` - Add spline-based technical indicators
-- `T.calcHistoricalCorrelationsMatrix(instrument_ids, lookback_weeks, shrinkage, as_of_date)` - Calculate weekly return correlation matrix for portfolio optimization. Defaults: 104 weeks lookback, 0.1 shrinkage toward identity, instruments with `use_for_trading=1`
+- `T.calcHistoricalCorrelationsMatrix(instrument_ids, lookback_weeks, shrinkage, as_of_date, floor_at_zero)` - Calculate weekly return correlation matrix for portfolio optimization. Defaults: 104 weeks lookback, 0.1 shrinkage toward identity. `floor_at_zero=TRUE` clamps negative correlations to 0 (used for sizing, not display)
 
 ### Utilities
 - `U.try(f, default)` - Wrap function with error handling (returns default on error)
@@ -306,6 +310,7 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 
 - Project root: `/home/fls/Models/Ventura/`
 - Working directory for R: `/home/fls/Models/Ventura/HD/Code/`
+- Log files: `/home/fls/Data/Ventura/SD/Log/` (subdirs: Python/, Technicals/, Model/, Communications/, Maintenance/, Book/)
 - Only look at .R files in Code/ (ignore other file types)
 - The Shiny dashboard works well - low priority for changes
 - Owner is self-taught in R, professional Python developer

@@ -2054,7 +2054,8 @@ function(
     instrument_ids = NULL,
     lookback_weeks = 104,
     shrinkage = 0.1,
-    as_of_date = NULL
+    as_of_date = NULL,
+    floor_at_zero = FALSE
 ) {
     ####################################################################################################
     ### Script description:
@@ -2186,6 +2187,15 @@ function(
 
     if (shrinkage > 0) {
         cor_matrix <- applyShrinkage(cor_matrix, shrinkage)
+    }
+
+    # Floor negative correlations at zero when used for sizing
+    # Negative correlations would reduce perceived risk, which is dangerous:
+    # two assets may be negatively correlated historically but could move
+    # together in a crisis. Flooring at zero is conservative.
+    if (floor_at_zero) {
+        cor_matrix <- pmax(cor_matrix, 0)
+        diag(cor_matrix) <- 1  # ensure diagonal stays 1
     }
 
     cor_matrix
