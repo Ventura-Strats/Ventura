@@ -164,8 +164,10 @@ Located in `/HD/Scripts/Python/`:
 - `Execute_Orders.py` - Place orders
 - `Signal_List.py` - Generate signal list for execution
 - `IB_Account_Data.py` - Fetch account data/NAV
+- `trade_orders.py` - Interactive order placement: exit orders (target+stop OCA), entry orders (chase algo)
+- `order_execution.py` - Chase algorithm for entry order execution (used by trade_orders.py)
 
-## Current Status (Updated 2026-03-03)
+## Current Status (Updated 2026-03-04)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -178,8 +180,9 @@ Located in `/HD/Scripts/Python/`:
 - **Dashboard orders table** (2026-02-21): New `G.Trades.Table.orders()` displays execution orders in the Trades tab before they're sent to IB (see Session_Notes/2026-02-21_dashboard_orders_table.md)
 - **Correlation floor at zero** (2026-03-03): `T.calcHistoricalCorrelationsMatrix()` now has `floor_at_zero` parameter. Enabled for sizing (`B.generateOrders`, `G.Trades.Table.predict`), not for display (`G.Trades.Table.correlations`)
 - **G.Trades.Table.orders fix** (2026-03-03): Fixed `unused argument (default = NULL)` error - `U.try()` parameter is `f_rtn`, not `default`
-- **IB Gateway move** (2026-03-03): IB API calls moved from machine H (34) to machine I (42) using IB Gateway. Ports: 7497 (account 1), 7498 (account 2). No code change needed
+- **IB Gateway move** (2026-03-03): IB API calls moved from machine H (34) to machine I (42) using IB Gateway. Ports: 7496 (account 1), 7497 (account 2). No code change needed
 - **First live trades** (2026-03-02): 3 trades executed manually from signals. Manual workflow used pending full automation testing
+- **Trade orders module** (2026-03-04): New `trade_orders.py` for placing exit orders (target LMT + stop STP as OCA pair) and entry orders (chase algo) interactively from Python console. See Session_Notes/2026-03-04_trade_orders_module.md
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -266,7 +269,9 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - **DONE**: `B.generateOrders()` converts signals to sized orders, exports CSV for Execute_Orders.py
 - **DONE**: Uses V.portfolioSizing() for eigenvalue-based N_effective sizing
 - **DONE**: Scales orders by account NAV from book_nav table
-- **TODO**: Enable actual order placement in Execute_Orders.py (currently commented out)
+- **DONE**: `trade_orders.py` places exit orders (target+stop as OCA) and entry orders interactively
+- **TODO**: Test `trade_orders.py` live with real orders (dry_run=False)
+- **TODO**: Enable actual order placement in Execute_Orders.py for full automation (currently commented out)
 - **TODO**: Test full flow: B.generateOrders() -> CSV -> Execute_Orders.py -> IB
 
 ### 3. Trade Database Entry Automation - DONE
@@ -300,6 +305,12 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - `T.importInvestingComHistoFile()` - Import historical data from investing.com CSV
 - `T.addAllSplines()` - Add spline-based technical indicators
 - `T.calcHistoricalCorrelationsMatrix(instrument_ids, lookback_weeks, shrinkage, as_of_date, floor_at_zero)` - Calculate weekly return correlation matrix for portfolio optimization. Defaults: 104 weeks lookback, 0.1 shrinkage toward identity. `floor_at_zero=TRUE` clamps negative correlations to 0 (used for sizing, not display)
+
+### Interactive Order Placement (Python - trade_orders.py, NEW 2026-03-04)
+- `show_live_trades(account_id)` - Display all live trades with entry/target/stop prices
+- `exit_orders(trade_id, account_id, dry_run=True)` - Place target LMT + stop STP as OCA pair (GTC). dry_run=True by default
+- `exit_orders_all(account_id, dry_run=True)` - Place exit orders for all live trades
+- `TradeOrderManager(account_id, client_id)` - Class for full control: connect(), get_trade_info(), place_exit_orders(), place_entry_order(), cancel_exit_orders()
 
 ### Utilities
 - `U.try(f, default)` - Wrap function with error handling (returns default on error)

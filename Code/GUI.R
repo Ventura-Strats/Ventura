@@ -472,7 +472,7 @@ function(dat_trd, output = "screen") {
     ### Script
     ####################################################################################################
 
-    px_live_book <- getLatestPriceFromBookPosition() 
+    px_live_book <- getLatestPriceFromBookPosition()
 
     px_live_book_fx <- px_live_book %>%
         filter(instrument_type == "FX") %>%
