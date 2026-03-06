@@ -24,13 +24,17 @@ shinyUI(
         fluidRow(
           column(2, actionButton("Trades.Button.refresh", "Refresh", styleclass = "primary")),
           hr(),
+          h4("Signals"),
           rHandsontableOutput("Trades.Table.predict"),
           hr(),
-          h4("Execution Orders"),
-          rHandsontableOutput("Trades.Table.orders"),
+          h4("Portfolio Sizing"),
+          htmlOutput("Trades.Table.sizing"),
           hr(),
           h4("Correlation Matrix (Trade-Adjusted)"),
-          tableOutput("Trades.Table.correlations")
+          tableOutput("Trades.Table.correlations"),
+          hr(),
+          h4("Execution Orders"),
+          rHandsontableOutput("Trades.Table.orders")
         )
       ),
       tabPanel(

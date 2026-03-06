@@ -167,7 +167,7 @@ Located in `/HD/Scripts/Python/`:
 - `trade_orders.py` - Interactive order placement: exit orders (target+stop OCA), entry orders (chase algo)
 - `order_execution.py` - Chase algorithm for entry order execution (used by trade_orders.py)
 
-## Current Status (Updated 2026-03-04)
+## Current Status (Updated 2026-03-06)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -183,6 +183,7 @@ Located in `/HD/Scripts/Python/`:
 - **IB Gateway move** (2026-03-03): IB API calls moved from machine H (34) to machine I (42) using IB Gateway. Ports: 7496 (account 1), 7497 (account 2). No code change needed
 - **First live trades** (2026-03-02): 3 trades executed manually from signals. Manual workflow used pending full automation testing
 - **Trade orders module** (2026-03-04): New `trade_orders.py` for placing exit orders (target LMT + stop STP as OCA pair) and entry orders (chase algo) interactively from Python console. See Session_Notes/2026-03-04_trade_orders_module.md
+- **Trades tab restructure** (2026-03-06): Split into 4 sequential tables: Signals (with Execute checkbox) → Portfolio Sizing (new `G.Trades.Table.sizing()`) → Correlation Matrix → Execution Orders. Sizing now only runs on selected trades. See Session_Notes/2026-03-06_trades_tab_restructure.md
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -249,7 +250,8 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
   - Trade correlation = direction_i × direction_j × asset_correlation
   - `correlation_adjustment` parameter: 0 = use historical, 0.2 = inflate correlations by 20%, -0.2 = reduce by 20%
   - Uses `quadprog::solve.QP` for weight distribution
-- `G.Trades.Table.predict(dat_predict, aum_total, risk_per_bet_pct, max_daily_risk_pct, correlation_adjustment)` - shows sized notionals and N_Eff
+- `G.Trades.Table.predict(dat_predict)` - signal list with Execute checkbox (no sizing columns)
+- `G.Trades.Table.sizing(dat_predict, aum_total, risk_per_bet_pct, max_daily_risk_pct, correlation_adjustment)` - eigenvalue-based sizing on selected trades, grouped by instrument after antagonist netting
 - `G.Trades.Table.correlations(dat_predict)` - shows trade-adjusted correlation matrix in dashboard
 - `G.Trades.Table.orders(dat_predict, risk_per_bet_pct, max_daily_risk_pct, correlation_adjustment, account_ids)` - shows execution orders from B.generateOrders() in dashboard Trades tab (all 21 columns, all accounts)
 
@@ -261,7 +263,7 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 | Single signal | 1 | 1 | 0.5% | 0.5% |
 | 20 uncorrelated | 20 | ~15 | 0.5% | 5% (capped) |
 
-**Dashboard**: Trades tab shows Weight_Pct, Sized_Notional, and N_Eff columns, plus correlation matrix below
+**Dashboard**: Trades tab has 4 sections: Signals (with Execute checkbox) → Portfolio Sizing (Instrument, Direction, N_Eff, Weight_Pct, Sized_Notional) → Correlation Matrix → Execution Orders. Unticking a signal recalculates sizing, correlations, and orders for selected trades only.
 
 ## Next Priorities
 

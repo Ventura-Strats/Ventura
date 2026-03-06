@@ -1344,8 +1344,8 @@ function ()
                 proba_antisignal,
                 proba_ok,
                 score_ok,
-                signal_ok, notional
-            ) %>% 
+                signal_ok, buy_sell, notional
+            ) %>%
             filter(!(strategy_id %in% c(4,5)))
     }
    
@@ -2078,33 +2078,95 @@ function(dat_predict) {
     trade_cor_df
 }
 G.Trades.Table.predict <-
-function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0)
+function (dat_predict)
 {
     ####################################################################################################
-    ### Script Variables
+    ### Script description:
+    ### Shows signal list with Execute checkbox. No sizing - that's done in G.Trades.Table.sizing()
     ####################################################################################################
 
     tradable_instruments <- c(
-        'A50CNY', 'ASXAUD', 'AUDCAD', 
-        'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD', 
-        'CADJPY', 'CHFJPY', 'CHFSEK', 'DAXEUR', 
-        'DJIUSD', 'EURAUD', 'EURCAD', 'EURCHF', 'EURCZK', 'EURGBP', 'EURHUF', 
-        'EURJPY', 'EURNOK', 'EURNZD', 'EURPLN', 'EURSEK', 'EURUSD', 
-        'FTSGBP', 'GBPAUD', 'GBPCAD', 'GBPCHF', 
+        'A50CNY', 'ASXAUD', 'AUDCAD',
+        'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD',
+        'CADJPY', 'CHFJPY', 'CHFSEK', 'DAXEUR',
+        'DJIUSD', 'EURAUD', 'EURCAD', 'EURCHF', 'EURCZK', 'EURGBP', 'EURHUF',
+        'EURJPY', 'EURNOK', 'EURNZD', 'EURPLN', 'EURSEK', 'EURUSD',
+        'FTSGBP', 'GBPAUD', 'GBPCAD', 'GBPCHF',
         'GBPJPY', 'GBPNZD', 'GBPSEK', 'GBPUSD', 'HSIHKD', 'IBXEUR',
-        'KSPKRW', 'MIBEUR', 
-        'NDXUSD', 'NKYJPY', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD', 
-        'PX1EUR', 'RUTUSD', 'SEKJPY', 'SMICHF', 'SPXUSD', 'SSECNY', 
+        'KSPKRW', 'MIBEUR',
+        'NDXUSD', 'NKYJPY', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD',
+        'PX1EUR', 'RUTUSD', 'SEKJPY', 'SMICHF', 'SPXUSD', 'SSECNY',
         'STXEUR', 'TPXJPY', 'TSXCAD',
-        'USDBRL', 'USDCAD', 'USDCHF', 'USDCLP', 
-        'USDINR', 'USDJPY', 'USDMXN', 'USDNOK', 'USDSEK', 
-        'USDSGD', 'USDZAR', 'XAGUSD', 'XAUUSD', 
-        'CHFNOK', 'GBPNOK', 'GBPPLN', 'NOKSEK', 
+        'USDBRL', 'USDCAD', 'USDCHF', 'USDCLP',
+        'USDINR', 'USDJPY', 'USDMXN', 'USDNOK', 'USDSEK',
+        'USDSGD', 'USDZAR', 'XAGUSD', 'XAUUSD',
+        'CHFNOK', 'GBPNOK', 'GBPPLN', 'NOKSEK',
         'EEMUSD')
-    
+
     dat_signals <- dat_predict %>%
         left_join(select(INSTRUMENTS, pair, asset, instrument_id), by = "pair") %>%
         filter(pair %in% tradable_instruments) %>%
+        mutate(
+            asset = case_when(
+                asset_class %in% c("index", "bond") ~ asset,
+                TRUE ~ pair
+            )
+        ) %>%
+        filter(signal_ok)
+
+    if (nrow(dat_signals) == 0) {
+        return(
+            dat_signals %>%
+                select(
+                    region, asset_class, strategy_id, ticker, asset,
+                    price, predict, target, stop, tp_pct, notional
+                ) %>%
+                rename(
+                    Region = region, Asset_Class = asset_class, Strategy = strategy_id,
+                    Ticker = ticker, Name = asset, Price = price, Predict = predict,
+                    Target = target, Stop = stop, Target_Pct = tp_pct,
+                    Notional_for_1k_PnL = notional
+                ) %>%
+                rhandsontable(rowHeaders = NULL)
+        )
+    }
+
+    dat_signals %>%
+        mutate(Execute = TRUE) %>%
+        select(
+            Execute, region, asset_class, strategy_id, ticker, asset,
+            price, predict, target, stop, tp_pct, notional
+        ) %>%
+        rename(
+            Region = region,
+            Asset_Class = asset_class,
+            Strategy = strategy_id,
+            Ticker = ticker,
+            Name = asset,
+            Price = price,
+            Predict = predict,
+            Target = target,
+            Stop = stop,
+            Target_Pct = tp_pct,
+            Notional_for_1k_PnL = notional
+        ) %>%
+        rhandsontable(rowHeaders = NULL) %>%
+        hot_col("Execute", readOnly = FALSE) %>%
+        hot_col(c("Price", "Target", "Stop", "Notional_for_1k_PnL"), format = "0,000.000000") %>%
+        hot_col("Target_Pct", format = "0.000%")
+}
+G.Trades.Table.sizing <-
+function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0)
+{
+    ####################################################################################################
+    ### Script description:
+    ### Runs eigenvalue-based portfolio sizing on selected (filtered) signals.
+    ### Includes antagonist signal netting (via V.portfolioSizing).
+    ### Returns clean summary: instrument, direction, N_eff, weight, sized notional.
+    ####################################################################################################
+
+    dat_signals <- dat_predict %>%
+        left_join(select(INSTRUMENTS, pair, asset, instrument_id), by = "pair") %>%
         mutate(
             asset = case_when(
                 asset_class %in% c("index", "bond") ~ asset,
@@ -2116,25 +2178,15 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
 
     if (nrow(dat_signals) == 0) {
         return(
-            dat_signals %>%
-                select(
-                    region, asset_class, strategy_id, ticker, asset,
-                    price, predict, target, stop, tp_pct, notional
-                ) %>%
-                mutate(sized_notional = numeric(0), weight_pct = numeric(0), n_eff = numeric(0)) %>%
-                rename(
-                    Region = region, Asset_Class = asset_class, Strategy = strategy_id,
-                    Ticker = ticker, Name = asset, Price = price, Predict = predict,
-                    Target = target, Stop = stop, Target_Pct = tp_pct,
-                    Notional_for_1k_PnL = notional, Sized_Notional = sized_notional,
-                    Weight_Pct = weight_pct, N_Eff = n_eff
-                ) %>%
-                rhandsontable(rowHeaders = NULL)
+            tibble(
+                Instrument = character(0), Direction = character(0),
+                N_Eff = numeric(0), Weight_Pct = numeric(0), Sized_Notional = numeric(0)
+            ) %>% gvisTable()
         )
     }
 
     ####################################################################################################
-    ### Compute correlation matrix and portfolio sizing
+    ### Compute correlation matrix and portfolio sizing (with antagonist netting)
     ####################################################################################################
 
     instrument_ids <- unique(dat_signals$instrument_id)
@@ -2149,44 +2201,43 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
         correlation_adjustment = correlation_adjustment
     )
 
-    ####################################################################################################
-    ### Format output table
-    ####################################################################################################
-
     n_effective <- dat_sized$n_effective[1]
+
+    ####################################################################################################
+    ### Build summary: group by instrument (after netting, multiple strategies on same asset are merged)
+    ####################################################################################################
 
     dat_signals %>%
         mutate(
             weight = dat_sized$weight,
-            sized_notional = dat_sized$sized_notional,
-            weight_pct = weight * 100,
-            n_eff = n_effective
+            sized_notional = dat_sized$sized_notional
         ) %>%
-        select(
-            region, asset_class, strategy_id, ticker, asset,
-            price, predict, target, stop, tp_pct, notional, weight_pct, sized_notional, n_eff
+        filter(weight > 0) %>%
+        group_by(instrument_id, asset) %>%
+        summarise(
+            direction = case_when(
+                first(buy_sell) > 0 ~ "BUY",
+                first(buy_sell) < 0 ~ "SELL",
+                TRUE ~ "-"
+            ),
+            weight_pct = sum(weight) * 100,
+            sized_notional = sum(sized_notional),
+            .groups = "drop"
         ) %>%
+        select(asset, direction, weight_pct, sized_notional) %>%
         rename(
-            Region = region,
-            Asset_Class = asset_class,
-            Strategy = strategy_id,
-            Ticker = ticker,
-            Name = asset,
-            Price = price,
-            Predict = predict,
-            Target = target,
-            Stop = stop,
-            Target_Pct = tp_pct,
-            Notional_for_1k_PnL = notional,
+            Instrument = asset,
+            Direction = direction,
             Weight_Pct = weight_pct,
-            Sized_Notional = sized_notional,
-            N_Eff = n_eff
+            Sized_Notional = sized_notional
         ) %>%
-        rhandsontable(rowHeaders = NULL) %>%
-        hot_col(c("Price", "Target", "Stop", "Notional_for_1k_PnL", "Sized_Notional"), format = "0,000.000000") %>%
-        hot_col("Target_Pct", format = "0.000%") %>%
-        hot_col("Weight_Pct", format = "0.00") %>%
-        hot_col("N_Eff", format = "0.00")
+        mutate(N_Eff = n_effective) %>%
+        select(Instrument, Direction, N_Eff, Weight_Pct, Sized_Notional) %>%
+        gvisTable(formats = list(
+            Weight_Pct = "#.##",
+            Sized_Notional = "#,###",
+            N_Eff = "#.##"
+        ))
 }
 G.Trades.Table.orders <-
 function (dat_predict, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0, account_ids = c(1, 2))
@@ -2198,7 +2249,7 @@ function (dat_predict, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlati
         "initial_position", "position", "filled", "remaining", "status", "ib_status"
     )
 
-    result <- U.try(function() {
+    result <- tryCatch(
         B.generateOrders(
             dat_predict = dat_predict,
             risk_per_bet_pct = risk_per_bet_pct,
@@ -2206,8 +2257,12 @@ function (dat_predict, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlati
             correlation_adjustment = correlation_adjustment,
             account_ids = account_ids,
             export_csv = FALSE
-        )
-    })()
+        ),
+        error = function(e) {
+            message("G.Trades.Table.orders ERROR: ", e$message)
+            NULL
+        }
+    )
 
     if (is.null(result) || nrow(result$orders_all) == 0) {
         empty_tbl <- tibble(

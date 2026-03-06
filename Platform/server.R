@@ -19,11 +19,25 @@ shinyServer(function(input, output, session) {
   Trades.Table.predict <- reactive(G.Trades.Table.predict(Predict.Data.predict()))
   output$Trades.Table.predict <- renderRHandsontable(Trades.Table.predict())
 
-  Trades.Table.orders <- reactive(G.Trades.Table.orders(Predict.Data.predict()))
-  output$Trades.Table.orders <- renderRHandsontable(Trades.Table.orders())
+  Trades.Data.predict_filtered <- reactive({
+      dat <- Predict.Data.predict()
+      edited <- input$Trades.Table.predict
+      if (!is.null(edited)) {
+          edited_df <- hot_to_r(edited)
+          excluded_tickers <- edited_df$Ticker[edited_df$Execute == FALSE]
+          dat <- dat %>% filter(!(ticker %in% excluded_tickers))
+      }
+      dat
+  })
 
-  Trades.Table.correlations <- reactive(G.Trades.Table.correlations(Predict.Data.predict()))
+  Trades.Table.sizing <- reactive(G.Trades.Table.sizing(Trades.Data.predict_filtered()))
+  output$Trades.Table.sizing <- renderGvis(Trades.Table.sizing())
+
+  Trades.Table.correlations <- reactive(G.Trades.Table.correlations(Trades.Data.predict_filtered()))
   output$Trades.Table.correlations <- renderTable(Trades.Table.correlations())
+
+  Trades.Table.orders <- reactive(G.Trades.Table.orders(Trades.Data.predict_filtered()))
+  output$Trades.Table.orders <- renderRHandsontable(Trades.Table.orders())
   
   ####################################################################################################
   ### Tab 3: Instrument

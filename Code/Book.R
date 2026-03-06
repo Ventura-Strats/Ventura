@@ -1158,7 +1158,7 @@ function(
         dat_orders %>%
             left_join(
                 INSTRUMENTS %>%
-                    select(instrument_id, pair, ticker, asset_class, conid_spot, trade_instrument_type),
+                    select(instrument_id, conid_spot, trade_instrument_type),
                 by = "instrument_id"
             ) %>%
             left_join(
