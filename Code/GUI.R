@@ -2028,8 +2028,27 @@ function(dat_predict) {
     ### Returns trade-adjusted correlation matrix for signals, labeled by pair
     ####################################################################################################
 
+    tradable_instruments <- c(
+        'A50CNY', 'ASXAUD', 'AUDCAD',
+        'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD',
+        'CADJPY', 'CHFJPY', 'CHFSEK', 'DAXEUR',
+        'DJIUSD', 'EURAUD', 'EURCAD', 'EURCHF', 'EURCZK', 'EURGBP', 'EURHUF',
+        'EURJPY', 'EURNOK', 'EURNZD', 'EURPLN', 'EURSEK', 'EURUSD',
+        'FTSGBP', 'GBPAUD', 'GBPCAD', 'GBPCHF',
+        'GBPJPY', 'GBPNZD', 'GBPSEK', 'GBPUSD', 'HSIHKD', 'IBXEUR',
+        'KSPKRW', 'MIBEUR',
+        'NDXUSD', 'NKYJPY', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD',
+        'PX1EUR', 'RUTUSD', 'SEKJPY', 'SMICHF', 'SPXUSD', 'SSECNY',
+        'STXEUR', 'TPXJPY', 'TSXCAD',
+        'USDBRL', 'USDCAD', 'USDCHF', 'USDCLP',
+        'USDINR', 'USDJPY', 'USDMXN', 'USDNOK', 'USDSEK',
+        'USDSGD', 'USDZAR', 'XAGUSD', 'XAUUSD',
+        'CHFNOK', 'GBPNOK', 'GBPPLN', 'NOKSEK',
+        'EEMUSD')
+
     dat_signals <- dat_predict %>%
         left_join(select(INSTRUMENTS, pair, instrument_id), by = "pair") %>%
+        filter(pair %in% tradable_instruments) %>%
         mutate(buy_sell = (predict == "up") - (predict == "down")) %>%
         filter(signal_ok)
 
@@ -2165,8 +2184,27 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
     ### Returns clean summary: instrument, direction, N_eff, weight, sized notional.
     ####################################################################################################
 
+    tradable_instruments <- c(
+        'A50CNY', 'ASXAUD', 'AUDCAD',
+        'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD',
+        'CADJPY', 'CHFJPY', 'CHFSEK', 'DAXEUR',
+        'DJIUSD', 'EURAUD', 'EURCAD', 'EURCHF', 'EURCZK', 'EURGBP', 'EURHUF',
+        'EURJPY', 'EURNOK', 'EURNZD', 'EURPLN', 'EURSEK', 'EURUSD',
+        'FTSGBP', 'GBPAUD', 'GBPCAD', 'GBPCHF',
+        'GBPJPY', 'GBPNZD', 'GBPSEK', 'GBPUSD', 'HSIHKD', 'IBXEUR',
+        'KSPKRW', 'MIBEUR',
+        'NDXUSD', 'NKYJPY', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD',
+        'PX1EUR', 'RUTUSD', 'SEKJPY', 'SMICHF', 'SPXUSD', 'SSECNY',
+        'STXEUR', 'TPXJPY', 'TSXCAD',
+        'USDBRL', 'USDCAD', 'USDCHF', 'USDCLP',
+        'USDINR', 'USDJPY', 'USDMXN', 'USDNOK', 'USDSEK',
+        'USDSGD', 'USDZAR', 'XAGUSD', 'XAUUSD',
+        'CHFNOK', 'GBPNOK', 'GBPPLN', 'NOKSEK',
+        'EEMUSD')
+
     dat_signals <- dat_predict %>%
         left_join(select(INSTRUMENTS, pair, asset, instrument_id), by = "pair") %>%
+        filter(pair %in% tradable_instruments) %>%
         mutate(
             asset = case_when(
                 asset_class %in% c("index", "bond") ~ asset,
@@ -2207,7 +2245,7 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
     ### Build summary: group by instrument (after netting, multiple strategies on same asset are merged)
     ####################################################################################################
 
-    dat_signals %>%
+    tbl <- dat_signals %>%
         mutate(
             weight = dat_sized$weight,
             sized_notional = dat_sized$sized_notional
@@ -2231,13 +2269,12 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
             Weight_Pct = weight_pct,
             Sized_Notional = sized_notional
         ) %>%
-        mutate(N_Eff = n_effective) %>%
-        select(Instrument, Direction, N_Eff, Weight_Pct, Sized_Notional) %>%
         gvisTable(formats = list(
             Weight_Pct = "#.##",
-            Sized_Notional = "#,###",
-            N_Eff = "#.##"
+            Sized_Notional = "#,###"
         ))
+
+    list(n_effective = n_effective, table = tbl)
 }
 G.Trades.Table.orders <-
 function (dat_predict, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0, account_ids = c(1, 2))

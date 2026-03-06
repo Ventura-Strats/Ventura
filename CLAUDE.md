@@ -183,7 +183,7 @@ Located in `/HD/Scripts/Python/`:
 - **IB Gateway move** (2026-03-03): IB API calls moved from machine H (34) to machine I (42) using IB Gateway. Ports: 7496 (account 1), 7497 (account 2). No code change needed
 - **First live trades** (2026-03-02): 3 trades executed manually from signals. Manual workflow used pending full automation testing
 - **Trade orders module** (2026-03-04): New `trade_orders.py` for placing exit orders (target LMT + stop STP as OCA pair) and entry orders (chase algo) interactively from Python console. See Session_Notes/2026-03-04_trade_orders_module.md
-- **Trades tab restructure** (2026-03-06): Split into 4 sequential tables: Signals (with Execute checkbox) → Portfolio Sizing (new `G.Trades.Table.sizing()`) → Correlation Matrix → Execution Orders. Sizing now only runs on selected trades. See Session_Notes/2026-03-06_trades_tab_restructure.md
+- **Trades tab restructure** (2026-03-06): Split into 4 sequential tables: Signals (with Execute checkbox) → Portfolio Sizing (new `G.Trades.Table.sizing()`, N_Eff as text header) → Correlation Matrix → Execution Orders. All downstream tables filter on tradable instruments and react to Execute checkbox. See Session_Notes/2026-03-06_trades_tab_restructure.md
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -263,7 +263,7 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 | Single signal | 1 | 1 | 0.5% | 0.5% |
 | 20 uncorrelated | 20 | ~15 | 0.5% | 5% (capped) |
 
-**Dashboard**: Trades tab has 4 sections: Signals (with Execute checkbox) → Portfolio Sizing (Instrument, Direction, N_Eff, Weight_Pct, Sized_Notional) → Correlation Matrix → Execution Orders. Unticking a signal recalculates sizing, correlations, and orders for selected trades only.
+**Dashboard**: Trades tab has 4 sections: Signals (with Execute checkbox) → Portfolio Sizing (N_Eff as text header, then table with Instrument, Direction, Weight_Pct, Sized_Notional) → Correlation Matrix → Execution Orders. Unticking a signal recalculates sizing, correlations, and orders for selected trades only. All sections filter on tradable instruments (currently hardcoded, to be moved to DB).
 
 ## Next Priorities
 
@@ -282,7 +282,12 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - **DONE**: `B.confirmSingleLeg()` for manual single-leg confirmation
 - Flow: Read_Executions.py -> book_trade_leg -> B.matchLegsToTrades() -> review -> B.confirmLegMatch()
 
-### 4. Python Codebase Cleanup
+### 4. Tradable Instruments List Cleanup
+- `tradable_instruments` is hardcoded in 3 GUI functions: `G.Trades.Table.predict()`, `G.Trades.Table.sizing()`, `G.Trades.Table.correlations()`
+- Plan: add `tradable` column to `instrument` DB table, read once at startup, feed into all functions
+- Removes need to maintain the list in multiple places
+
+### 5. Python Codebase Cleanup
 - All Python scripts (IB API integration) are poorly written legacy code
 - Need complete refactoring into proper Python style
 - To be done incrementally, with proper specs for each script

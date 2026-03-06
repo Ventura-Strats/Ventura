@@ -20,37 +20,54 @@ The dashboard Trades tab was restructured from a single table with mixed concern
 
 ### 2. New G.Trades.Table.sizing()
 - Takes filtered `dat_predict` (after Execute checkbox filtering)
+- Filters on `tradable_instruments` list (same as predict)
 - Runs `V.portfolioSizing()` which includes antagonist signal netting
 - Groups results by instrument (merging multiple strategies on same asset)
-- Returns `gvisTable` with columns: Instrument, Direction, N_Eff, Weight_Pct, Sized_Notional
+- Returns a list: `n_effective` (numeric) and `table` (gvisTable with Instrument, Direction, Weight_Pct, Sized_Notional)
+- N_Eff displayed as text above the table, not as a column
 - Only shows trades with weight > 0 (netted-out trades excluded)
 
-### 3. Reactive Chain Updated (server.R)
-- `Trades.Data.predict_filtered` feeds into sizing, correlations, AND orders
-- Previously correlations used unfiltered data - now uses filtered
-- Order: sizing → correlations → orders (all react to Execute checkbox changes)
+### 3. G.Trades.Table.correlations() - tradable filter added
+- Now filters on `tradable_instruments` list (was missing before)
+- Ensures correlation matrix only shows instruments we can actually trade
 
-### 4. UI Layout Updated (ui.R)
-- Added `h4()` section headers: "Signals", "Portfolio Sizing", "Correlation Matrix", "Execution Orders"
-- Sizing uses `htmlOutput` (for `gvisTable` rendering)
+### 4. N_Eff displayed as text header
+- "Effective number of bets: X.XX" shown above the sizing table
+- Removed from table columns (same value for every row was redundant)
+
+### 5. Reactive Chain Updated (server.R)
+- `Trades.Data.predict_filtered` feeds into sizing, correlations, AND orders
+- Sizing reactive returns a list; N_Eff rendered as text, table rendered as gvisTable
+- All downstream tables react to Execute checkbox changes
+
+### 6. UI Layout Updated (ui.R)
+- Section headers: "Signals", "Portfolio Sizing", "Correlation Matrix", "Execution Orders"
+- N_Eff text output above sizing table
 - Horizontal rules between each section
 
 ## Files Changed
-- `Code/GUI.R` - Simplified `G.Trades.Table.predict()`, added `G.Trades.Table.sizing()`
-- `Platform/server.R` - New sizing reactive, correlations now uses filtered data, reordered
-- `Platform/ui.R` - Trades tab layout: signals → sizing → correlation → orders
+- `Code/GUI.R` - Simplified `G.Trades.Table.predict()`, added `G.Trades.Table.sizing()`, added tradable filter to `G.Trades.Table.correlations()`
+- `Platform/server.R` - New sizing reactive (list output), N_Eff text output, correlations uses filtered data
+- `Platform/ui.R` - Trades tab layout: signals → sizing (with N_Eff text) → correlation → orders
 
 ## Reactive Data Flow
 ```
 Predict.Data.predict()
-  → G.Trades.Table.predict()  [signals with Execute checkbox]
+  → G.Trades.Table.predict()  [signals with Execute checkbox, tradable only]
   → Trades.Data.predict_filtered  [filters by Execute == TRUE]
-    → G.Trades.Table.sizing()        [eigenvalue sizing on selected trades]
-    → G.Trades.Table.correlations()  [correlation matrix on selected trades]
-    → G.Trades.Table.orders()        [execution orders on selected trades]
+    → G.Trades.Table.sizing()        [eigenvalue sizing, tradable only, returns list]
+      → Trades.Text.n_eff             [N_Eff as text header]
+      → Trades.Table.sizing           [instrument/direction/weight/notional table]
+    → G.Trades.Table.correlations()  [correlation matrix, tradable only]
+    → G.Trades.Table.orders()        [execution orders]
 ```
 
+## Known Technical Debt
+- `tradable_instruments` list is hardcoded in 3 functions: `G.Trades.Table.predict()`, `G.Trades.Table.sizing()`, `G.Trades.Table.correlations()`
+- Plan: move to database table (e.g. `instrument.tradable = 1`) and read once
+
 ## Next Steps
+- Move tradable instruments list to database table
 - Test `trade_orders.py` live with real orders (dry_run=False)
 - Verify OCA linkage in IB Gateway
 - Test for account 2

@@ -30,8 +30,9 @@ shinyServer(function(input, output, session) {
       dat
   })
 
-  Trades.Table.sizing <- reactive(G.Trades.Table.sizing(Trades.Data.predict_filtered()))
-  output$Trades.Table.sizing <- renderGvis(Trades.Table.sizing())
+  Trades.Data.sizing <- reactive(G.Trades.Table.sizing(Trades.Data.predict_filtered()))
+  output$Trades.Text.n_eff <- renderText(sprintf("Effective number of bets: %.2f", Trades.Data.sizing()$n_effective))
+  output$Trades.Table.sizing <- renderGvis(Trades.Data.sizing()$table)
 
   Trades.Table.correlations <- reactive(G.Trades.Table.correlations(Trades.Data.predict_filtered()))
   output$Trades.Table.correlations <- renderTable(Trades.Table.correlations())

@@ -28,6 +28,7 @@ shinyUI(
           rHandsontableOutput("Trades.Table.predict"),
           hr(),
           h4("Portfolio Sizing"),
+          textOutput("Trades.Text.n_eff"),
           htmlOutput("Trades.Table.sizing"),
           hr(),
           h4("Correlation Matrix (Trade-Adjusted)"),
