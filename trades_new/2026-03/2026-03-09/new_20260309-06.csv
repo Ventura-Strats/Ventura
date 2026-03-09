@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026030906001,2026-03-09,8,GBPPLN,4.94089,flat,0,4.98913270038995,4.892647299610049,2026-03-16,4.89264729961005,4.98913270038995,0.009763969728115995,76410.33731697548,2026-03-09 16:50:15,2026-03-09 16:50:00
