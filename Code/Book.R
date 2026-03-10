@@ -1059,7 +1059,8 @@ function(
     correlation_adjustment = 0,
     account_ids = c(1, 2),
     export_csv = TRUE,
-    export_path = NULL
+    export_path = NULL,
+    cor_matrix = NULL
 ) {
     ####################################################################################################
     ### Script description:
@@ -1128,7 +1129,9 @@ function(
 
     applyPortfolioSizing <- function(dat_signals) {
         instrument_ids <- unique(dat_signals$instrument_id)
-        cor_matrix <- T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0, floor_at_zero = TRUE)
+        if (is.null(cor_matrix)) {
+            cor_matrix <- T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0)
+        }
 
         dat_for_sizing <- dat_signals %>%
             select(instrument_id, buy_sell, notional)

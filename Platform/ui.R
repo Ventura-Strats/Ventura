@@ -112,7 +112,7 @@ shinyUI(
             "NAV", 
             fluidRow(
               column(2, actionButton("Book.NAV.Button.refresh", "Refresh", styleclass = "primary")),
-              column(2, textInput("Book.NAV.date_start", "From", "2024-01-01"))
+              column(2, textInput("Book.NAV.date_start", "From", "2026-01-01"))
             ),
             fluidRow(
               column(4, plotOutput("Book.NAV.Plot.NAV")),

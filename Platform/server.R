@@ -30,14 +30,22 @@ shinyServer(function(input, output, session) {
       dat
   })
 
-  Trades.Data.sizing <- reactive(G.Trades.Table.sizing(Trades.Data.predict_filtered()))
+  Trades.Data.cor_matrix <- reactive({
+      dat <- Trades.Data.predict_filtered()
+      instrument_ids <- dat %>%
+          left_join(select(INSTRUMENTS, pair, instrument_id), by = "pair") %>%
+          pull(instrument_id) %>% unique()
+      T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0)
+  })
+
+  Trades.Data.sizing <- reactive(G.Trades.Table.sizing(Trades.Data.predict_filtered(), cor_matrix = Trades.Data.cor_matrix()))
   output$Trades.Text.n_eff <- renderText(sprintf("Effective number of bets: %.2f", Trades.Data.sizing()$n_effective))
   output$Trades.Table.sizing <- renderGvis(Trades.Data.sizing()$table)
 
-  Trades.Table.correlations <- reactive(G.Trades.Table.correlations(Trades.Data.predict_filtered()))
+  Trades.Table.correlations <- reactive(G.Trades.Table.correlations(Trades.Data.predict_filtered(), cor_matrix = Trades.Data.cor_matrix()))
   output$Trades.Table.correlations <- renderTable(Trades.Table.correlations())
 
-  Trades.Table.orders <- reactive(G.Trades.Table.orders(Trades.Data.predict_filtered()))
+  Trades.Table.orders <- reactive(G.Trades.Table.orders(Trades.Data.predict_filtered(), cor_matrix = Trades.Data.cor_matrix()))
   output$Trades.Table.orders <- renderRHandsontable(Trades.Table.orders())
   
   ####################################################################################################

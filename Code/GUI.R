@@ -2022,7 +2022,7 @@ function (fx_pair)
         gvisTable(formats = list(price = U.formatPrice(.$price[ceiling(nrow(.) / 2)])))
 }
 G.Trades.Table.correlations <-
-function(dat_predict) {
+function(dat_predict, cor_matrix = NULL) {
     ####################################################################################################
     ### Script description:
     ### Returns trade-adjusted correlation matrix for signals, labeled by pair
@@ -2064,11 +2064,13 @@ function(dat_predict) {
         return(data.frame(Message = "Need at least 2 instruments for correlation matrix"))
     }
 
-    # Compute asset correlation matrix
-    cor_matrix <- T.calcHistoricalCorrelationsMatrix(
-        instrument_ids = dat_unique$instrument_id,
-        shrinkage = 0
-    )
+    # Compute asset correlation matrix if not provided
+    if (is.null(cor_matrix)) {
+        cor_matrix <- T.calcHistoricalCorrelationsMatrix(
+            instrument_ids = dat_unique$instrument_id,
+            shrinkage = 0
+        )
+    }
 
     # Build trade correlation matrix (direction-adjusted)
     n <- nrow(dat_unique)
@@ -2175,7 +2177,7 @@ function (dat_predict)
         hot_col("Target_Pct", format = "0.000%")
 }
 G.Trades.Table.sizing <-
-function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0)
+function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0, cor_matrix = NULL)
 {
     ####################################################################################################
     ### Script description:
@@ -2228,7 +2230,9 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
     ####################################################################################################
 
     instrument_ids <- unique(dat_signals$instrument_id)
-    cor_matrix <- T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0, floor_at_zero = TRUE)
+    if (is.null(cor_matrix)) {
+        cor_matrix <- T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0)
+    }
 
     dat_sized <- V.portfolioSizing(
         dat_signals %>% select(instrument_id, buy_sell, notional),
@@ -2277,7 +2281,7 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
     list(n_effective = n_effective, table = tbl)
 }
 G.Trades.Table.orders <-
-function (dat_predict, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0, account_ids = c(1, 2))
+function (dat_predict, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0, account_ids = c(1, 2), cor_matrix = NULL)
 {
     empty_cols <- c(
         "order_id", "ib_order_id", "account_id", "instrument_id", "ticker",
@@ -2293,7 +2297,8 @@ function (dat_predict, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlati
             max_daily_risk_pct = max_daily_risk_pct,
             correlation_adjustment = correlation_adjustment,
             account_ids = account_ids,
-            export_csv = FALSE
+            export_csv = FALSE,
+            cor_matrix = cor_matrix
         ),
         error = function(e) {
             message("G.Trades.Table.orders ERROR: ", e$message)
