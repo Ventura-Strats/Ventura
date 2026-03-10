@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026031007001,2026-03-10,14,CHFJPY,202.99,down,-1,200.93960936196802,205.040390638032,2026-03-17,200.939609361968,205.040390638032,0.01010094407622053,77107.64401058125,2026-03-10 19:50:43,2026-03-10 19:50:00
