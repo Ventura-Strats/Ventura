@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026031207001,2026-03-12,14,CHFNOK,12.35896,flat,0,12.5419986119183,12.175921388081699,2026-03-19,12.1759213880817,12.5419986119183,0.014810195349633126,53042.176787996104,2026-03-12 19:50:36,2026-03-12 19:50:00
