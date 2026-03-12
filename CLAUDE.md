@@ -167,7 +167,7 @@ Located in `/HD/Scripts/Python/`:
 - `trade_orders.py` - Interactive order placement: exit orders (target+stop OCA), entry orders (chase algo)
 - `order_execution.py` - Chase algorithm for entry order execution (used by trade_orders.py)
 
-## Current Status (Updated 2026-03-06)
+## Current Status (Updated 2026-03-10)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -178,12 +178,13 @@ Located in `/HD/Scripts/Python/`:
 - **Cross-asset correlation matrix**: New function `T.calcHistoricalCorrelationsMatrix()` for min-variance portfolio sizing (see Key Functions Reference)
 - **Trade workflow automation** (2026-02-21): New functions `B.generateOrders()`, `B.matchLegsToTrades()`, `B.confirmLegMatch()`, `B.confirmSingleLeg()` for end-to-end trade lifecycle (see Session_Notes/2026-02-21_trade_workflow_automation.md)
 - **Dashboard orders table** (2026-02-21): New `G.Trades.Table.orders()` displays execution orders in the Trades tab before they're sent to IB (see Session_Notes/2026-02-21_dashboard_orders_table.md)
-- **Correlation floor at zero** (2026-03-03): `T.calcHistoricalCorrelationsMatrix()` now has `floor_at_zero` parameter. Enabled for sizing (`B.generateOrders`, `G.Trades.Table.predict`), not for display (`G.Trades.Table.correlations`)
+- **Correlation floor at zero** (2026-03-03): `T.calcHistoricalCorrelationsMatrix()` has `floor_at_zero` parameter for display use. **Fixed (2026-03-10)**: floor moved from asset correlations to trade correlations inside `V.portfolioSizing()` - was incorrectly treating buy/sell on correlated assets as uncorrelated instead of hedged
 - **G.Trades.Table.orders fix** (2026-03-03): Fixed `unused argument (default = NULL)` error - `U.try()` parameter is `f_rtn`, not `default`
 - **IB Gateway move** (2026-03-03): IB API calls moved from machine H (34) to machine I (42) using IB Gateway. Ports: 7496 (account 1), 7497 (account 2). No code change needed
 - **First live trades** (2026-03-02): 3 trades executed manually from signals. Manual workflow used pending full automation testing
 - **Trade orders module** (2026-03-04): New `trade_orders.py` for placing exit orders (target LMT + stop STP as OCA pair) and entry orders (chase algo) interactively from Python console. See Session_Notes/2026-03-04_trade_orders_module.md
 - **Trades tab restructure** (2026-03-06): Split into 4 sequential tables: Signals (with Execute checkbox) → Portfolio Sizing (new `G.Trades.Table.sizing()`, N_Eff as text header) → Correlation Matrix → Execution Orders. All downstream tables filter on tradable instruments and react to Execute checkbox. See Session_Notes/2026-03-06_trades_tab_restructure.md
+- **Correlation floor fix & dedup** (2026-03-10): Fixed floor_at_zero bug (was applied to asset correlations before direction adjustment, now applied to trade correlations after). Deduplicated correlation matrix computation in dashboard via `Trades.Data.cor_matrix` reactive in server.R. See Session_Notes/2026-03-10_correlation_floor_fix.md
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -247,7 +248,7 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
   - **Antagonist signal netting**: If same asset has buy+sell signals from different strategies, sums directions. Net > 0 → buy, net < 0 → sell, net = 0 → no trade. Prevents optimizer exploiting opposite signals as "free hedge".
   - Calculates N_effective (effective number of independent bets) from eigenvalues: N_eff = (Σλ)² / Σ(λ²)
   - Total risk = min(N_effective × risk_per_bet_pct, max_daily_risk_pct)
-  - Trade correlation = direction_i × direction_j × asset_correlation
+  - Trade correlation = direction_i × direction_j × asset_correlation, **floored at zero** (negative trade correlations would reduce perceived risk; floor is conservative)
   - `correlation_adjustment` parameter: 0 = use historical, 0.2 = inflate correlations by 20%, -0.2 = reduce by 20%
   - Uses `quadprog::solve.QP` for weight distribution
 - `G.Trades.Table.predict(dat_predict)` - signal list with Execute checkbox (no sizing columns)
@@ -263,7 +264,7 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 | Single signal | 1 | 1 | 0.5% | 0.5% |
 | 20 uncorrelated | 20 | ~15 | 0.5% | 5% (capped) |
 
-**Dashboard**: Trades tab has 4 sections: Signals (with Execute checkbox) → Portfolio Sizing (N_Eff as text header, then table with Instrument, Direction, Weight_Pct, Sized_Notional) → Correlation Matrix → Execution Orders. Unticking a signal recalculates sizing, correlations, and orders for selected trades only. All sections filter on tradable instruments (currently hardcoded, to be moved to DB).
+**Dashboard**: Trades tab has 4 sections: Signals (with Execute checkbox) → Portfolio Sizing (N_Eff as text header, then table with Instrument, Direction, Weight_Pct, Sized_Notional) → Correlation Matrix → Execution Orders. Unticking a signal recalculates sizing, correlations, and orders for selected trades only. All sections filter on tradable instruments (currently hardcoded, to be moved to DB). Asset correlation matrix is computed once in `Trades.Data.cor_matrix` reactive and shared across all three downstream functions.
 
 ## Next Priorities
 
