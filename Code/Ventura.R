@@ -2102,12 +2102,7 @@ function(
 
     buildTradeCorrelationMatrix <- function(signals, asset_cor_matrix) {
         # Build trade correlation matrix: direction_i * direction_j * asset_cor[i,j]
-        # Floor negative trade correlations at zero for sizing safety:
-        # negative trade correlations would reduce perceived risk, but correlations
-        # can flip in a crisis. Flooring is conservative.
-        # NB: floor is applied AFTER direction adjustment, not on raw asset correlations,
-        # because buy-A/sell-B on positively correlated assets is a genuinely hedged trade
-        # (negative trade correlation) that should not be treated as diversification.
+        # For signals on the same instrument, correlation = 1
 
         n <- nrow(signals)
         trade_cor <- matrix(0, nrow = n, ncol = n)
@@ -2145,10 +2140,6 @@ function(
                 trade_cor[j, i] <- trade_cor[i, j]
             }
         }
-
-        # Floor negative trade correlations at zero
-        trade_cor <- pmax(trade_cor, 0)
-        diag(trade_cor) <- 1
 
         trade_cor
     }

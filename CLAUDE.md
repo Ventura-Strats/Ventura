@@ -109,6 +109,15 @@ source("Init.R"); I.executeScript()
 
 **Note**: Code runs from shared NAS drive. Git pull only needed on one machine.
 
+### Machine Status Monitoring
+Each machine runs a crontab shell script that appends timestamped system metrics to text files:
+- **Data location**: `/home/fls/Data/Glenorchy/SD/Machine_Status/<computer>/`
+- **Computer name**: Read from `/home/fls/Data/System/this_computer.txt`
+- **Metrics collected**: `cpu_load.txt`, `memory_load.txt`, `swap_load.txt`, `heat_load.txt`, `ib_load.txt` (java process), `R_load.txt`, `disk_space.txt`, `system_load.txt`
+- **Collection method**: `top -b -n 1`, `df`, `sensors`, `ps aux` piped through `ts` for timestamps
+- **Dashboard**: Tab 6.1 "Machine Status" via `G.Diagnostic.MachineStatus.Plot.systemLoad(metric, sub_metric, nb_days)`
+- **Status**: Work in progress, still has bugs
+
 ### Crontab
 - Jobs distributed across machines
 - Crontabs generated from central source via `Generate_Crontab.R`
@@ -167,7 +176,7 @@ Located in `/HD/Scripts/Python/`:
 - `trade_orders.py` - Interactive order placement: exit orders (target+stop OCA), entry orders (chase algo)
 - `order_execution.py` - Chase algorithm for entry order execution (used by trade_orders.py)
 
-## Current Status (Updated 2026-03-10)
+## Current Status (Updated 2026-03-15)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -185,6 +194,7 @@ Located in `/HD/Scripts/Python/`:
 - **Trade orders module** (2026-03-04): New `trade_orders.py` for placing exit orders (target LMT + stop STP as OCA pair) and entry orders (chase algo) interactively from Python console. See Session_Notes/2026-03-04_trade_orders_module.md
 - **Trades tab restructure** (2026-03-06): Split into 4 sequential tables: Signals (with Execute checkbox) → Portfolio Sizing (new `G.Trades.Table.sizing()`, N_Eff as text header) → Correlation Matrix → Execution Orders. All downstream tables filter on tradable instruments and react to Execute checkbox. See Session_Notes/2026-03-06_trades_tab_restructure.md
 - **Correlation floor fix & dedup** (2026-03-10): Fixed floor_at_zero bug (was applied to asset correlations before direction adjustment, now applied to trade correlations after). Deduplicated correlation matrix computation in dashboard via `Trades.Data.cor_matrix` reactive in server.R. See Session_Notes/2026-03-10_correlation_floor_fix.md
+- **Machine status monitoring** (2026-03-15): Added dashboard tab 6.1 "Machine Status" with `G.Diagnostic.MachineStatus.Plot.systemLoad()`. Displays CPU, memory, swap, heat, IB process, R process, DB stats from text files collected by crontab shell script on each machine. Data stored in `/home/fls/Data/Glenorchy/SD/Machine_Status/<computer>/`. Still has bugs, work in progress. See Session_Notes/2026-03-15_machine_status_and_fixes.md
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`

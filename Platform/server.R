@@ -8,7 +8,11 @@ shinyServer(function(input, output, session) {
   ####################################################################################################
   ### Tab 1: Predict
   ####################################################################################################
-  Predict.Data.predict <- reactive({input$Predict.Button.refresh; input$Trades.Button.refresh; G.Predict.Data.predict() })
+  Predict.Data.predict <- reactive({
+    input$Predict.Button.refresh; input$Trades.Button.refresh; 
+    TO_DAY <<- Sys.Date()
+    G.Predict.Data.predict() 
+    })
   
   Predict.Table.predict <- reactive(G.Predict.Table.predict(Predict.Data.predict()))
   output$Predict.Table.predict <- renderDataTable(Predict.Table.predict())
@@ -20,6 +24,7 @@ shinyServer(function(input, output, session) {
   output$Trades.Table.predict <- renderRHandsontable(Trades.Table.predict())
 
   Trades.Data.predict_filtered <- reactive({
+      TO_DAY <<- Sys.Date()
       dat <- Predict.Data.predict()
       edited <- input$Trades.Table.predict
       if (!is.null(edited)) {
@@ -31,6 +36,7 @@ shinyServer(function(input, output, session) {
   })
 
   Trades.Data.cor_matrix <- reactive({
+      TO_DAY <<- Sys.Date()
       dat <- Trades.Data.predict_filtered()
       instrument_ids <- dat %>%
           left_join(select(INSTRUMENTS, pair, instrument_id), by = "pair") %>%
@@ -74,7 +80,11 @@ shinyServer(function(input, output, session) {
   ####################################################################################################
   ### Tab 5: Book
   ####################################################################################################
-  Book.Trades.Data.trades <- reactive({input$Book.FX.Button.refresh; input$Book.Trades_Closed.Button.refresh; input$Book.Trades_Live.Button.refresh; B.readTradesFromDB()})
+  Book.Trades.Data.trades <- reactive({
+    input$Book.FX.Button.refresh; input$Book.Trades_Closed.Button.refresh; input$Book.Trades_Live.Button.refresh; 
+    TO_DAY <<- Sys.Date()
+    B.readTradesFromDB()
+    })
   
   Book.FX.Table.fx_position <- reactive(G.Book.FX.Table.fx_position(Book.Trades.Data.trades()))
   output$Book.FX.Table.fx_position <- renderGvis(Book.FX.Table.fx_position())
@@ -214,12 +224,61 @@ shinyServer(function(input, output, session) {
   ####################################################################################################
   ### Tab 6: Diagnostics
   ####################################################################################################
-  Diagnostic.Jobs.Data.Activity <- reactive({ input$Diagnostic.Jobs.Button.refresh; G.Diagnostic.Jobs.Data.Activity(input$Diagnostic.Jobs.Data.diagnosticDate) })
+  Diagnostic.Jobs.Data.Activity <- reactive({ 
+    input$Diagnostic.Jobs.Button.refresh; 
+    TO_DAY <<- Sys.Date()
+    G.Diagnostic.Jobs.Data.Activity(input$Diagnostic.Jobs.Data.diagnosticDate) 
+    })
   Diagnostic.Jobs.Plot.Utilization <- reactive({ G.Diagnostic.Jobs.Plot.Utilization(Diagnostic.Jobs.Data.Activity(), input$Diagnostic.Jobs.Data.diagnosticDate) })
   output$Diagnostic.Jobs.Plot.Utilization <- renderPlot(Diagnostic.Jobs.Plot.Utilization(), height = 2000)
   
   Diagnostic.Instruments.Table.status <- reactive({input$Diagnostic.Instruments.Button.refresh; G.Diagnostic.Instruments.Table.status() })
   output$Diagnostic.Instruments.Table.status <- renderDataTable(Diagnostic.Instruments.Table.status(), height = 900)
+  
+  ####################################################################################################
+  #### Tab 6.1 : Machine Status
+  ####################################################################################################
+  Diagnostic.MachineStatus.Plot.cpuLoad <- reactive({ 
+    input$Diagnostic.MachineStatus.Button.refresh; 
+    TO_DAY <<- Sys.Date();
+    G.Diagnostic.MachineStatus.Plot.systemLoad("cpu", NULL, input$Diagnostic.MachineStatus.Button.nbDays) 
+    })
+  output$Diagnostic.MachineStatus.Plot.cpuLoad <- renderPlot({ Diagnostic.MachineStatus.Plot.cpuLoad() })
+  
+  Diagnostic.MachineStatus.Plot.memoryLoad <- reactive({ input$Diagnostic.MachineStatus.Button.refresh; G.Diagnostic.MachineStatus.Plot.systemLoad("memory", NULL, input$Diagnostic.MachineStatus.Button.nbDays) })
+  output$Diagnostic.MachineStatus.Plot.memoryLoad <- renderPlot({ Diagnostic.MachineStatus.Plot.memoryLoad() })
+  
+  Diagnostic.MachineStatus.Plot.swapLoad <- reactive({ input$Diagnostic.MachineStatus.Button.refresh; G.Diagnostic.MachineStatus.Plot.systemLoad("swap", "mem", input$Diagnostic.MachineStatus.Button.nbDays) })
+  output$Diagnostic.MachineStatus.Plot.swapLoad <- renderPlot({ Diagnostic.MachineStatus.Plot.swapLoad() })
+  
+  Diagnostic.MachineStatus.Plot.headLoad <- reactive({ input$Diagnostic.MachineStatus.Button.refresh; G.Diagnostic.MachineStatus.Plot.systemLoad("heat", NULL, input$Diagnostic.MachineStatus.Button.nbDays) })
+  output$Diagnostic.MachineStatus.Plot.headLoad <- renderPlot({ Diagnostic.MachineStatus.Plot.headLoad() })
+  
+  
+  Diagnostic.MachineStatus.Plot.dbCpuLoad <- reactive({ input$Diagnostic.MachineStatus.Button.refresh; G.Diagnostic.MachineStatus.Plot.systemLoad("sql", "cpu", input$Diagnostic.MachineStatus.Button.nbDays) })
+  output$Diagnostic.MachineStatus.Plot.dbCpuLoad <- renderPlot({ Diagnostic.MachineStatus.Plot.dbCpuLoad() })
+  
+  Diagnostic.MachineStatus.Plot.dbMemoryLoad <- reactive({ input$Diagnostic.MachineStatus.Button.refresh; G.Diagnostic.MachineStatus.Plot.systemLoad("sql", "mem", input$Diagnostic.MachineStatus.Button.nbDays) })
+  output$Diagnostic.MachineStatus.Plot.dbMemoryLoad <- renderPlot({ Diagnostic.MachineStatus.Plot.dbMemoryLoad() })
+  
+  Diagnostic.MachineStatus.Plot.dbConnectionsLoad <- reactive({ input$Diagnostic.MachineStatus.Button.refresh; G.Diagnostic.MachineStatus.Plot.systemLoad("conn", NULL, input$Diagnostic.MachineStatus.Button.nbDays) })
+  output$Diagnostic.MachineStatus.Plot.dbConnectionsLoad <- renderPlot({ Diagnostic.MachineStatus.Plot.dbConnectionsLoad() })
+  
+  Diagnostic.MachineStatus.Plot.dbSizeLoad <- reactive({ input$Diagnostic.MachineStatus.Button.refresh; G.Diagnostic.MachineStatus.Plot.systemLoad("dbsize", NULL, input$Diagnostic.MachineStatus.Button.nbDays) })
+  output$Diagnostic.MachineStatus.Plot.dbSizeLoad <- renderPlot({ Diagnostic.MachineStatus.Plot.dbSizeLoad() })
+  
+  Diagnostic.MachineStatus.Plot.ibCpuLoad <- reactive({ input$Diagnostic.MachineStatus.Button.refresh; G.Diagnostic.MachineStatus.Plot.systemLoad("ib", "cpu", input$Diagnostic.MachineStatus.Button.nbDays) })
+  output$Diagnostic.MachineStatus.Plot.ibCpuLoad <- renderPlot({ Diagnostic.MachineStatus.Plot.ibCpuLoad() })
+  
+  Diagnostic.MachineStatus.Plot.ibMemoryLoad <- reactive({ input$Diagnostic.MachineStatus.Button.refresh; G.Diagnostic.MachineStatus.Plot.systemLoad("ib", "mem", input$Diagnostic.MachineStatus.Button.nbDays) })
+  output$Diagnostic.MachineStatus.Plot.ibMemoryLoad <- renderPlot({ Diagnostic.MachineStatus.Plot.ibMemoryLoad() })
+  
+  Diagnostic.MachineStatus.Plot.RCpuLoad <- reactive({ input$Diagnostic.MachineStatus.Button.refresh; G.Diagnostic.MachineStatus.Plot.systemLoad("R", "cpu", input$Diagnostic.MachineStatus.Button.nbDays) })
+  output$Diagnostic.MachineStatus.Plot.RCpuLoad <- renderPlot({ Diagnostic.MachineStatus.Plot.RCpuLoad() })
+  
+  Diagnostic.MachineStatus.Plot.RMemoryLoad <- reactive({ input$Diagnostic.MachineStatus.Button.refresh; G.Diagnostic.MachineStatus.Plot.systemLoad("R", "mem", input$Diagnostic.MachineStatus.Button.nbDays) })
+  output$Diagnostic.MachineStatus.Plot.RMemoryLoad <- renderPlot({ Diagnostic.MachineStatus.Plot.RMemoryLoad() })
+  
   ####################################################################################################
   ### End
   ####################################################################################################

@@ -146,6 +146,31 @@ shinyUI(
               column(2, actionButton("Diagnostic.Instruments.Button.refresh", "Refresh", styleclass = "primary"))
             ),
             dataTableOutput("Diagnostic.Instruments.Table.status")
+          ),
+          tabPanel(
+            "Machine Status",
+            fluidRow(
+              column(2, numericInput("Diagnostic.MachineStatus.Button.nbDays", label = "NB Days", value = 1, width = "50%")),
+              column(2, actionButton("Diagnostic.MachineStatus.Button.refresh", "Refresh", styleclass = "primary"))
+            ),
+            fluidRow(
+              column(3, wellPanel(tags$p(h4("CPU Load")), plotOutput("Diagnostic.MachineStatus.Plot.cpuLoad"))),
+              column(3, wellPanel(tags$p(h4("Memory Load")), plotOutput("Diagnostic.MachineStatus.Plot.memoryLoad"))),
+              column(3, wellPanel(tags$p(h4("Swap Load")), plotOutput("Diagnostic.MachineStatus.Plot.swapLoad"))),
+              column(3, wellPanel(tags$p(h4("Temperature")), plotOutput("Diagnostic.MachineStatus.Plot.headLoad")))
+            ),
+            fluidRow(
+              column(3, wellPanel(tags$p(h4("DB CPU Load")), plotOutput("Diagnostic.MachineStatus.Plot.dbCpuLoad"))),
+              column(3, wellPanel(tags$p(h4("DB Memory Load")), plotOutput("Diagnostic.MachineStatus.Plot.dbMemoryLoad"))),
+              column(3, wellPanel(tags$p(h4("DB Nb Connections")), plotOutput("Diagnostic.MachineStatus.Plot.dbConnectionsLoad"))),
+              column(3, wellPanel(tags$p(h4("DB Size")), plotOutput("Diagnostic.MachineStatus.Plot.dbSizeLoad")))
+            ),
+            fluidRow(
+              column(3, wellPanel(tags$p(h4("IB CPU Load")), plotOutput("Diagnostic.MachineStatus.Plot.ibCpuLoad"))),
+              column(3, wellPanel(tags$p(h4("IB Memory Load")), plotOutput("Diagnostic.MachineStatus.Plot.ibMemoryLoad"))),
+              column(3, wellPanel(tags$p(h4("R CPU Load - Glenorchy")), plotOutput("Diagnostic.MachineStatus.Plot.RCpuLoad"))),
+              column(3, wellPanel(tags$p(h4("R Memory Load - Glenorchy")), plotOutput("Diagnostic.MachineStatus.Plot.RMemoryLoad")))
+            )
           )
         )
       )

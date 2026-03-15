@@ -891,6 +891,427 @@ function (activity_data, diagnostic_date) {
         ggtitle(ip_address)
     
 }
+G.Diagnostic.MachineStatus.Plot.systemLoad <-
+function (load_type, cpu_or_mem = NULL, timeframe_days = 2) 
+{
+    ####################################################################################################
+    ### Script Variables
+    ####################################################################################################
+    TO_DAY <<- Sys.Date()
+    
+    machine_list <- c("H", "I", "V", "W", "X", "Y", "Z");
+    if (load_type == "R")
+        machine_list <- machine_list[-5]
+    file_dir <- paste0(gsub("Ventura", "Glenorchy", DIRECTORY_DATA_SD), "Machine_Status/")
+    file_name <- "/%s_load.txt" %>% 
+        sprintf(load_type);
+    start_time <- as.POSIXct(paste0(TO_DAY - timeframe_days + 1, " 00:00:00")) - 6 * 3600;
+    end_time <- as.POSIXct(paste0(TO_DAY + 1, " 23:59:00"))
+    
+    ####################################################################################################
+    ### Sub routines
+    ####################################################################################################
+    buildBaseTimeLine <- function() {
+        seq(start_time, end_time, 60) %>%
+            data.frame(date_time = .) %>%
+            as_tibble
+    }
+    
+    loadFile_Try <- function(this_machine) {
+        paste0(file_dir, this_machine, file_name) %>%
+            read.csv(header = FALSE) %>%
+            tail(24 * 60 * (timeframe_days + 1) * 10)
+    }
+    loadFile <- function(this_machine) 
+        U.try(loadFile_Try)(this_machine)
+    
+    reformatLoadFactorCPU <- function(dat) {
+        dat %>% 
+            rename(load_factor = V4) %>% 
+            mutate(
+                load_factor = 1 - 0.01 * as.numeric(gsub(" id", "", load_factor))
+            )
+    }
+    reformatLoadFactorMemoryOrSwap <- function(dat) {
+        dat %>% 
+            mutate(capacity = date_time) %>%
+            rename(usage = V3) %>%
+            mutate(
+                capacity = substr(capacity, 23, 100),
+                capacity = gsub("MiB Swap:", "", capacity),
+                capacity = gsub("MiB Mem :", "", capacity),
+                capacity = gsub("total", "", capacity),
+                capacity = gsub(" ", "", capacity),
+                capacity = as.numeric(capacity)
+            ) %>%
+            mutate(
+                pos_used = regexpr(" used", usage)[1],
+                usage = as.numeric(substr(usage, 1, pos_used))
+            ) %>%
+            select(-pos_used) %>%
+            mutate(
+                load_factor = usage / capacity
+            )
+    }
+    reformatLoadFactorIB <- function(dat) {
+        dat <- dat %>% 
+            mutate(
+                usage = date_time
+            );
+        dat$pos_start <- U.sapply(dat$usage, function(x) regexpr(" S", x)[1]);
+        dat <- dat %>% 
+            mutate(
+                usage = substr(usage, pos_start + 2, 200),
+                usage = gsub("       ", " ", usage),
+                usage = gsub("      ", " ", usage),
+                usage = gsub("     ", " ", usage),
+                usage = gsub("    ", " ", usage),
+                usage = gsub("   ", " ", usage),
+                usage = gsub("  ", " ", usage)
+            ) %>%
+            separate(usage, c("V1", "V2", "V3"), " ");
+        switch(
+            cpu_or_mem,
+            "cpu" = rename(dat, usage = V2),
+            "mem" = rename(dat, usage = V3)
+        ) %>%
+            mutate(
+                load_factor = 0.01 * as.numeric(usage)
+            ) %>%
+            mutate(date_time = substr(date_time, 1, 22)) %>%
+            group_by(date_time, Machine) %>%
+            summarize(load_factor = sum(load_factor)) %>%
+            ungroup;
+    }
+    
+    reformatLoadFactorSQL <- function(dat) {
+        dat <- dat %>%
+            mutate(
+                tmp = date_time,
+                date_time = substr(date_time, 1, 22),
+                tmp = gsub("               ", " ", tmp),
+                tmp = gsub("              ", " ", tmp),
+                tmp = gsub("             ", " ", tmp),
+                tmp = gsub("            ", " ", tmp),
+                tmp = gsub("           ", " ", tmp),
+                tmp = gsub("          ", " ", tmp),
+                tmp = gsub("         ", " ", tmp),
+                tmp = gsub("        ", " ", tmp),
+                tmp = gsub("       ", " ", tmp),
+                tmp = gsub("      ", " ", tmp),
+                tmp = gsub("     ", " ", tmp),
+                tmp = gsub("    ", " ", tmp),
+                tmp = gsub("   ", " ", tmp),
+                tmp = gsub("  ", " ", tmp)
+            ) %>%
+            separate(tmp, paste0("V", 1:10), " ") %>%
+            rename(
+                cpu = V5,
+                mem = V6
+            );
+        switch(cpu_or_mem,
+               "cpu" = rename(dat, usage = cpu),
+               "mem" = rename(dat, usage = mem)
+        ) %>%
+            mutate(
+                load_factor = 0.01 * as.numeric(usage)
+            ) %>%
+            group_by(date_time, Machine) %>%
+            summarize(load_factor = sum(load_factor)) %>%
+            ungroup;
+    }
+    
+    reformatLoadFactorTemperature <- function(dat) {
+        dat <- dat %>% 
+            mutate(
+                temp = date_time
+            );
+        dat$pos_temp_start <- U.sapply(dat$temp, function(x) regexpr("+", x, fixed = TRUE)[1]);
+        dat$pos_temp_end <- U.sapply(dat$temp, function(x) regexpr("°C", x, fixed = TRUE)[1]);
+        dat <- dat %>%
+            mutate(
+                temp = substr(temp, pos_temp_start + 1, pos_temp_end - 1)
+            ) %>%
+            mutate(
+                load_factor = as.numeric(temp)
+            ) %>%
+            mutate(date_time = substr(date_time, 1, 22)) %>%
+            group_by(date_time, Machine) %>%
+            summarize(load_factor = mean(load_factor)) %>%
+            ungroup;
+    }
+    
+    reformatLoadFactorDBSize <- function(dat) {
+        dat <- dat %>% 
+            mutate(
+                tmp = date_time
+            ) %>%
+            separate(tmp, paste0("V", 1:5), "/") %>%
+            rename(
+                load_factor = V1
+            ) %>%
+            mutate(
+                Machine = V5
+            );
+        dat$pos_temp_start <- U.sapply(dat$load_factor, function(x) regexpr("]", x)[1]);
+        dat <- dat %>%
+            mutate(
+                load_factor = substr(load_factor, pos_temp_start + 1, nchar(load_factor) - 1),
+                load_factor = as.numeric(load_factor) / 1000000
+            );
+    }
+    
+    reformatLoadFactorNbConnections <- function(dat) {
+        dat <- dat %>% 
+            mutate(
+                tmp = date_time
+            );
+        dat$pos_temp_start <- U.sapply(dat$tmp, function(x) regexpr("Threads:", x)[1]);
+        dat$pos_temp_end <- U.sapply(dat$tmp, function(x) regexpr("Questions:", x)[1]);
+        dat <- dat %>%
+            mutate(
+                tmp = substr(tmp, pos_temp_start + 8, pos_temp_end - 1),
+                load_factor = as.numeric(tmp)
+            );
+    }
+    
+    reformatLoadFactorR <- function(dat) {
+        dat <- dat %>%
+            mutate(
+                tmp = date_time,
+                date_time = substr(date_time, 1, 22),
+                tmp = gsub("               ", " ", tmp),
+                tmp = gsub("              ", " ", tmp),
+                tmp = gsub("             ", " ", tmp),
+                tmp = gsub("            ", " ", tmp),
+                tmp = gsub("           ", " ", tmp),
+                tmp = gsub("          ", " ", tmp),
+                tmp = gsub("         ", " ", tmp),
+                tmp = gsub("        ", " ", tmp),
+                tmp = gsub("       ", " ", tmp),
+                tmp = gsub("      ", " ", tmp),
+                tmp = gsub("     ", " ", tmp),
+                tmp = gsub("    ", " ", tmp),
+                tmp = gsub("   ", " ", tmp),
+                tmp = gsub("  ", " ", tmp)
+            ) %>%
+            separate(tmp, paste0("V", 1:20), " ") %>%
+            rename(
+                cpu = V5,
+                mem = V6,
+                time = V12,
+                process_name = V16
+            ) %>% 
+            select(-starts_with("V")) %>%
+            mutate(
+                process_name = gsub(sprintf("--file=%sScripts/", DIRECTORY_CODE), "", process_name)
+            ) %>% 
+            separate(process_name, c("category", "process_name"), "/") %>%
+            mutate(Machine = category);
+        switch(
+            cpu_or_mem,
+            "cpu" = rename(dat, load_factor = cpu),
+            "mem" = rename(dat, load_factor = mem),
+            "time" = rename(dat, load_factor = time)
+        ) %>%
+            mutate(load_factor = 0.01 * as.numeric(load_factor)) %>%
+            group_by(date_time, Machine) %>%
+            summarize(load_factor = sum(load_factor)) %>%
+            ungroup %>%
+            filter(Machine %in% c("Fundamentals", "Technicals", "Book", "Maintenance", "Execution"));
+    }
+    
+    reformatLoadFactor_Try <- function(dat) {
+        switch(
+            load_type,
+            "cpu" = reformatLoadFactorCPU(dat),
+            "memory" = reformatLoadFactorMemoryOrSwap(dat), 
+            "swap" = reformatLoadFactorMemoryOrSwap(dat),
+            "ib" = reformatLoadFactorIB(dat),
+            "sql" = reformatLoadFactorSQL(dat),
+            "heat" = reformatLoadFactorTemperature(dat),
+            "dbsize" = reformatLoadFactorDBSize(dat),
+            "conn" = reformatLoadFactorNbConnections(dat),
+            "R" = reformatLoadFactorR(dat),
+        )
+    }
+    reformatLoadFactor <- function(dat)
+        U.try(reformatLoadFactor_Try)(dat)
+    
+    keepOnlyRecentData <- function(dat) {
+        dat %>% 
+            filter(
+                date_time >= start_time
+            )
+    }
+    
+    matchDatesToSchedule <- function(dat) {
+        max_time <- max(dat$date_time)
+        dat <- dat %>% 
+            mutate(
+                date_time = as.character(date_time),
+                date_time = U.left(date_time, -2),
+                date_time = paste0(date_time, "00"),
+                date_time = as.POSIXct(date_time)
+            )
+        dat <- time_schedule %>% 
+            filter(date_time <= max_time) %>% 
+            left_join(dat, by = "date_time") 
+        if (load_type %in% c("ib", "sqp", "R", "conn")) {
+            pos_na_load <- which(is.na(dat$load_factor))
+            dat$load_factor[pos_na_load] <- 0;
+            pos_na_machine <- which(is.na(dat$Machine));
+            this_machine <- dat$Machine[which(!is.na(dat$Machine))[1]];
+            dat$Machine[pos_na_machine] <- this_machine;
+        }
+        else {
+            dat <- dat %>% filter(!is.na(Machine))
+        }
+        
+        dat;
+    }
+    
+    reformatFile_Try <- function(dat, this_machine) {
+        dat <- dat %>%
+            rename(date_time = V1) %>%
+            mutate(Machine = this_machine) %>%
+            reformatLoadFactor %>%
+            select(date_time, Machine, load_factor) %>% 
+            mutate(
+                date_time = as.POSIXct(substr(date_time, 2, 20)),
+            ) %>%
+            matchDatesToSchedule
+        #keepOnlyRecentData;
+        if (load_type == "dbsize") {
+            dat <- dat %>% 
+                rename(DB = Machine)
+        }
+        if (load_type == "R") {
+            dat <- dat %>% 
+                rename(Category = Machine)
+        }
+        dat;
+    }
+    reformatFile <- function(dat, this_machine)
+        U.try(reformatFile_Try)(dat, this_machine)
+    
+    prepareData <- function(this_machine) {
+        this_machine %>%
+            loadFile %>% 
+            reformatFile(this_machine)
+    }
+    
+    plotBase <- function(dat) {
+        shutdown_time_start <- as.POSIXct(paste0(TO_DAY," 02:10:00")) + 24*3600*((-timeframe_days-1):1)
+        shutdown_time_start <- shutdown_time_start[which(shutdown_time_start >= start_time)];
+        shutdown_time_start <- shutdown_time_start[which(shutdown_time_start <= end_time)];
+        shutdown_time_end <- shutdown_time_start + 30 * 60;
+        
+        dat <- dat %>%
+            ggplot(data = ., aes(x = date_time, y = load_factor)) + #, col = Machine)) + 
+            theme(legend.position="top", legend.text=element_text(size=12)) + 
+            theme(axis.title.x = element_blank(), axis.title.y = element_blank()) + 
+            theme(axis.text=element_text(size=12));
+        
+        if (timeframe_days == 1) {
+            dat <- dat +
+                scale_x_datetime(
+                    limits=c(start_time, end_time),
+                    date_labels = "%H", 
+                    date_breaks = "2 hour"
+                );
+        }
+        else {
+            dat <- dat +
+                scale_x_datetime(limits=c(start_time, end_time));
+        }
+        
+        dat +
+            annotate(
+                "rect", 
+                xmin = shutdown_time_start, 
+                xmax = shutdown_time_end, 
+                alpha = 0.2, 
+                ymin = -Inf, 
+                ymax = Inf
+            );
+    }
+    
+    plotPercent <- function(dat_plot) {
+        plot_limits <- c(0,1);
+        if (!is.null(cpu_or_mem))
+            if (cpu_or_mem == "mem")
+                plot_limits <- c(0,0.25);    
+        
+        dat_plot +
+                    geom_line(aes(col = Machine)) +
+                    scale_y_continuous(labels = percent_format(), limits=plot_limits)
+    }
+    
+    plotConnections <- function(dat_plot) {
+        dat_plot +
+            geom_line(aes(col = Machine)) #+
+        #scale_y_continuous(limits=c(0,25))
+    }
+    
+    plotTemperature <- function(dat_plot, dat) {
+        min_temperature <- min(dat$load_factor, na.rm = TRUE);
+        min_temperature <- 5 * floor(min_temperature / 5);
+        
+        max_temperature <- max(dat$load_factor, na.rm = TRUE);
+        max_temperature <- 5 * ceiling(max_temperature / 5);
+        
+        dat_plot +
+            geom_line(aes(col = Machine)) +
+            scale_y_continuous(
+                labels = function(x) paste0(x, "°C"), 
+                limits=c(min_temperature, max_temperature)
+            )
+    }
+    
+    plotDBSize <- function(dat_plot) {
+        dat_plot +
+            scale_y_continuous(labels = function(x) paste0(x, " Gb")) + #, limits = c(20, 25)) +
+            geom_area(aes(colour = NULL, fill = DB), position = 'stack')
+        
+    }
+    
+    plotRUsage <- function(dat_plot) {
+        plot_limits <- c(0,1);
+        if (!is.null(cpu_or_mem))
+            if (cpu_or_mem == "mem")
+                plot_limits <- c(0,0.3);
+        dat_plot +
+                    geom_bar(position = "stack", stat = "identity", 
+                             aes(colour = Category, fill = Category)) +
+                    scale_y_continuous(labels = percent_format(), limits=plot_limits)
+    }
+    
+    preparePlot_Try <- function(dat) {
+        dat_plot <- plotBase(dat)
+        
+        switch(
+            load_type,
+            "heat" = plotTemperature(dat_plot, dat),
+            "dbsize" = plotDBSize(dat_plot),
+            "conn" = plotConnections(dat_plot),
+            "R" = plotRUsage(dat_plot),
+            plotPercent(dat_plot)
+        )
+    }
+    preparePlot <- function(dat)
+        U.tryNull(preparePlot_Try, dat)
+    
+    ####################################################################################################
+    ### Script 
+    ####################################################################################################
+    time_schedule <- buildBaseTimeLine()
+    
+    machine_list %>% 
+        lapply(prepareData) %>% 
+        bind_rows %>%
+        preparePlot
+}
 G.Instrument.Plot.technicalChart <-
 function (instrument, date_start, date_end, strat_id) 
 {
@@ -2022,7 +2443,7 @@ function (fx_pair)
         gvisTable(formats = list(price = U.formatPrice(.$price[ceiling(nrow(.) / 2)])))
 }
 G.Trades.Table.correlations <-
-function(dat_predict, cor_matrix = NULL) {
+function(dat_predict) {
     ####################################################################################################
     ### Script description:
     ### Returns trade-adjusted correlation matrix for signals, labeled by pair
@@ -2064,13 +2485,11 @@ function(dat_predict, cor_matrix = NULL) {
         return(data.frame(Message = "Need at least 2 instruments for correlation matrix"))
     }
 
-    # Compute asset correlation matrix if not provided
-    if (is.null(cor_matrix)) {
-        cor_matrix <- T.calcHistoricalCorrelationsMatrix(
-            instrument_ids = dat_unique$instrument_id,
-            shrinkage = 0
-        )
-    }
+    # Compute asset correlation matrix
+    cor_matrix <- T.calcHistoricalCorrelationsMatrix(
+        instrument_ids = dat_unique$instrument_id,
+        shrinkage = 0
+    )
 
     # Build trade correlation matrix (direction-adjusted)
     n <- nrow(dat_unique)
@@ -2097,6 +2516,51 @@ function(dat_predict, cor_matrix = NULL) {
     colnames(trade_cor_df) <- dat_unique$pair
     trade_cor_df <- cbind(Pair = dat_unique$pair, trade_cor_df)
     trade_cor_df
+}
+G.Trades.Table.orders <-
+function (dat_predict, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0, account_ids = c(1, 2))
+{
+    empty_cols <- c(
+        "order_id", "ib_order_id", "account_id", "instrument_id", "ticker",
+        "future_id", "conid", "contract", "tick_size",
+        "buy_sell", "buy_sell_action", "size_to_do", "px_order", "px_live", "px_avg",
+        "initial_position", "position", "filled", "remaining", "status", "ib_status"
+    )
+
+    result <- tryCatch(
+        B.generateOrders(
+            dat_predict = dat_predict,
+            risk_per_bet_pct = risk_per_bet_pct,
+            max_daily_risk_pct = max_daily_risk_pct,
+            correlation_adjustment = correlation_adjustment,
+            account_ids = account_ids,
+            export_csv = FALSE
+        ),
+        error = function(e) {
+            message("G.Trades.Table.orders ERROR: ", e$message)
+            NULL
+        }
+    )
+
+    if (is.null(result) || nrow(result$orders_all) == 0) {
+        empty_tbl <- tibble(
+            order_id = integer(0), ib_order_id = integer(0), account_id = integer(0),
+            instrument_id = integer(0), ticker = character(0),
+            future_id = integer(0), conid = integer(0), contract = character(0),
+            tick_size = numeric(0), buy_sell = integer(0), buy_sell_action = character(0),
+            size_to_do = integer(0), px_order = numeric(0), px_live = numeric(0),
+            px_avg = numeric(0), initial_position = integer(0), position = integer(0),
+            filled = integer(0), remaining = integer(0), status = character(0),
+            ib_status = character(0)
+        )
+        return(rhandsontable(empty_tbl, rowHeaders = NULL))
+    }
+
+    result$orders_all %>%
+        rhandsontable(rowHeaders = NULL) %>%
+        hot_col("px_order", format = "0,000.000000") %>%
+        hot_col("tick_size", format = "0.00000") %>%
+        hot_col(c("size_to_do", "filled", "remaining"), format = "0,000")
 }
 G.Trades.Table.predict <-
 function (dat_predict)
@@ -2177,7 +2641,7 @@ function (dat_predict)
         hot_col("Target_Pct", format = "0.000%")
 }
 G.Trades.Table.sizing <-
-function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0, cor_matrix = NULL)
+function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0)
 {
     ####################################################################################################
     ### Script description:
@@ -2230,9 +2694,7 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
     ####################################################################################################
 
     instrument_ids <- unique(dat_signals$instrument_id)
-    if (is.null(cor_matrix)) {
-        cor_matrix <- T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0)
-    }
+    cor_matrix <- T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0, floor_at_zero = TRUE)
 
     dat_sized <- V.portfolioSizing(
         dat_signals %>% select(instrument_id, buy_sell, notional),
@@ -2279,50 +2741,4 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
         ))
 
     list(n_effective = n_effective, table = tbl)
-}
-G.Trades.Table.orders <-
-function (dat_predict, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0, account_ids = c(1, 2), cor_matrix = NULL)
-{
-    empty_cols <- c(
-        "order_id", "ib_order_id", "account_id", "instrument_id", "ticker",
-        "future_id", "conid", "contract", "tick_size",
-        "buy_sell", "buy_sell_action", "size_to_do", "px_order", "px_live", "px_avg",
-        "initial_position", "position", "filled", "remaining", "status", "ib_status"
-    )
-
-    result <- tryCatch(
-        B.generateOrders(
-            dat_predict = dat_predict,
-            risk_per_bet_pct = risk_per_bet_pct,
-            max_daily_risk_pct = max_daily_risk_pct,
-            correlation_adjustment = correlation_adjustment,
-            account_ids = account_ids,
-            export_csv = FALSE,
-            cor_matrix = cor_matrix
-        ),
-        error = function(e) {
-            message("G.Trades.Table.orders ERROR: ", e$message)
-            NULL
-        }
-    )
-
-    if (is.null(result) || nrow(result$orders_all) == 0) {
-        empty_tbl <- tibble(
-            order_id = integer(0), ib_order_id = integer(0), account_id = integer(0),
-            instrument_id = integer(0), ticker = character(0),
-            future_id = integer(0), conid = integer(0), contract = character(0),
-            tick_size = numeric(0), buy_sell = integer(0), buy_sell_action = character(0),
-            size_to_do = integer(0), px_order = numeric(0), px_live = numeric(0),
-            px_avg = numeric(0), initial_position = integer(0), position = integer(0),
-            filled = integer(0), remaining = integer(0), status = character(0),
-            ib_status = character(0)
-        )
-        return(rhandsontable(empty_tbl, rowHeaders = NULL))
-    }
-
-    result$orders_all %>%
-        rhandsontable(rowHeaders = NULL) %>%
-        hot_col("px_order", format = "0,000.000000") %>%
-        hot_col("tick_size", format = "0.00000") %>%
-        hot_col(c("size_to_do", "filled", "remaining"), format = "0,000")
 }
