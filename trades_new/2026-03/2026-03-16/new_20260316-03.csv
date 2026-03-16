@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026031603001,2026-03-16,10,FTXIN9:IND,14926.98,flat,0,15220.8392417503,14633.120758249699,2026-03-23,14633.1207582497,15220.8392417503,0.01968644975408962,23.489256144835675,2026-03-16 06:50:46,2026-03-16 06:50:00
