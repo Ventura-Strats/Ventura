@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026031601001,2026-03-17,6,AS51:IND,8615.8,flat,0,8766.49549634324,8465.10450365676,2026-03-24,8465.10450365676,8766.49549634324,0.017490598243139255,9.38665871648507,2026-03-17 04:50:15,2026-03-17 04:50:00
