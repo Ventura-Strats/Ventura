@@ -41,7 +41,11 @@ shinyServer(function(input, output, session) {
       instrument_ids <- dat %>%
           left_join(select(INSTRUMENTS, pair, instrument_id), by = "pair") %>%
           pull(instrument_id) %>% unique()
-      T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0)
+      if (length(instrument_ids) >= 2) {
+          T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0)
+      } else {
+          NULL
+      }
   })
 
   Trades.Data.sizing <- reactive(G.Trades.Table.sizing(Trades.Data.predict_filtered(), cor_matrix = Trades.Data.cor_matrix()))

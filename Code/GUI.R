@@ -1076,7 +1076,7 @@ function (load_type, cpu_or_mem = NULL, timeframe_days = 2)
     }
     
     reformatLoadFactorR <- function(dat) {
-        dat <- dat %>%
+        dat <- dat %>% U.debug("R1") %>%
             mutate(
                 tmp = date_time,
                 date_time = substr(date_time, 1, 22),
@@ -1094,31 +1094,31 @@ function (load_type, cpu_or_mem = NULL, timeframe_days = 2)
                 tmp = gsub("    ", " ", tmp),
                 tmp = gsub("   ", " ", tmp),
                 tmp = gsub("  ", " ", tmp)
-            ) %>%
-            separate(tmp, paste0("V", 1:20), " ") %>%
+            ) %>%  U.debug("R2") %>%
+            separate(tmp, paste0("V", 1:20), " ") %>%  U.debug("R3") %>%
             rename(
                 cpu = V5,
                 mem = V6,
                 time = V12,
                 process_name = V16
-            ) %>% 
-            select(-starts_with("V")) %>%
-            mutate(
-                process_name = gsub(sprintf("--file=%sScripts/", DIRECTORY_CODE), "", process_name)
-            ) %>% 
-            separate(process_name, c("category", "process_name"), "/") %>%
-            mutate(Machine = category);
+            ) %>%  U.debug("R4") %>%
+            select(-starts_with("V")) %>% U.debug("R5") 
+       #     mutate(
+    #            process_name = gsub(sprintf("--file=%sScripts/", DIRECTORY_CODE), "", process_name)
+    #        ) %>% U.debug("R6") %>%
+    #        separate(process_name, c("category", "process_name"), "/") %>% U.debug("R7") %>%
+    #        mutate(Machine = category) %>% U.debug("R8") 
         switch(
             cpu_or_mem,
             "cpu" = rename(dat, load_factor = cpu),
             "mem" = rename(dat, load_factor = mem),
             "time" = rename(dat, load_factor = time)
-        ) %>%
-            mutate(load_factor = 0.01 * as.numeric(load_factor)) %>%
+        ) %>% U.debug("R6") %>%
+            mutate(load_factor = 0.01 * as.numeric(load_factor)) %>% U.debug("R7") %>%
             group_by(date_time, Machine) %>%
             summarize(load_factor = sum(load_factor)) %>%
-            ungroup %>%
-            filter(Machine %in% c("Fundamentals", "Technicals", "Book", "Maintenance", "Execution"));
+            ungroup %>% U.debug("R8")# %>%
+            #filter(Machine %in% c("Fundamentals", "Technicals", "Book", "Maintenance", "Execution"));
     }
     
     reformatLoadFactor_Try <- function(dat) {
@@ -1132,7 +1132,7 @@ function (load_type, cpu_or_mem = NULL, timeframe_days = 2)
             "heat" = reformatLoadFactorTemperature(dat),
             "dbsize" = reformatLoadFactorDBSize(dat),
             "conn" = reformatLoadFactorNbConnections(dat),
-            "R" = reformatLoadFactorR(dat),
+            "R" = reformatLoadFactorR(dat) %>% U.debug("R"),
         )
     }
     reformatLoadFactor <- function(dat)
@@ -1244,13 +1244,13 @@ function (load_type, cpu_or_mem = NULL, timeframe_days = 2)
                 plot_limits <- c(0,0.25);    
         
         dat_plot +
-                    geom_line(aes(col = Machine), linewidth=0.1) +
+                    geom_line(aes(col = Machine), linewidth=0.2) +
                     scale_y_continuous(labels = percent_format(), limits=plot_limits)
     }
     
     plotConnections <- function(dat_plot) {
         dat_plot +
-            geom_line(aes(col = Machine)) #+
+            geom_line(aes(col = Machine), linesize=0.2) #+
         #scale_y_continuous(limits=c(0,25))
     }
     
@@ -1262,7 +1262,7 @@ function (load_type, cpu_or_mem = NULL, timeframe_days = 2)
         max_temperature <- 5 * ceiling(max_temperature / 5);
         
         dat_plot +
-            geom_line(aes(col = Machine)) +
+            geom_line(aes(col = Machine), linesize = 0.2) +
             scale_y_continuous(
                 labels = function(x) paste0(x, "°C"), 
                 limits=c(min_temperature, max_temperature)
@@ -2466,7 +2466,7 @@ function(dat_predict) {
         distinct(instrument_id, pair, buy_sell)
 
     if (nrow(dat_unique) < 2) {
-        return(data.frame(Message = "Need at least 2 instruments for correlation matrix"))
+        return(data.frame(Pair = dat_unique$pair[1], setNames(data.frame(1), dat_unique$pair[1])))
     }
 
     # Compute asset correlation matrix
@@ -2646,7 +2646,11 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
     ####################################################################################################
 
     instrument_ids <- unique(dat_signals$instrument_id)
-    cor_matrix <- T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0, floor_at_zero = TRUE)
+    cor_matrix <- if (length(instrument_ids) >= 2) {
+        T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0, floor_at_zero = TRUE)
+    } else {
+        NULL
+    }
 
     dat_sized <- V.portfolioSizing(
         dat_signals %>% select(instrument_id, buy_sell, notional),

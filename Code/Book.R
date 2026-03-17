@@ -467,7 +467,11 @@ function(
 
     applyPortfolioSizing <- function(dat_signals) {
         instrument_ids <- unique(dat_signals$instrument_id)
-        cor_matrix <- T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0, floor_at_zero = TRUE)
+        cor_matrix <- if (length(instrument_ids) >= 2) {
+            T.calcHistoricalCorrelationsMatrix(instrument_ids = instrument_ids, shrinkage = 0, floor_at_zero = TRUE)
+        } else {
+            NULL
+        }
 
         dat_for_sizing <- dat_signals %>%
             select(instrument_id, buy_sell, notional)
