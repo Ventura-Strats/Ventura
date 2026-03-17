@@ -438,18 +438,7 @@ function(
         filter(attribute_id == 4) %>%
         select(instrument_id, tick_size = value)
 
-    tradable_instruments <- c(
-        'A50CNY', 'ASXAUD', 'AUDCAD', 'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD',
-        'CADJPY', 'CHFJPY', 'CHFSEK', 'DAXEUR', 'DJIUSD', 'EURAUD', 'EURCAD',
-        'EURCHF', 'EURCZK', 'EURGBP', 'EURHUF', 'EURJPY', 'EURNOK', 'EURNZD',
-        'EURPLN', 'EURSEK', 'EURUSD', 'FTSGBP', 'GBPAUD', 'GBPCAD', 'GBPCHF',
-        'GBPJPY', 'GBPNZD', 'GBPSEK', 'GBPUSD', 'HSIHKD', 'IBXEUR', 'KSPKRW',
-        'MIBEUR', 'NDXUSD', 'NKYJPY', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD',
-        'PX1EUR', 'RUTUSD', 'SEKJPY', 'SMICHF', 'SPXUSD', 'SSECNY', 'STXEUR',
-        'TPXJPY', 'TSXCAD', 'USDBRL', 'USDCAD', 'USDCHF', 'USDCLP', 'USDINR',
-        'USDJPY', 'USDMXN', 'USDNOK', 'USDSEK', 'USDSGD', 'USDZAR', 'XAGUSD',
-        'XAUUSD', 'CHFNOK', 'GBPNOK', 'GBPPLN', 'NOKSEK', 'EEMUSD'
-    )
+    tradable_instruments <- A.tradableInstruments()
 
     ####################################################################################################
     ### Sub routines

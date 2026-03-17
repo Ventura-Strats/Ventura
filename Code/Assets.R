@@ -427,6 +427,18 @@ function ()
     ####################################################################################################
     instrumentsStatus()
 }
+A.tradableInstruments <-
+function ()
+{
+    INSTRUMENTS %>%
+        filter(
+            asset_class != "bond",
+            use_for_training == 1,
+            use_for_trading == 1,
+            use_for_trading_gs == 1
+        ) %>%
+        .$pair
+}
 A.save <-
 function() {
     All_Objects <- ls(".GlobalEnv", pattern = "A.");

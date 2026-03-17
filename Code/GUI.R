@@ -906,7 +906,7 @@ function (load_type, cpu_or_mem = NULL, timeframe_days = 2)
     file_name <- "/%s_load.txt" %>% 
         sprintf(load_type);
     start_time <- as.POSIXct(paste0(TO_DAY - timeframe_days + 1, " 00:00:00")) - 6 * 3600;
-    end_time <- as.POSIXct(paste0(TO_DAY + 1, " 23:59:00"))
+    end_time <- as.POSIXct(paste0(TO_DAY, " 23:59:00"))
     
     ####################################################################################################
     ### Sub routines
@@ -1157,7 +1157,7 @@ function (load_type, cpu_or_mem = NULL, timeframe_days = 2)
         dat <- time_schedule %>% 
             filter(date_time <= max_time) %>% 
             left_join(dat, by = "date_time") 
-        if (load_type %in% c("ib", "sqp", "R", "conn")) {
+        if (load_type %in% c("ib", "sql", "R", "conn")) {
             pos_na_load <- which(is.na(dat$load_factor))
             dat$load_factor[pos_na_load] <- 0;
             pos_na_machine <- which(is.na(dat$Machine));
@@ -1244,7 +1244,7 @@ function (load_type, cpu_or_mem = NULL, timeframe_days = 2)
                 plot_limits <- c(0,0.25);    
         
         dat_plot +
-                    geom_line(aes(col = Machine)) +
+                    geom_line(aes(col = Machine), linewidth=0.1) +
                     scale_y_continuous(labels = percent_format(), limits=plot_limits)
     }
     
@@ -2449,23 +2449,7 @@ function(dat_predict) {
     ### Returns trade-adjusted correlation matrix for signals, labeled by pair
     ####################################################################################################
 
-    tradable_instruments <- c(
-        'A50CNY', 'ASXAUD', 'AUDCAD',
-        'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD',
-        'CADJPY', 'CHFJPY', 'CHFSEK', 'DAXEUR',
-        'DJIUSD', 'EURAUD', 'EURCAD', 'EURCHF', 'EURCZK', 'EURGBP', 'EURHUF',
-        'EURJPY', 'EURNOK', 'EURNZD', 'EURPLN', 'EURSEK', 'EURUSD',
-        'FTSGBP', 'GBPAUD', 'GBPCAD', 'GBPCHF',
-        'GBPJPY', 'GBPNZD', 'GBPSEK', 'GBPUSD', 'HSIHKD', 'IBXEUR',
-        'KSPKRW', 'MIBEUR',
-        'NDXUSD', 'NKYJPY', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD',
-        'PX1EUR', 'RUTUSD', 'SEKJPY', 'SMICHF', 'SPXUSD', 'SSECNY',
-        'STXEUR', 'TPXJPY', 'TSXCAD',
-        'USDBRL', 'USDCAD', 'USDCHF', 'USDCLP',
-        'USDINR', 'USDJPY', 'USDMXN', 'USDNOK', 'USDSEK',
-        'USDSGD', 'USDZAR', 'XAGUSD', 'XAUUSD',
-        'CHFNOK', 'GBPNOK', 'GBPPLN', 'NOKSEK',
-        'EEMUSD')
+    tradable_instruments <- A.tradableInstruments()
 
     dat_signals <- dat_predict %>%
         left_join(select(INSTRUMENTS, pair, instrument_id), by = "pair") %>%
@@ -2570,23 +2554,7 @@ function (dat_predict)
     ### Shows signal list with Execute checkbox. No sizing - that's done in G.Trades.Table.sizing()
     ####################################################################################################
 
-    tradable_instruments <- c(
-        'A50CNY', 'ASXAUD', 'AUDCAD',
-        'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD',
-        'CADJPY', 'CHFJPY', 'CHFSEK', 'DAXEUR',
-        'DJIUSD', 'EURAUD', 'EURCAD', 'EURCHF', 'EURCZK', 'EURGBP', 'EURHUF',
-        'EURJPY', 'EURNOK', 'EURNZD', 'EURPLN', 'EURSEK', 'EURUSD',
-        'FTSGBP', 'GBPAUD', 'GBPCAD', 'GBPCHF',
-        'GBPJPY', 'GBPNZD', 'GBPSEK', 'GBPUSD', 'HSIHKD', 'IBXEUR',
-        'KSPKRW', 'MIBEUR',
-        'NDXUSD', 'NKYJPY', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD',
-        'PX1EUR', 'RUTUSD', 'SEKJPY', 'SMICHF', 'SPXUSD', 'SSECNY',
-        'STXEUR', 'TPXJPY', 'TSXCAD',
-        'USDBRL', 'USDCAD', 'USDCHF', 'USDCLP',
-        'USDINR', 'USDJPY', 'USDMXN', 'USDNOK', 'USDSEK',
-        'USDSGD', 'USDZAR', 'XAGUSD', 'XAUUSD',
-        'CHFNOK', 'GBPNOK', 'GBPPLN', 'NOKSEK',
-        'EEMUSD')
+    tradable_instruments <- A.tradableInstruments()
 
     dat_signals <- dat_predict %>%
         left_join(select(INSTRUMENTS, pair, asset, instrument_id), by = "pair") %>%
@@ -2650,23 +2618,7 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
     ### Returns clean summary: instrument, direction, N_eff, weight, sized notional.
     ####################################################################################################
 
-    tradable_instruments <- c(
-        'A50CNY', 'ASXAUD', 'AUDCAD',
-        'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD',
-        'CADJPY', 'CHFJPY', 'CHFSEK', 'DAXEUR',
-        'DJIUSD', 'EURAUD', 'EURCAD', 'EURCHF', 'EURCZK', 'EURGBP', 'EURHUF',
-        'EURJPY', 'EURNOK', 'EURNZD', 'EURPLN', 'EURSEK', 'EURUSD',
-        'FTSGBP', 'GBPAUD', 'GBPCAD', 'GBPCHF',
-        'GBPJPY', 'GBPNZD', 'GBPSEK', 'GBPUSD', 'HSIHKD', 'IBXEUR',
-        'KSPKRW', 'MIBEUR',
-        'NDXUSD', 'NKYJPY', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD',
-        'PX1EUR', 'RUTUSD', 'SEKJPY', 'SMICHF', 'SPXUSD', 'SSECNY',
-        'STXEUR', 'TPXJPY', 'TSXCAD',
-        'USDBRL', 'USDCAD', 'USDCHF', 'USDCLP',
-        'USDINR', 'USDJPY', 'USDMXN', 'USDNOK', 'USDSEK',
-        'USDSGD', 'USDZAR', 'XAGUSD', 'XAUUSD',
-        'CHFNOK', 'GBPNOK', 'GBPPLN', 'NOKSEK',
-        'EEMUSD')
+    tradable_instruments <- A.tradableInstruments()
 
     dat_signals <- dat_predict %>%
         left_join(select(INSTRUMENTS, pair, asset, instrument_id), by = "pair") %>%

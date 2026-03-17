@@ -104,7 +104,7 @@ prepareSpecificTables <- function() {
     U.dfReplaceNAColumnsWithZero("is_etf") %>%
     select(
       instrument_id, pair, ticker, ccy, asset, asset_class, 
-      use_for_training, use_for_trading, use_for_trading_ib,
+      use_for_training, use_for_trading, use_for_trading_ib, use_for_trading_gs,
       market, market_id, execution_time_id, execution_time,
       trade_instrument_type,
       conid_spot, is_etf

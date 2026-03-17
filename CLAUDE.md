@@ -176,7 +176,7 @@ Located in `/HD/Scripts/Python/`:
 - `trade_orders.py` - Interactive order placement: exit orders (target+stop OCA), entry orders (chase algo)
 - `order_execution.py` - Chase algorithm for entry order execution (used by trade_orders.py)
 
-## Current Status (Updated 2026-03-15)
+## Current Status (Updated 2026-03-16)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -195,6 +195,7 @@ Located in `/HD/Scripts/Python/`:
 - **Trades tab restructure** (2026-03-06): Split into 4 sequential tables: Signals (with Execute checkbox) → Portfolio Sizing (new `G.Trades.Table.sizing()`, N_Eff as text header) → Correlation Matrix → Execution Orders. All downstream tables filter on tradable instruments and react to Execute checkbox. See Session_Notes/2026-03-06_trades_tab_restructure.md
 - **Correlation floor fix & dedup** (2026-03-10): Fixed floor_at_zero bug (was applied to asset correlations before direction adjustment, now applied to trade correlations after). Deduplicated correlation matrix computation in dashboard via `Trades.Data.cor_matrix` reactive in server.R. See Session_Notes/2026-03-10_correlation_floor_fix.md
 - **Machine status monitoring** (2026-03-15): Added dashboard tab 6.1 "Machine Status" with `G.Diagnostic.MachineStatus.Plot.systemLoad()`. Displays CPU, memory, swap, heat, IB process, R process, DB stats from text files collected by crontab shell script on each machine. Data stored in `/home/fls/Data/Glenorchy/SD/Machine_Status/<computer>/`. Still has bugs, work in progress. See Session_Notes/2026-03-15_machine_status_and_fixes.md
+- **Tradable instruments cleanup** (2026-03-16): Replaced 4 hardcoded `tradable_instruments` lists with new `A.tradableInstruments()` function. Reads from INSTRUMENTS table filtering on `asset_class != "bond"`, `use_for_training == 1`, `use_for_trading == 1`, `use_for_trading_gs == 1`. Changed: `G.Trades.Table.correlations`, `G.Trades.Table.predict`, `G.Trades.Table.sizing` (GUI.R), `B.generateOrders` (Book.R). See Session_Notes/2026-03-16_tradable_instruments_cleanup.md
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -293,10 +294,11 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - **DONE**: `B.confirmSingleLeg()` for manual single-leg confirmation
 - Flow: Read_Executions.py -> book_trade_leg -> B.matchLegsToTrades() -> review -> B.confirmLegMatch()
 
-### 4. Tradable Instruments List Cleanup
-- `tradable_instruments` is hardcoded in 3 GUI functions: `G.Trades.Table.predict()`, `G.Trades.Table.sizing()`, `G.Trades.Table.correlations()`
-- Plan: add `tradable` column to `instrument` DB table, read once at startup, feed into all functions
-- Removes need to maintain the list in multiple places
+### 4. Tradable Instruments List Cleanup - DONE
+- **DONE**: New `A.tradableInstruments()` function in Assets.R reads from INSTRUMENTS table
+- **DONE**: Replaced hardcoded lists in `G.Trades.Table.predict()`, `G.Trades.Table.sizing()`, `G.Trades.Table.correlations()` (GUI.R) and `B.generateOrders()` (Book.R)
+- **DONE**: Uses existing DB flags: `use_for_training`, `use_for_trading`, `use_for_trading_gs` from `static_instrument`
+- To change tradable instruments: update `use_for_trading_gs` in DB, re-run `Static_Tables.R`
 
 ### 5. Python Codebase Cleanup
 - All Python scripts (IB API integration) are poorly written legacy code
@@ -329,6 +331,10 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - `exit_orders(trade_id, account_id, dry_run=True)` - Place target LMT + stop STP as OCA pair (GTC). dry_run=True by default
 - `exit_orders_all(account_id, dry_run=True)` - Place exit orders for all live trades
 - `TradeOrderManager(account_id, client_id)` - Class for full control: connect(), get_trade_info(), place_exit_orders(), place_entry_order(), cancel_exit_orders()
+
+### Asset Management
+- `A.tradableInstruments()` - Returns pair names of tradable instruments from INSTRUMENTS table (filters: not bond, use_for_training=1, use_for_trading=1, use_for_trading_gs=1)
+- `A.getInstrumentId(input_list)` - Convert pairs/tickers to instrument_ids
 
 ### Utilities
 - `U.try(f, default)` - Wrap function with error handling (returns default on error)
