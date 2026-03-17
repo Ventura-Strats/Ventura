@@ -1103,11 +1103,11 @@ function (load_type, cpu_or_mem = NULL, timeframe_days = 2)
                 process_name = V16
             ) %>%  U.debug("R4") %>%
             select(-starts_with("V")) %>% U.debug("R5") 
-       #     mutate(
-    #            process_name = gsub(sprintf("--file=%sScripts/", DIRECTORY_CODE), "", process_name)
-    #        ) %>% U.debug("R6") %>%
-    #        separate(process_name, c("category", "process_name"), "/") %>% U.debug("R7") %>%
-    #        mutate(Machine = category) %>% U.debug("R8") 
+        #     mutate(
+        #            process_name = gsub(sprintf("--file=%sScripts/", DIRECTORY_CODE), "", process_name)
+        #        ) %>% U.debug("R6") %>%
+        #        separate(process_name, c("category", "process_name"), "/") %>% U.debug("R7") %>%
+        #        mutate(Machine = category) %>% U.debug("R8") 
         switch(
             cpu_or_mem,
             "cpu" = rename(dat, load_factor = cpu),
@@ -1118,7 +1118,7 @@ function (load_type, cpu_or_mem = NULL, timeframe_days = 2)
             group_by(date_time, Machine) %>%
             summarize(load_factor = sum(load_factor)) %>%
             ungroup %>% U.debug("R8")# %>%
-            #filter(Machine %in% c("Fundamentals", "Technicals", "Book", "Maintenance", "Execution"));
+        #filter(Machine %in% c("Fundamentals", "Technicals", "Book", "Maintenance", "Execution"));
     }
     
     reformatLoadFactor_Try <- function(dat) {
