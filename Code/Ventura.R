@@ -2305,13 +2305,18 @@ function(
             dat_netted %>% select(instrument_id, buy_sell_netted = buy_sell, weight_netted),
             by = "instrument_id"
         ) %>%
+        mutate(
+            # Instruments fully netted out (e.g., BUY+SELL cancelled) have NA from left_join
+            buy_sell_netted = replace_na(buy_sell_netted, 0),
+            weight_netted = replace_na(weight_netted, 0)
+        ) %>%
         group_by(instrument_id) %>%
         mutate(
             # Only signals matching the netted direction get weight
             matches_netted = (sign(buy_sell) == buy_sell_netted),
             n_matching = sum(matches_netted),
             # Split weight among matching signals for same asset
-            weight = ifelse(matches_netted, weight_netted / n_matching, 0)
+            weight = ifelse(matches_netted, weight_netted / pmax(n_matching, 1), 0)
         ) %>%
         ungroup() %>%
         mutate(

@@ -176,7 +176,7 @@ Located in `/HD/Scripts/Python/`:
 - `trade_orders.py` - Interactive order placement: exit orders (target+stop OCA), entry orders (chase algo)
 - `order_execution.py` - Chase algorithm for entry order execution (used by trade_orders.py)
 
-## Current Status (Updated 2026-03-17)
+## Current Status (Updated 2026-03-18)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -197,6 +197,7 @@ Located in `/HD/Scripts/Python/`:
 - **Machine status monitoring** (2026-03-15): Added dashboard tab 6.1 "Machine Status" with `G.Diagnostic.MachineStatus.Plot.systemLoad()`. Displays CPU, memory, swap, heat, IB process, R process, DB stats from text files collected by crontab shell script on each machine. Data stored in `/home/fls/Data/Glenorchy/SD/Machine_Status/<computer>/`. Still has bugs, work in progress. See Session_Notes/2026-03-15_machine_status_and_fixes.md
 - **Tradable instruments cleanup** (2026-03-16): Replaced 4 hardcoded `tradable_instruments` lists with new `A.tradableInstruments()` function. Reads from INSTRUMENTS table filtering on `asset_class != "bond"`, `use_for_training == 1`, `use_for_trading == 1`, `use_for_trading_gs == 1`. Changed: `G.Trades.Table.correlations`, `G.Trades.Table.predict`, `G.Trades.Table.sizing` (GUI.R), `B.generateOrders` (Book.R). See Session_Notes/2026-03-16_tradable_instruments_cleanup.md
 - **Backtest portfolio sizing** (2026-03-17): Replaced crude equal-risk sizing in `V.readBacktest` with eigenvalue-based `V.portfolioSizing`. Daily signals now go through antagonist netting, N_eff calculation, and min-variance optimization — same pipeline as live trading. Correlation matrix recomputed weekly (rolling). Removed per-strategy P&L tracking (total portfolio only). Added `n_effective` and `avg_n_eff` to diagnostics. See Session_Notes/2026-03-17_backtest_portfolio_sizing.md
+- **V.portfolioSizing antagonist netting fix** (2026-03-18): Fixed NA propagation bug when strategies disagree on the same instrument (e.g., strategy 7 BUY + strategy 11 SELL). Netted-out instruments produced NA weights via `left_join`, crashing multi-strategy backtests. Fix: `replace_na()` after join gives cancelled instruments weight=0. Affects `V.portfolioSizing` (shared by backtest, dashboard, and order generation). See Session_Notes/2026-03-18_portfolio_sizing_netting_fix.md
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
