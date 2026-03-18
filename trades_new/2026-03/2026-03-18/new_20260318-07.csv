@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026031807001,2026-03-18,2,USDRUB,84.552,up,1,86.0139756787938,83.09002432120622,2026-03-25,83.0900243212062,86.0139756787938,0.017290846801894633,57834.0674379479,2026-03-18 19:52:00,2026-03-18 19:50:00
