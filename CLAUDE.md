@@ -176,7 +176,7 @@ Located in `/HD/Scripts/Python/`:
 - `trade_orders.py` - Interactive order placement: exit orders (target+stop OCA), entry orders (chase algo)
 - `order_execution.py` - Chase algorithm for entry order execution (used by trade_orders.py)
 
-## Current Status (Updated 2026-03-16)
+## Current Status (Updated 2026-03-17)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -196,6 +196,7 @@ Located in `/HD/Scripts/Python/`:
 - **Correlation floor fix & dedup** (2026-03-10): Fixed floor_at_zero bug (was applied to asset correlations before direction adjustment, now applied to trade correlations after). Deduplicated correlation matrix computation in dashboard via `Trades.Data.cor_matrix` reactive in server.R. See Session_Notes/2026-03-10_correlation_floor_fix.md
 - **Machine status monitoring** (2026-03-15): Added dashboard tab 6.1 "Machine Status" with `G.Diagnostic.MachineStatus.Plot.systemLoad()`. Displays CPU, memory, swap, heat, IB process, R process, DB stats from text files collected by crontab shell script on each machine. Data stored in `/home/fls/Data/Glenorchy/SD/Machine_Status/<computer>/`. Still has bugs, work in progress. See Session_Notes/2026-03-15_machine_status_and_fixes.md
 - **Tradable instruments cleanup** (2026-03-16): Replaced 4 hardcoded `tradable_instruments` lists with new `A.tradableInstruments()` function. Reads from INSTRUMENTS table filtering on `asset_class != "bond"`, `use_for_training == 1`, `use_for_trading == 1`, `use_for_trading_gs == 1`. Changed: `G.Trades.Table.correlations`, `G.Trades.Table.predict`, `G.Trades.Table.sizing` (GUI.R), `B.generateOrders` (Book.R). See Session_Notes/2026-03-16_tradable_instruments_cleanup.md
+- **Backtest portfolio sizing** (2026-03-17): Replaced crude equal-risk sizing in `V.readBacktest` with eigenvalue-based `V.portfolioSizing`. Daily signals now go through antagonist netting, N_eff calculation, and min-variance optimization — same pipeline as live trading. Correlation matrix recomputed weekly (rolling). Removed per-strategy P&L tracking (total portfolio only). Added `n_effective` and `avg_n_eff` to diagnostics. See Session_Notes/2026-03-17_backtest_portfolio_sizing.md
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -277,6 +278,8 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 
 **Dashboard**: Trades tab has 4 sections: Signals (with Execute checkbox) → Portfolio Sizing (N_Eff as text header, then table with Instrument, Direction, Weight_Pct, Sized_Notional) → Correlation Matrix → Execution Orders. Unticking a signal recalculates sizing, correlations, and orders for selected trades only. All sections filter on tradable instruments (currently hardcoded, to be moved to DB). Asset correlation matrix is computed once in `Trades.Data.cor_matrix` reactive and shared across all three downstream functions.
 
+**Backtest integration** (2026-03-17): `V.readBacktest` now calls `V.portfolioSizing` for each day's new signals. Correlation matrix is recomputed weekly (rolling, cached by ISO week). Replaced crude `capital_allocation_ratio` with eigenvalue-based sizing. Per-strategy P&L tracking removed; only total portfolio P&L. Summary statistics include `avg_n_eff`. See Session_Notes/2026-03-17_backtest_portfolio_sizing.md
+
 ## Next Priorities
 
 ### 2. Automatic Trade Execution (Python) - PARTIALLY DONE
@@ -319,6 +322,10 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - `B.matchLegsToTrades(lookback_days, price_tolerance_pct, timestamp_tolerance_minutes)` - Match execution legs to trades. Determines if each leg is ENTRY, TARGET, STOP, or MATURITY. Returns summary for manual review
 - `B.confirmLegMatch(match_summary, confirm_types, dry_run)` - Execute matches after review. Creates trades via B.createNewTradeIDFromLegs() or closes via B.closeTradeFromLegs()
 - `B.confirmSingleLeg(leg_id, match_type, trade_id, strategy_id, tp_pct, dry_run)` - Manually confirm a single leg when automatic matching fails
+
+### Backtesting
+- `V.readBacktest(strats_list)` - Run backtest simulation with eigenvalue-based portfolio sizing. Calls `V.portfolioSizing()` daily for new signals. Correlation matrix recomputed weekly (rolling). Key parameters (inside function): `risk_per_bet_pct` (0.5), `max_daily_risk_pct` (5), `correlation_adjustment` (0), `lookback_weeks` (104), `pnl_reference_usd` (1000). Returns list with `pnl`, `pnl_per_day`, `data`, `summary` (including `avg_n_eff`)
+- `V.backtestModel()` - Generate backtest signals (run separately, produces CSV files consumed by `V.readBacktest`)
 
 ### Technical Analysis
 - `T.plotPriceSeries()` - Diagnostic plot for price data
