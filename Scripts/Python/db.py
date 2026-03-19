@@ -7,7 +7,7 @@ Created on Sat Sep 22 12:54:57 2018
 
 import pandas as pd
 # import MySQLdb as mysql
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from datetime import datetime
 # from datetime import timedelta
 import utils as ut
@@ -44,7 +44,8 @@ DB_CONNECT_STR = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/Ventura'
 def executeSQL(sql_query):
     DB = create_engine(DB_CONNECT_STR)
     with DB.connect() as connection:
-        connection.execute(sql_query)
+        connection.execute(text(sql_query))
+        connection.commit()
     DB.dispose()
 
 @ut.trySimpleNone()
