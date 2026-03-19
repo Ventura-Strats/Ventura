@@ -91,10 +91,11 @@ source("Init.R"); I.executeScript()
 ## Infrastructure
 
 ### Database
-- MySQL on 192.168.0.37
-- Database name: `Ventura`
+- MySQL 8.0.45 on 192.168.0.37 (ventura3, "X"), Intel i5-6600T, 32GB RAM, 234GB NVMe SSD
+- Database name: `Ventura` (~22.5GB)
 - Connection via `D.connect()` in DB.R
 - Credentials in environment variables (`VENTURA_DB_USER`, `VENTURA_DB_PASSWORD`, `VENTURA_DB_HOST`)
+- **Tuned (2026-03-19)**: 20G buffer pool, O_DIRECT, 1G redo log, 4 I/O threads, binlog off, 8G swap. See Session_Notes/2026-03-19_mysql_tuning.md
 
 ### Network Machines
 ```
@@ -176,7 +177,7 @@ Located in `/HD/Scripts/Python/`:
 - `trade_orders.py` - Interactive order placement: exit orders (target+stop OCA), entry orders (chase algo)
 - `order_execution.py` - Chase algorithm for entry order execution (used by trade_orders.py)
 
-## Current Status (Updated 2026-03-18)
+## Current Status (Updated 2026-03-19)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -198,6 +199,7 @@ Located in `/HD/Scripts/Python/`:
 - **Tradable instruments cleanup** (2026-03-16): Replaced 4 hardcoded `tradable_instruments` lists with new `A.tradableInstruments()` function. Reads from INSTRUMENTS table filtering on `asset_class != "bond"`, `use_for_training == 1`, `use_for_trading == 1`, `use_for_trading_gs == 1`. Changed: `G.Trades.Table.correlations`, `G.Trades.Table.predict`, `G.Trades.Table.sizing` (GUI.R), `B.generateOrders` (Book.R). See Session_Notes/2026-03-16_tradable_instruments_cleanup.md
 - **Backtest portfolio sizing** (2026-03-17): Replaced crude equal-risk sizing in `V.readBacktest` with eigenvalue-based `V.portfolioSizing`. Daily signals now go through antagonist netting, N_eff calculation, and min-variance optimization — same pipeline as live trading. Correlation matrix recomputed weekly (rolling). Removed per-strategy P&L tracking (total portfolio only). Added `n_effective` and `avg_n_eff` to diagnostics. See Session_Notes/2026-03-17_backtest_portfolio_sizing.md
 - **V.portfolioSizing antagonist netting fix** (2026-03-18): Fixed NA propagation bug when strategies disagree on the same instrument (e.g., strategy 7 BUY + strategy 11 SELL). Netted-out instruments produced NA weights via `left_join`, crashing multi-strategy backtests. Fix: `replace_na()` after join gives cancelled instruments weight=0. Affects `V.portfolioSizing` (shared by backtest, dashboard, and order generation). See Session_Notes/2026-03-18_portfolio_sizing_netting_fix.md
+- **MySQL server tuning** (2026-03-19): Audited and tuned MySQL 8.0.45 on ventura3. Reduced buffer pool from 32G to 20G (was using only 7.6G), enabled O_DIRECT (eliminates double-buffering), increased redo log from 100MB to 1G (reduces checkpoint iowait), reduced I/O threads from 128 to 8 (4 cores), disabled binlog (no replication), increased temp tables to 128MB. Created 8G swap with swappiness=10 as OOM protection. Freed ~8GB RAM. See Session_Notes/2026-03-19_mysql_tuning.md
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
