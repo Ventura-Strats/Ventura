@@ -39,7 +39,7 @@ whichPairsToDo <- function(exec_time_id_if_just_before_execution) {
   minute(time_limit) <- U.mround(minute(time_limit), 5)
   print("Time limit")
   print(time_limit)
-  dat_pair <- filter(INSTRUMENTS, use_for_trading == 1)
+  dat_pair <- filter(INSTRUMENTS, pair %in% A.filterInstruments("predict"))
   if (!is.na(exec_time_id_if_just_before_execution)) {
     dat_pair <- filter(dat_pair, execution_time_id == exec_time_id_if_just_before_execution)
   }

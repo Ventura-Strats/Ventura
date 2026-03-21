@@ -231,9 +231,7 @@ function (strat_id, dat_input = NULL)
         }
         
         prepareBaseData <- function() {
-            INSTRUMENTS %>%
-                filter(use_for_training == 1) %>%
-                .$pair %>%
+            A.filterInstruments("training") %>%
                 lapply(loadTechFile) #%>% 
             bind_rows %>% 
                 U.data2Tibble %>%

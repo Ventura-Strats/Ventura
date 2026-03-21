@@ -438,7 +438,7 @@ function(
         filter(attribute_id == 4) %>%
         select(instrument_id, tick_size = value)
 
-    tradable_instruments <- A.tradableInstruments()
+    tradable_instruments <- A.filterInstruments("exec")
 
     ####################################################################################################
     ### Sub routines

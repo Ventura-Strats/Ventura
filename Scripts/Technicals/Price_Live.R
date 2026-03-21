@@ -10,7 +10,7 @@ max_time_hours <<- 5/60
 ####################################################################################################
 getPairList <- function() {
   exec_time_id <- A.getExecutionTimeId()
-  pair_list <- filter(INSTRUMENTS, use_for_trading == 1)
+  pair_list <- filter(INSTRUMENTS, pair %in% A.filterInstruments("predict"))
   if (!is.na(exec_time_id)) {
     pair_list <- filter(pair_list, execution_time_id == A.getExecutionTimeId())
   }

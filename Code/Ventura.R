@@ -385,16 +385,16 @@ function (strat_id_list,
     }
     
     filterProbabilities <- function(dat) {
-        dat %>% 
-            left_join(select(INSTRUMENTS, instrument_id, use_for_trading_ib), by = "instrument_id") %>%
+        dat %>%
+            left_join(select(INSTRUMENTS, instrument_id, pair), by = "instrument_id") %>%
             filter(
-                (use_for_trading_ib == 1) | !keep_only_tradable,
+                (pair %in% A.filterInstruments("IB")) | !keep_only_tradable,
                 (predict == predict_w) | !compare_with_weighted_calibration,
                 (pmax(proba_signal, proba_signal_w) >= THRESHOLD_PROBA_SIGNAL) |
-                    (pmax(proba_diff, proba_diff_w) >= THRESHOLD_PROBA_DIFF) | 
+                    (pmax(proba_diff, proba_diff_w) >= THRESHOLD_PROBA_DIFF) |
                     (pmin(proba_antisignal, proba_antisignal_w) <= THRESHOLD_PROBA_ANTISIGNAL)
-            ) %>% 
-            select(-use_for_trading_ib)
+            ) %>%
+            select(-pair)
     }
     
     calcQuickPnL <- function(dat) {
@@ -597,15 +597,15 @@ function (strat_id_list, PROBA_STEP = 0.025, dat_input = NULL, this_quinquennat 
     }
     
     filterProbabilities <- function(p, dat) {
-        dat %>% 
-            left_join(select(INSTRUMENTS, instrument_id, use_for_trading_ib), by = "instrument_id") %>%
+        dat %>%
+            left_join(select(INSTRUMENTS, instrument_id, pair), by = "instrument_id") %>%
             filter(
-                (use_for_trading_ib == 1) | !keep_only_tradable,
+                (pair %in% A.filterInstruments("IB")) | !keep_only_tradable,
                 (predict == predict_w) | !compare_with_weighted_calibration,
                 (pmax(proba_diff, proba_diff_w) >= p),
                 (pmax(proba_diff, proba_diff_w) < p + PROBA_STEP),
-            ) %>% 
-            select(-use_for_trading_ib)
+            ) %>%
+            select(-pair)
     }
     
     calcPnLDensityForProba <- function(p, dat) {
@@ -1563,7 +1563,7 @@ function (
     }
     
     if (is.null(pair_list)) {
-        pair_list <- filter(INSTRUMENTS, use_for_training + use_for_trading >= 1)$pair
+        pair_list <- A.filterInstruments("all")
     }
     instrument_id_list <- filter(INSTRUMENTS, pair %in% pair_list)$instrument_id
     ####################################################################################################
@@ -1685,10 +1685,10 @@ function (
     }
     
     if (is.null(pair_list)) {
-        pair_list <- filter(INSTRUMENTS, use_for_training + use_for_trading >= 1)$pair
+        pair_list <- A.filterInstruments("all")
     }
     instrument_id_list <- filter(INSTRUMENTS, pair %in% pair_list)$instrument_id
-    
+
     predict_time <- Sys.time()
     ####################################################################################################
     ### Sub routines
@@ -2730,7 +2730,6 @@ function (strat_id_list)
             sprintf(strat_id) %>%
             U.read.csv %>%
             left_join(dat_w, by = c("date", "instrument_id")) %>%
-            left_join(select(INSTRUMENTS, instrument_id, use_for_trading_ib), by = "instrument_id") %>%
             filter(predict %in% c("up", "down")) %>%
      #       filter(predict %in% "up") %>%
             mutate(
@@ -2745,10 +2744,10 @@ function (strat_id_list)
             filter(
                 date >= min_date,
                 instrument_id %in% limited_instrument_set,
-                (use_for_trading_ib == 1) ,
+                instrument_id %in% filter(INSTRUMENTS, pair %in% A.filterInstruments("IB"))$instrument_id,
                 (predict == predict_w) ,
                 (proba_signal >= min_proba_signal) |
-                    (proba_diff >= min_proba_diff) | 
+                    (proba_diff >= min_proba_diff) |
                     (proba_signal_plus_flat >= min_proba_signal_plus_flat)
             ) %>%
             select(
@@ -2884,7 +2883,7 @@ function (strats_list = NULL)
     path_backtest <- paste0(DIRECTORY_DATA_HD, "Backtestings/")
     file_name_normal <- "%sbacktest_strat_%s.csv"
     
-    tradable_instruments <- filter(INSTRUMENTS, use_for_trading_ib == 1)$instrument_id
+    tradable_instruments <- filter(INSTRUMENTS, pair %in% A.filterInstruments("IB"))$instrument_id
     
     cost_of_carry_pct_per_annum <- 5
     

@@ -13,7 +13,7 @@ pairs_to_do_index <<- as.integer(commandArgs(trailingOnly = TRUE)[2])
 ####################################################################################################
 whichPairsToDo <- function() {
   INSTRUMENTS %>%
-    filter((use_for_training + use_for_trading >= 1)) %>%
+    filter(pair %in% A.filterInstruments("all")) %>%
     .$pair %>%
     U.splitInBatch(pairs_to_do_index, nb_batches) %>% 
     U.debug("Will do these pairs:")

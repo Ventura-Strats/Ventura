@@ -12,9 +12,9 @@ getPairList <- function() {
   exec_time_id <- A.getExecutionTimeId(time_threshold = 15)
   pair_list <- INSTRUMENTS$pair
   if (!is.na(exec_time_id)) {
-    pair_list <- INSTRUMENTS %>% 
+    pair_list <- INSTRUMENTS %>%
       filter(
-        use_for_trading == 1, 
+        pair %in% A.filterInstruments("predict"),
         execution_time_id == A.getExecutionTimeId(time_threshold = 15)
       ) %>%
       .$pair

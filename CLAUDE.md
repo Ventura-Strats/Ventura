@@ -177,7 +177,7 @@ Located in `/HD/Scripts/Python/`:
 - `trade_orders.py` - Interactive order placement: exit orders (target+stop OCA), entry orders (chase algo)
 - `order_execution.py` - Chase algorithm for entry order execution (used by trade_orders.py)
 
-## Current Status (Updated 2026-03-19)
+## Current Status (Updated 2026-03-21)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -201,6 +201,8 @@ Located in `/HD/Scripts/Python/`:
 - **V.portfolioSizing antagonist netting fix** (2026-03-18): Fixed NA propagation bug when strategies disagree on the same instrument (e.g., strategy 7 BUY + strategy 11 SELL). Netted-out instruments produced NA weights via `left_join`, crashing multi-strategy backtests. Fix: `replace_na()` after join gives cancelled instruments weight=0. Affects `V.portfolioSizing` (shared by backtest, dashboard, and order generation). See Session_Notes/2026-03-18_portfolio_sizing_netting_fix.md
 - **MySQL server tuning** (2026-03-19): Audited and tuned MySQL 8.0.45 on ventura3. Reduced buffer pool from 32G to 20G (was using only 7.6G), enabled O_DIRECT (eliminates double-buffering), increased redo log from 100MB to 1G (reduces checkpoint iowait), reduced I/O threads from 128 to 8 (4 cores), disabled binlog (no replication), increased temp tables to 128MB. Created 8G swap with swappiness=10 as OOM protection. Freed ~8GB RAM. See Session_Notes/2026-03-19_mysql_tuning.md
 - **"DB not writable" fix** (2026-03-19): Fixed `executeSQL()` in `db.py` — SQLAlchemy 2.x (2.0.34) requires `text()` wrapping for raw SQL strings and explicit `connection.commit()`. Was silently failing via `ObjectNotExecutableError` swallowed by `@ut.trySimpleNone()`. Broken since SQLAlchemy upgrade (at least since 2026-03-11). Affected all Python DB writes: `testWriteDB()`, `status_script` inserts/updates, `book_nav` inserts, `live_px_exec` truncation. See Session_Notes/2026-03-19_db_not_writable_fix.md
+- **A.filterInstruments refactor** (2026-03-21): Renamed `A.tradableInstruments()` to `A.filterInstruments(use_case)` with 5 use cases: `"all"`, `"training"`, `"predict"`, `"exec"`, `"IB"`. Replaced all direct `use_for_*` column filtering across 26 call sites in Code/ and Scripts/ with centralised function. See Session_Notes/2026-03-21_filter_instruments_refactor.md
+- **Trim_Machine_Status.sh** (2026-03-21): New maintenance script keeps last 3000 lines per machine status file. Reduced 1.3GB to 18MB on first run. Runs daily via crontab
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -300,11 +302,13 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - **DONE**: `B.confirmSingleLeg()` for manual single-leg confirmation
 - Flow: Read_Executions.py -> book_trade_leg -> B.matchLegsToTrades() -> review -> B.confirmLegMatch()
 
-### 4. Tradable Instruments List Cleanup - DONE
-- **DONE**: New `A.tradableInstruments()` function in Assets.R reads from INSTRUMENTS table
-- **DONE**: Replaced hardcoded lists in `G.Trades.Table.predict()`, `G.Trades.Table.sizing()`, `G.Trades.Table.correlations()` (GUI.R) and `B.generateOrders()` (Book.R)
-- **DONE**: Uses existing DB flags: `use_for_training`, `use_for_trading`, `use_for_trading_gs` from `static_instrument`
-- To change tradable instruments: update `use_for_trading_gs` in DB, re-run `Static_Tables.R`
+### 4. Tradable Instruments List Cleanup - DONE (refactored 2026-03-21)
+- **DONE**: `A.filterInstruments(use_case)` centralises all instrument filtering with 5 use cases: `"all"`, `"training"`, `"predict"`, `"exec"` (default), `"IB"`
+- **DONE**: Replaced all 26 direct `use_for_*` column filters across Code/ and Scripts/ with `A.filterInstruments()` calls
+- **DONE**: Uses existing DB flags: `use_for_training`, `use_for_trading`, `use_for_trading_gs`, `use_for_trading_ib` from `static_instrument`
+- To change tradable instruments: update relevant flags in DB, re-run `Static_Tables.R`
+- SQL queries in Technicals.R, Ventura.R, Static_Tables.R, PowerLaw.R still filter directly (can't call R from SQL)
+- Python scripts still filter directly (different language)
 
 ### 5. Python Codebase Cleanup
 - All Python scripts (IB API integration) are poorly written legacy code
@@ -343,7 +347,7 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - `TradeOrderManager(account_id, client_id)` - Class for full control: connect(), get_trade_info(), place_exit_orders(), place_entry_order(), cancel_exit_orders()
 
 ### Asset Management
-- `A.tradableInstruments()` - Returns pair names of tradable instruments from INSTRUMENTS table (filters: not bond, use_for_training=1, use_for_trading=1, use_for_trading_gs=1)
+- `A.filterInstruments(use_case)` - Returns pair names filtered by use case. `"all"` = all rows, `"training"` = use_for_training, `"predict"` = use_for_trading, `"exec"` (default) = use_for_trading_gs, `"IB"` = use_for_trading_ib
 - `A.getInstrumentId(input_list)` - Convert pairs/tickers to instrument_ids
 
 ### Utilities

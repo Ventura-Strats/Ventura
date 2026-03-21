@@ -12,7 +12,7 @@ pairs_to_do_index <<- as.integer(commandArgs(trailingOnly = TRUE)[2])
 ### Sub routines
 ####################################################################################################
 whichPairsToDo <- function(exec_time_id) {
-  dat_pair <- filter(INSTRUMENTS, use_for_trading == 1)
+  dat_pair <- filter(INSTRUMENTS, pair %in% A.filterInstruments("predict"))
   if (!is.na(exec_time_id)) {
     dat_pair <- filter(dat_pair, execution_time_id == exec_time_id)
   }

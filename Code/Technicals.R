@@ -1747,7 +1747,7 @@ function (fx_pair = NULL)
     ### Script
     ####################################################################################################
     if (is.null(fx_pair)) {
-        PAIR_LIST <- filter(INSTRUMENTS, (use_for_training + use_for_trading >= 1))$pair
+        PAIR_LIST <- A.filterInstruments("all")
         for (this_pair in PAIR_LIST) {
             calcTradingDataOnePair(this_pair)
         }
@@ -5138,7 +5138,7 @@ function (pair_list = NULL)
     ### Script variables
     ####################################################################################################
     if (is.null(pair_list)) {
-        pair_list <- filter(INSTRUMENTS, use_for_trading == 1)$pair
+        pair_list <- A.filterInstruments("predict")
     }
     
     yahoo_pairs <- c("STISGD")
@@ -5771,7 +5771,7 @@ function (fx_pair = NULL, i_strat = NULL, import_training_tech_from_file = FALSE
         load(paste0(DIRECTORY_DATA_SD, "Technicals/Technicals.RData"))
         
         dat <- dat %>%
-            semi_join(filter(INSTRUMENTS, use_for_training == 1), by = "instrument_id") 
+            filter(instrument_id %in% filter(INSTRUMENTS, pair %in% A.filterInstruments("training"))$instrument_id)
         
         if (!keep_all_features) {
             cols_to_keep <- c("instrument_id", "date", strategy_features) %>%
@@ -5912,9 +5912,9 @@ function (scenario_bump = NULL, any_time = FALSE)
     ### Sub routines
     ####################################################################################################
     prepareInstrumentsToDo <- function() {
-        INSTRUMENTS %>% 
-            filter(use_for_trading == 1) %>% 
-            select(instrument_id) %>% 
+        INSTRUMENTS %>%
+            filter(pair %in% A.filterInstruments("predict")) %>%
+            select(instrument_id) %>%
             U.vectorize;
     }
     

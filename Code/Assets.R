@@ -413,8 +413,8 @@ function ()
             FROM histo_px_daily 
             GROUP BY instrument_id" %>%
             D.select
-        INSTRUMENTS %>% 
-            filter(use_for_trading + use_for_training >= 1) %>%
+        INSTRUMENTS %>%
+            filter(pair %in% A.filterInstruments("all")) %>%
             select(instrument_id, pair, asset_class) %>% 
             left_join(dat_status, by="instrument_id") %>% 
             left_join(dat_px, by="instrument_id") %>% 
@@ -427,17 +427,19 @@ function ()
     ####################################################################################################
     instrumentsStatus()
 }
-A.tradableInstruments <-
-function ()
+A.filterInstruments <-
+function (use_case = "exec")
 {
-    INSTRUMENTS %>%
-        filter(
-            asset_class != "bond",
-            use_for_training == 1,
-            use_for_trading == 1,
-            use_for_trading_gs == 1
-        ) %>%
-        .$pair
+    dat <- switch(
+        use_case,
+        "all"      = INSTRUMENTS,
+        "training" = filter(INSTRUMENTS, use_for_training == 1),
+        "predict"  = filter(INSTRUMENTS, use_for_trading == 1),
+        "exec"     = filter(INSTRUMENTS, use_for_trading_gs == 1),
+        "IB"       = filter(INSTRUMENTS, use_for_trading_ib == 1),
+        stop(paste0("A.filterInstruments: unknown use_case '", use_case, "'"))
+    )
+    dat$pair
 }
 A.save <-
 function() {

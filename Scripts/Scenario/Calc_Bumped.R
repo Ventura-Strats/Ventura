@@ -20,7 +20,7 @@ whichBumpsToDo <- function() {
 ### Script
 ####################################################################################################
 Script <- function() {
-  pair_list <- filter(INSTRUMENTS, use_for_trading == 1)$pair
+  pair_list <- A.filterInstruments("predict")
   bumps_to_do <- whichBumpsToDo()
   D.waitTillPreviousJobHasFinished("Live", 3, 17, 5)
   for (bump in bumps_to_do) {

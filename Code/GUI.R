@@ -1692,7 +1692,7 @@ function ()
                 by = "instrument_id"
             ) %>%
             filter(
-                instrument_id %in% filter(INSTRUMENTS, use_for_trading == 1)$instrument_id
+                pair %in% A.filterInstruments("predict")
             ) %>%
             left_join(MARKETS, by = "market_id") %>%
             left_join(REGIONS, by = "region_id") %>%
@@ -2089,7 +2089,7 @@ function (dat_predict, view_what, strat_id = NULL)
             left_join(TRADE_OUTCOMES, by = "outcome_id") %>%
             left_join(MARKETS, by = "market") %>%
             left_join(REGIONS, by = "region_id") %>%
-            filter(use_for_trading == 1) %>%
+            filter(pair %in% A.filterInstruments("predict")) %>%
             mutate(
                 buy_sell = (outcome == "up") - (outcome == "down"),
                 target = case_when(
@@ -2146,7 +2146,7 @@ function (dat_predict, view_what, strat_id = NULL)
             left_join(TRADE_OUTCOMES, by = "outcome_id") %>%
             left_join(MARKETS, by = "market") %>%
             left_join(REGIONS, by = "region_id") %>%
-            filter(use_for_trading == 1) %>%
+            filter(pair %in% A.filterInstruments("predict")) %>%
             select(region_id, region, pair, strategy_id, outcome) %>%
             mutate(strategy_id = paste0("predict_", U.right(paste0("0", strategy_id), 2))) %>%
             spread(strategy_id, outcome) %>%
@@ -2209,7 +2209,7 @@ function (dat_predict, view_what, strat_id = NULL)
             left_join(TRADE_OUTCOMES, by = "outcome_id") %>%
             left_join(MARKETS, by = "market") %>%
             left_join(REGIONS, by = "region_id") %>%
-            filter(use_for_trading == 1) %>%
+            filter(pair %in% A.filterInstruments("predict")) %>%
             rename(
                 Pair = pair,
                 Ticker = ticker,
@@ -2248,7 +2248,7 @@ function (dat_predict, view_what, strat_id = NULL)
             left_join(REGIONS, by = "region_id") %>%
             filter(
                 score == 10,
-                use_for_trading == 1
+                pair %in% A.filterInstruments("predict")
             ) %>%
             mutate(code = substr(pair, 1, 3)) %>% 
             left_join(fx_spot_vs_usd, by = "code") %>% 
@@ -2449,7 +2449,7 @@ function(dat_predict) {
     ### Returns trade-adjusted correlation matrix for signals, labeled by pair
     ####################################################################################################
 
-    tradable_instruments <- A.tradableInstruments()
+    tradable_instruments <- A.filterInstruments("exec")
 
     dat_signals <- dat_predict %>%
         left_join(select(INSTRUMENTS, pair, instrument_id), by = "pair") %>%
@@ -2554,7 +2554,7 @@ function (dat_predict)
     ### Shows signal list with Execute checkbox. No sizing - that's done in G.Trades.Table.sizing()
     ####################################################################################################
 
-    tradable_instruments <- A.tradableInstruments()
+    tradable_instruments <- A.filterInstruments("exec")
 
     dat_signals <- dat_predict %>%
         left_join(select(INSTRUMENTS, pair, asset, instrument_id), by = "pair") %>%
@@ -2618,7 +2618,7 @@ function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_p
     ### Returns clean summary: instrument, direction, N_eff, weight, sized notional.
     ####################################################################################################
 
-    tradable_instruments <- A.tradableInstruments()
+    tradable_instruments <- A.filterInstruments("exec")
 
     dat_signals <- dat_predict %>%
         left_join(select(INSTRUMENTS, pair, asset, instrument_id), by = "pair") %>%
