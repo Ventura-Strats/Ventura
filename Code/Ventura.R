@@ -1,3 +1,7 @@
+V.backtest <-
+function () 
+{
+}
 V.backtestModel <-
 function (strat_id = 1, start_date = "1995-01-01", end_date = TO_DAY-7,
           use_weights_for_recent_data = FALSE, file_import_data_already_done = NULL
@@ -2866,8 +2870,8 @@ function (strats_list = NULL)
     min_proba_signal <- 0#0.37
     min_proba_signal_plus_flat <- 0#0.75
     
-    start_date <- as.Date("2024-01-01")
-    end_date <- as.Date("2025-12-31")
+    start_date <- as.Date("1995-01-01")
+    end_date <- YESTERDAY
     
     initial_nav <- 100
 
@@ -3349,20 +3353,24 @@ function (strats_list = NULL)
     last_cor_week <- ""
     for (i in 2:nrow(pnl)) {
         
-        date_i <- pnl$date[i]
-        pnl <- initializeDailyMorningValues(i, pnl);
-        px_i_1 <- preparePxYesterday(px_i);
-        px_i <- preparePxToday(date_i);
-        nav_morning <- pnl$nav_morning[i];
+        date_i <- pnl$date[i] # %>% U.debug("DATE")
+        pnl <- initializeDailyMorningValues(i, pnl)
+        tail(filter(pnl, date <= date_i),10) 
+        px_i_1 <- preparePxYesterday(px_i)
+        px_i <- preparePxToday(date_i)
+        nav_morning <- pnl$nav_morning[i]
         
-        dat_live <- calcPnLTradesLive(pnl, date_i, px_i, px_i_1, nav_morning, pnl_per_day);
+        dat_live <- calcPnLTradesLive(pnl, date_i, px_i, px_i_1, nav_morning, pnl_per_day) 
+      #  dat_live$trd_live %>% U.debug("Live")
         
-        dat_exit <- calcPnLTradesExit(dat_live$pnl, date_i, px_i, px_i_1, nav_morning, pnl_per_day);
+        dat_exit <- calcPnLTradesExit(dat_live$pnl, date_i, px_i, px_i_1, nav_morning, pnl_per_day) 
+      #  dat_exit$trd_exit %>% U.debug("Exit")
         
-        dat_new <- calcPnLTradesNew(dat_exit$pnl, date_i, px_i, px_i_1, nav_morning);
+        dat_new <- calcPnLTradesNew(dat_exit$pnl, date_i, px_i, px_i_1, nav_morning)
+      #  dat_new$trd_new %>% U.debug("New")
         
-        pnl <- wrapUpDailyValues(dat_new$pnl, i, date_i);
-        pnl_per_day <- updatePnLPerDay(pnl_per_day);
+        pnl <- wrapUpDailyValues(dat_new$pnl, i, date_i) 
+        pnl_per_day <- updatePnLPerDay(pnl_per_day)
         
     }
     

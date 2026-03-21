@@ -35,6 +35,7 @@ The system runs distributed across multiple networked machines via crontab sched
 │   │   ├── Crontab/             # Generate_Crontab.R
 │   │   ├── Python/              # IB API scripts (see below)
 │   │   └── zzz_Old/             # Archived/deprecated scripts
+│   ├── Documentation/            # Project documentation (.md files)
 │   └── Data/                    # Data files (on NAS)
 └── SD/                          # NAS SSD mount (faster storage)
 ```
@@ -177,7 +178,7 @@ Located in `/HD/Scripts/Python/`:
 - `trade_orders.py` - Interactive order placement: exit orders (target+stop OCA), entry orders (chase algo)
 - `order_execution.py` - Chase algorithm for entry order execution (used by trade_orders.py)
 
-## Current Status (Updated 2026-03-21)
+## Current Status (Updated 2026-03-21b)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -203,6 +204,8 @@ Located in `/HD/Scripts/Python/`:
 - **"DB not writable" fix** (2026-03-19): Fixed `executeSQL()` in `db.py` — SQLAlchemy 2.x (2.0.34) requires `text()` wrapping for raw SQL strings and explicit `connection.commit()`. Was silently failing via `ObjectNotExecutableError` swallowed by `@ut.trySimpleNone()`. Broken since SQLAlchemy upgrade (at least since 2026-03-11). Affected all Python DB writes: `testWriteDB()`, `status_script` inserts/updates, `book_nav` inserts, `live_px_exec` truncation. See Session_Notes/2026-03-19_db_not_writable_fix.md
 - **A.filterInstruments refactor** (2026-03-21): Renamed `A.tradableInstruments()` to `A.filterInstruments(use_case)` with 5 use cases: `"all"`, `"training"`, `"predict"`, `"exec"`, `"IB"`. Replaced all direct `use_for_*` column filtering across 26 call sites in Code/ and Scripts/ with centralised function. See Session_Notes/2026-03-21_filter_instruments_refactor.md
 - **Trim_Machine_Status.sh** (2026-03-21): New maintenance script keeps last 3000 lines per machine status file. Reduced 1.3GB to 18MB on first run. Runs daily via crontab
+- **Backtest data gap fix** (2026-03-21): Diagnosed `V.readBacktest(2)` NA crash on 2021-08-20. Root cause: `histo_px_daily` had no data for 2021-08-18/19 (historical data gap), causing empty price joins in `calcPnLTradesNew`. Fixed by repopulating missing dates and re-running `T.histoPXvsUSD()`. See Session_Notes/2026-03-21_backtest_data_gap_and_docs.md
+- **Documentation folder** (2026-03-21): Created `Documentation/` folder. First file: `Feature_Selection.md` documenting `V.removeUselessFeatures()` workflow, `strategy_feature` table update procedure, and downstream consumption by `T.getTechnicals()` / `E.trainModel()`
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -329,6 +332,9 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - `B.matchLegsToTrades(lookback_days, price_tolerance_pct, timestamp_tolerance_minutes)` - Match execution legs to trades. Determines if each leg is ENTRY, TARGET, STOP, or MATURITY. Returns summary for manual review
 - `B.confirmLegMatch(match_summary, confirm_types, dry_run)` - Execute matches after review. Creates trades via B.createNewTradeIDFromLegs() or closes via B.closeTradeFromLegs()
 - `B.confirmSingleLeg(leg_id, match_type, trade_id, strategy_id, tp_pct, dry_run)` - Manually confirm a single leg when automatic matching fails
+
+### Feature Selection
+- `V.removeUselessFeatures(strat_id, starting_features)` - Iteratively eliminates features from ~2000 to ~120 per strategy using random forest variable importance. Does NOT write to DB -- returns results for review. Output includes `dat_feature` (ready for DB insert), `sql_delete`, and comparison lists. After review: `D.execute(sql_delete)` then `D.replaceDataIntoTable("strategy_feature", res$dat_feature)`. See `Documentation/Feature_Selection.md`
 
 ### Backtesting
 - `V.readBacktest(strats_list)` - Run backtest simulation with eigenvalue-based portfolio sizing. Calls `V.portfolioSizing()` daily for new signals. Correlation matrix recomputed weekly (rolling). Key parameters (inside function): `risk_per_bet_pct` (0.5), `max_daily_risk_pct` (5), `correlation_adjustment` (0), `lookback_weeks` (104), `pnl_reference_usd` (1000). Returns list with `pnl`, `pnl_per_day`, `data`, `summary` (including `avg_n_eff`)
