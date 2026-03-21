@@ -59,7 +59,8 @@ G 30 22 * * * RScriptGlenorchy.sh Maintenance/Erase_Older_Files.R
 G 30 22 * * * ~/Util/user/./erase_older_log_files.sh
 G 30 22 * * * ~/Util/user/./erase_older_xml_files.sh
 # L */15 * * * * cd /home/fls/Mount/GDrv && grive
-H 00 23 * * * RScriptGlenorchy.sh Maintenance/Clean_Track_System_Files.R
+#H 00 23 * * * RScriptGlenorchy.sh Maintenance/Clean_Track_System_Files.R
+H 04 23 * * * /home/fls/Models/Ventura/HD/Scripts/Maintenance/Trim_Machine_Status.sh
 
 ############################################################################################
 ############################################################################################
@@ -311,12 +312,12 @@ Z 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 2 & RScriptVent
 I 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 3
 H 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 5 & RScriptVentura.sh Model/Predict.R 6
 
-#V 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
-#Y 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
-#W 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
-#Z 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
-#I 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
-#H 58 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+V 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+Y 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+W 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+Z 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+I 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+H 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
 
 ### Execution
 H 52 04-08,15-16,20-21 * * 1-5 PScriptVentura.sh Signal_List.py
