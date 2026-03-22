@@ -13,7 +13,7 @@ print(paste0("Doing model: ", model_to_do))
 ####################################################################################################
 Script <- function() {
   
-  V.removeUselessFeatures(model_to_do); I.completeStage(1)
+  V.removeUselessFeatures(model_to_do, "", TRUE); I.completeStage(1)
 }
 
 ####################################################################################################

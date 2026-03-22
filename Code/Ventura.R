@@ -2874,9 +2874,9 @@ function (strats_list = NULL)
     end_date <- YESTERDAY
     
     initial_nav <- 100
-
+    
     flat_fee_per_trade <-  2.5 / 100000
-
+    
     risk_per_bet_pct <- 0.5
     max_daily_risk_pct <- 5
     correlation_adjustment <- 0
@@ -2885,7 +2885,7 @@ function (strats_list = NULL)
     pnl_reference_usd <- 1000
     
     path_backtest <- paste0(DIRECTORY_DATA_HD, "Backtestings/")
-    file_name_normal <- "%sbacktest_strat_%s.csv"
+    file_name_normal <- "%sbacktest_strat_%s_stitched.csv"
     
     tradable_instruments <- filter(INSTRUMENTS, pair %in% A.filterInstruments("IB"))$instrument_id
     
@@ -2910,13 +2910,13 @@ function (strats_list = NULL)
         'EEMUSD')
     
     limited_instrument_set <- A.getInstrumentId(limited_training_set)
-  #  limited_instrument_set <- tradable_instruments
+    #  limited_instrument_set <- tradable_instruments
     ####################################################################################################
     ### Script Variables
     ####################################################################################################
     file_names_normal <- strats_list %>%
         U.sapply(function(i) sprintf(file_name_normal, path_backtest, i))
-    file_names_weights <- gsub(".csv", "_weights.csv", file_names_normal)
+    file_names_weights <- gsub("_stitched.csv", "_weights_stitched.csv", file_names_normal)
     
     cols_to_keep <- c(
         "instrument_id", "date", "predict", "t_up", "t_dn", 
@@ -3002,10 +3002,10 @@ function (strats_list = NULL)
         #        (pmin(proba_signal, proba_signal_w) >= min_proba_signal) | 
         #            (pmin(proba_diff, proba_diff_w) >= min_proba_diff) | 
         #            (pmax(proba_antisignal, proba_antisignal_w) <= 1-min_proba_signal_plus_flat)
-                
-                #    (proba_signal >= min_proba_signal) | 
-                #        (proba_diff >= min_proba_diff) | 
-            #        (proba_antisignal <= 1-min_proba_signal_plus_flat)
+        
+        #    (proba_signal >= min_proba_signal) | 
+        #        (proba_diff >= min_proba_diff) | 
+        #        (proba_antisignal <= 1-min_proba_signal_plus_flat)
         #    )
     }
     
@@ -3103,11 +3103,11 @@ function (strats_list = NULL)
             select(-date) %>%
             rename(px_t = fx);
     }
-
+    
     getCorrelationMatrix <- function(date_i) {
         current_week <- format(date_i, "%Y-%W")
         if (current_week != last_cor_week || is.null(cor_matrix_cache)) {
-            U.printBanner(sprintf("Recomputing correlation matrix for week %s", current_week), FALSE)
+            #  U.printBanner(sprintf("Recomputing correlation matrix for week %s", current_week), FALSE)
             cor_matrix_cache <<- U.try(
                 function() T.calcHistoricalCorrelationsMatrix(
                     instrument_ids = NULL,
@@ -3122,7 +3122,7 @@ function (strats_list = NULL)
         }
         cor_matrix_cache
     }
-
+    
     findNotionalsForExistingTrade <- function(i, trd_live, pnl_per_day) {
         this_trd <- trd_live[i,];
         this_trd_date_entry <- this_trd$date_entry;
@@ -3142,16 +3142,16 @@ function (strats_list = NULL)
                 date_exit >= date_i
             ) %>%
             select(-notional_ref);
-
+        
         if (U.dfContainsData(trd_live)) {
-
+            
             findNotionalsForExistingTrade_local <- function(i)
                 findNotionalsForExistingTrade(i, trd_live, pnl_per_day)
-
+            
             trd_notionals <- 1:nrow(trd_live) %>%
                 lapply(findNotionalsForExistingTrade_local) %>%
                 bind_rows;
-
+            
             trd_live <- trd_live %>%
                 left_join(rename(px_i, ccy_1 = ccy, px_1_t = px_t), by = "ccy_1") %>%
                 left_join(rename(px_i, ccy_2 = ccy, px_2_t = px_t), by = "ccy_2") %>%
@@ -3169,7 +3169,7 @@ function (strats_list = NULL)
                     fees_carry = cost_of_carry_pct_per_annum * npv_usd_1_t / (365 * 100),
                     fees = fees_carry,
                 )
-
+            
             pnl$n_live[i] <- nrow(trd_live);
             pnl$pnl_live[i] <- sum(trd_live$pnl_usd);
             pnl$risk_live[i] <- 0;
@@ -3182,15 +3182,15 @@ function (strats_list = NULL)
         trd_exit <- dat_trd %>%
             filter(date_exit == date_i) %>%
             select(-notional_ref);
-
+        
         if (U.dfContainsData(trd_exit)) {
             findNotionalsForExistingTrade_local <- function(i)
                 findNotionalsForExistingTrade(i, trd_exit, pnl_per_day)
-
+            
             trd_notionals <- 1:nrow(trd_exit) %>%
                 lapply(findNotionalsForExistingTrade_local) %>%
                 bind_rows;
-
+            
             trd_exit <- trd_exit %>%
                 left_join(rename(px_i, ccy_1 = ccy, px_1_t = px_t), by = "ccy_1") %>%
                 left_join(rename(px_i, ccy_2 = ccy, px_2_t = px_t), by = "ccy_2") %>%
@@ -3205,12 +3205,12 @@ function (strats_list = NULL)
                     flat_fee = flat_fee_per_trade * abs(npv_usd_1_t),
                     fees = flat_fee
                 )
-
+            
             pnl$n_exit[i] <- nrow(trd_exit);
             pnl$pnl_exit[i] <- sum(trd_exit$pnl_usd);
             pnl$risk_exit[i] <- 0;
             pnl$fees_exit[i] <- sum(trd_exit$fees);
-
+            
         }
         list(pnl = pnl, trd_exit = trd_exit);
     }
@@ -3218,11 +3218,11 @@ function (strats_list = NULL)
     calcPnLTradesNew <- function(pnl, date_i, px_i, px_i_1, nav_morning) {
         trd_new <- dat_trd %>%
             filter(date_entry == date_i);
-
+        
         if (U.dfContainsData(trd_new) && nav_morning > 0) {
-
+            
             cor_matrix <- getCorrelationMatrix(date_i)
-
+            
             # Fall back to identity matrix if correlation data unavailable
             if (is.null(cor_matrix)) {
                 inst_ids <- unique(trd_new$instrument_id)
@@ -3230,11 +3230,11 @@ function (strats_list = NULL)
                 colnames(cor_matrix) <- as.character(inst_ids)
                 rownames(cor_matrix) <- as.character(inst_ids)
             }
-
+            
             # Run eigenvalue-based portfolio sizing
             dat_for_sizing <- trd_new %>%
                 select(instrument_id, buy_sell, notional = notional_ref)
-
+            
             dat_sized <- V.portfolioSizing(
                 dat_for_sizing,
                 cor_matrix = cor_matrix,
@@ -3243,7 +3243,7 @@ function (strats_list = NULL)
                 aum_total = nav_morning,
                 correlation_adjustment = correlation_adjustment
             )
-
+            
             # Apply sized notionals back to trades
             trd_new <- trd_new %>%
                 mutate(
@@ -3259,7 +3259,7 @@ function (strats_list = NULL)
                     flat_fee = flat_fee_per_trade * abs(npv_usd_1_t),
                     fees = flat_fee
                 )
-
+            
             pnl$n_new[i] <- nrow(trd_new);
             pnl$pnl_new[i] <- 0;
             pnl$n_effective[i] <- dat_sized$n_effective[1];
@@ -3271,22 +3271,22 @@ function (strats_list = NULL)
     
     wrapUpDailyValues <- function(pnl, i, date_i) {
         pnl$fees[i] <- pnl$fees_new[i] + pnl$fees_live[i] + pnl$fees_exit[i];
-
+        
         pnl$risk_evening[i] <- pnl$risk_morning[i] +
             pnl$risk_new[i] +
             pnl$risk_live[i] +
             pnl$risk_exit[i];
-
+        
         pnl$pnl[i] <- pnl$pnl_new[i] + pnl$pnl_live[i] + pnl$pnl_exit[i] - pnl$fees[i];
-
+        
         pnl$nav_evening[i] <- pnl$nav_morning[i] + pnl$pnl[i];
-
+        
         if (is.na(pnl$nav_evening[i]) & !is.na(pnl$nav_evening[i-1])) {
             print(pnl[(i-5):i,] %>% data.frame)
         }
-
+        
         plotAnnualPnLProgression(pnl, i, date_i);
-
+        
         pnl;
     }
     
@@ -3308,7 +3308,7 @@ function (strats_list = NULL)
                     scale_y_continuous(labels = comma, trans='log10') + 
                     scale_x_date(
                         date_breaks = "1 years", date_labels = "%y", limits = c(start_date, end_date)
-                        ) +
+                    ) +
                     theme(
                         axis.title = element_blank(),
                         legend.position = "bottom"
@@ -3361,13 +3361,13 @@ function (strats_list = NULL)
         nav_morning <- pnl$nav_morning[i]
         
         dat_live <- calcPnLTradesLive(pnl, date_i, px_i, px_i_1, nav_morning, pnl_per_day) 
-      #  dat_live$trd_live %>% U.debug("Live")
+        #  dat_live$trd_live %>% U.debug("Live")
         
         dat_exit <- calcPnLTradesExit(dat_live$pnl, date_i, px_i, px_i_1, nav_morning, pnl_per_day) 
-      #  dat_exit$trd_exit %>% U.debug("Exit")
+        #  dat_exit$trd_exit %>% U.debug("Exit")
         
         dat_new <- calcPnLTradesNew(dat_exit$pnl, date_i, px_i, px_i_1, nav_morning)
-      #  dat_new$trd_new %>% U.debug("New")
+        #  dat_new$trd_new %>% U.debug("New")
         
         pnl <- wrapUpDailyValues(dat_new$pnl, i, date_i) 
         pnl_per_day <- updatePnLPerDay(pnl_per_day)
@@ -3401,9 +3401,15 @@ function (strats_list = NULL)
             dat_backtest %>%
                 mutate(year = year(date_entry)) %>%
                 filter(buy_sell != 0) %>%
-                mutate(outcome = sign(buy_sell * (px_exit - px_entry))) %>%
+                mutate(
+                    gross_pnl = buy_sell * (px_exit - px_entry) / (t_up - px_entry),
+                    outcome = sign(buy_sell * (px_exit - px_entry))
+                ) %>%
                 group_by(year) %>%
-                summarize(win_rate = sum(outcome == 1) / n()) %>%
+                summarize(
+                    gross_pnl = mean(gross_pnl),
+                    win_rate = sum(outcome == 1) / n()
+                ) %>%
                 ungroup,
             by="year"
         )
@@ -3435,9 +3441,15 @@ function (strats_list = NULL)
             dat_backtest %>%
                 mutate(year = "Total") %>%
                 filter(buy_sell != 0) %>%
-                mutate(outcome = sign(buy_sell * (px_exit - px_entry))) %>%
+                mutate(
+                    gross_pnl = buy_sell * (px_exit - px_entry) / (t_up - px_entry),
+                    outcome = sign(buy_sell * (px_exit - px_entry))
+                ) %>%
                 group_by(year) %>%
-                summarize(win_rate = sum(outcome == 1) / n()) %>%
+                summarize(
+                    gross_pnl = mean(gross_pnl),
+                    win_rate = sum(outcome == 1) / n()
+                ) %>%
                 ungroup,
             by="year"
         )
@@ -3453,7 +3465,7 @@ function (strats_list = NULL)
         data = dat_backtest,
         summary = dat_summary
     );
-  #  save(dat_backtest, file = sprintf("backtest_%s_new.RData", "fees_2"));
+    #  save(dat_backtest, file = sprintf("backtest_%s_new.RData", "fees_2"));
     dat_backtest
     
     
@@ -3497,7 +3509,7 @@ function ()
     
 }
 V.removeUselessFeatures <-
-function (strat_id, starting_features = "") 
+function (strat_id, starting_features = "", save_to_db = FALSE) 
 {
     ####################################################################################################
     ### Script Variables
@@ -3598,6 +3610,16 @@ function (strat_id, starting_features = "")
         round(as.numeric(difftime(Sys.time(), time_start, units = "mins")), 2),
         " minutes"
         ), FALSE)
+    
+    if (save_to_db) {
+        D.SQL(sprintf(res$sql_delete, strat_id))
+        D.replaceDataIntoTable("strategy_feature", res$dat_feature)
+        U.printBanner(sprintf("Features for strategy %s saved to DB", strat_id))
+    } else {
+        U.printBanner("Now execute this into the db:")
+        print("D.SQL(sprintf(res$sql_delete, strat_id))")
+        print('D.replaceDataIntoTable("strategy_feature", res$dat_feature)')
+    }
     
     res
 

@@ -312,12 +312,12 @@ Z 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 2 & RScriptVent
 I 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 3
 H 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 5 & RScriptVentura.sh Model/Predict.R 6
 
-V 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
-Y 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
-W 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
-Z 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
-I 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
-H 59 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Predict.R
+V 05 05-09,16-17,21-22 * * 1-5 KillScriptVentura.sh Predict.R
+Y 05 05-09,16-17,21-22 * * 1-5 KillScriptVentura.sh Predict.R
+W 05 05-09,16-17,21-22 * * 1-5 KillScriptVentura.sh Predict.R
+Z 05 05-09,16-17,21-22 * * 1-5 KillScriptVentura.sh Predict.R
+I 05 05-09,16-17,21-22 * * 1-5 KillScriptVentura.sh Predict.R
+H 05 05-09,16-17,21-22 * * 1-5 KillScriptVentura.sh Predict.R
 
 ### Execution
 H 52 04-08,15-16,20-21 * * 1-5 PScriptVentura.sh Signal_List.py

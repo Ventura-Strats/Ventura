@@ -1018,7 +1018,7 @@ function (dat_ohlc)
             psi_1 = log(close / lag(close, 1)) / vol_lt,
             psi_5 = log(close / lag(close, 5)) / vol_lt,
             psi_20 = log(close / lag(close, 20)) / vol_lt,
-            psi_60 = log(close / lag(close, 20)) / vol_lt,
+            psi_60 = log(close / lag(close, 60)) / vol_lt,
             psi_130 = log(close / lag(close, 130)) / vol_lt,
             psi_260 = log(close / lag(close, 260)) / vol_lt,
             open_close = log(open / close) / vol_lt,

@@ -54,7 +54,7 @@ res$features_old_not_in_new    # features being dropped
 length(res$features_in_model)  # should be ~120
 
 # Write to DB
-D.execute(sprintf(res$sql_delete, strat_id))
+D.SQL(sprintf(res$sql_delete, strat_id))
 D.replaceDataIntoTable("strategy_feature", res$dat_feature)
 ```
 
