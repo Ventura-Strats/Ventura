@@ -14,7 +14,7 @@
 ### VENTURA2: 	192.168.0.39                                                             ###
 ### VENTURA3: 	192.168.0.37                                                             ###
 ### VENTURA4: 	192.168.0.41                                                             ###
-### VENTURA5: 	192.168.0.38                                                            ssh  ###
+### VENTURA5: 	192.168.0.38                                                             ###
 ### Time set at Hong Kong time                                                           ### 
 ############################################################################################
 A SHELL=/bin/sh
@@ -244,11 +244,34 @@ H 02 00 * * 1-6 RScriptVentura.sh Technicals/Recent.R 16 & RScriptVentura.sh Tec
 
 H 40 01 * * 1-6 RScriptVentura.sh Maintenance/Load_Tech.R
 
-V 25 02 * * 1-6 RScriptVentura.sh Model/Train.R 1 & RScriptVentura.sh Model/Train.R 5
-W 25 02 * * 1-6 RScriptVentura.sh Model/Train.R 2 & RScriptVentura.sh Model/Train.R 6
-Y 25 02 * * 1-6 RScriptVentura.sh Model/Train.R 4
-Z 25 02 * * 1-6 RScriptVentura.sh Model/Train.R 8
-I 25 02 * * 1-6 RScriptVentura.sh Model/Train.R 3 & RScriptVentura.sh Model/Train.R 7
+V 10 02 * * 1-6 RScriptVentura.sh Model/Train.R 1 & RScriptVentura.sh Model/Train.R 5
+W 10 02 * * 1-6 RScriptVentura.sh Model/Train.R 2 & RScriptVentura.sh Model/Train.R 6
+Y 10 02 * * 1-6 RScriptVentura.sh Model/Train.R 4
+Z 10 02 * * 1-6 RScriptVentura.sh Model/Train.R 8
+I 10 02 * * 1-6 RScriptVentura.sh Model/Train.R 3 & RScriptVentura.sh Model/Train.R 7
+
+
+#H 30 03 * * 1-6 find /home/fls/Data/Ventura/SD/Models/ -maxdepth 1 -type f -name "model_*.RData" ! -name "*backup*" -exec cp {} /home/fls/Data/Ventura/Models_Local/ \;
+#V 35 03 * * 1-6 find /home/fls/Data/Ventura/SD/Models/ -maxdepth 1 -type f -name "model_*.RData" ! -name "*backup*" -exec cp {} /home/fls/Data/Ventura/Models_Local/ \;
+#W 40 03 * * 1-6 find /home/fls/Data/Ventura/SD/Models/ -maxdepth 1 -type f -name "model_*.RData" ! -name "*backup*" -exec cp {} /home/fls/Data/Ventura/Models_Local/ \;
+#Y 45 03 * * 1-6 find /home/fls/Data/Ventura/SD/Models/ -maxdepth 1 -type f -name "model_*.RData" ! -name "*backup*" -exec cp {} /home/fls/Data/Ventura/Models_Local/ \;
+#Z 50 03 * * 1-6 find /home/fls/Data/Ventura/SD/Models/ -maxdepth 1 -type f -name "model_*.RData" ! -name "*backup*" -exec cp {} /home/fls/Data/Ventura/Models_Local/ \;
+#I 55 03 * * 1-6 find /home/fls/Data/Ventura/SD/Models/ -maxdepth 1 -type f -name "model_*.RData" ! -name "*backup*" -exec cp {} /home/fls/Data/Ventura/Models_Local/ \;
+
+H 30 03 * * 1-6 0 2 * * * /bin/bash -c 'cp /home/fls/Data/Ventura/SD/Models/model_{1,4,5,6,9,10,11}.RData /home/fls/Data/Ventura/Models_Local/'
+I 35 03 * * 1-6 0 2 * * * /bin/bash -c 'cp /home/fls/Data/Ventura/SD/Models/model_{2,7,8,13}.RData /home/fls/Data/Ventura/Models_Local/'
+V 40 03 * * 1-6 0 2 * * * /bin/bash -c 'cp /home/fls/Data/Ventura/SD/Models/model_{3,12,14}.RData /home/fls/Data/Ventura/Models_Local/'
+W 45 03 * * 1-6 0 2 * * * /bin/bash -c 'cp /home/fls/Data/Ventura/SD/Models/model_{4,9,11}.RData /home/fls/Data/Ventura/Models_Local/'
+Y 50 03 * * 1-6 0 2 * * * /bin/bash -c 'cp /home/fls/Data/Ventura/SD/Models/model_{3,12,14}.RData /home/fls/Data/Ventura/Models_Local/'
+Z 55 03 * * 1-6 0 2 * * * /bin/bash -c 'cp /home/fls/Data/Ventura/SD/Models/model_{2,7,8,11}.RData /home/fls/Data/Ventura/Models_Local/'
+
+H 01 04 * * 1-6 0 2 * * * /bin/bash -c 'cp /home/fls/Data/Ventura/SD/Models/model_weights_{1,4,5,6,9,10,11}.RData /home/fls/Data/Ventura/Models_Local/'
+I 05 04 * * 1-6 0 2 * * * /bin/bash -c 'cp /home/fls/Data/Ventura/SD/Models/model_weights_{2,7,8,13}.RData /home/fls/Data/Ventura/Models_Local/'
+V 10 04 * * 1-6 0 2 * * * /bin/bash -c 'cp /home/fls/Data/Ventura/SD/Models/model_weights_{3,12,14}.RData /home/fls/Data/Ventura/Models_Local/'
+W 15 04 * * 1-6 0 2 * * * /bin/bash -c 'cp /home/fls/Data/Ventura/SD/Models/model_weights_{4,9,11}.RData /home/fls/Data/Ventura/Models_Local/'
+Y 20 04 * * 1-6 0 2 * * * /bin/bash -c 'cp /home/fls/Data/Ventura/SD/Models/model_weights_{3,12,14}.RData /home/fls/Data/Ventura/Models_Local/'
+Z 25 04 * * 1-6 0 2 * * * /bin/bash -c 'cp /home/fls/Data/Ventura/SD/Models/model_weights_{2,7,8,11}.RData /home/fls/Data/Ventura/Models_Local/'
+
 
 ############################################################################################
 ### Live Prices, technicals and model predictions                                        ###
@@ -268,28 +291,14 @@ Z 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Technicals/Live.R 10 &
 I 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Technicals/Live.R 13 & RScriptVentura.sh Technicals/Live.R 14 & RScriptVentura.sh Technicals/Live.R 15
 H 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Technicals/Live.R 16 & RScriptVentura.sh Technicals/Live.R 17 & RScriptVentura.sh Technicals/Live.R 18 & RScriptVentura.sh Technicals/Live.R 19 & RScriptVentura.sh Technicals/Live.R 20
 
-V 32 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
-Y 32 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
-W 34 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
-Z 34 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
-I 34 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
-H 34 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
-
-V 33 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Model/Predict.R 4
-Y 33 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Model/Predict.R 8
-W 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Model/Predict.R 1
-Z 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Model/Predict.R 2 & RScriptVentura.sh Model/Predict.R 7
-I 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Model/Predict.R 3
-H 35 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Model/Predict.R 5 & RScriptVentura.sh Model/Predict.R 6
+V 33 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R && RScriptVentura.sh Model/Predict.R 4
+Y 33 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R && RScriptVentura.sh Model/Predict.R 8
+W 35 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R && RScriptVentura.sh Model/Predict.R 1
+Z 35 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R && { RScriptVentura.sh Model/Predict.R 2 & RScriptVentura.sh Model/Predict.R 7;}
+I 35 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R && RScriptVentura.sh Model/Predict.R 3
+H 35 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R && {RScriptVentura.sh Model/Predict.R 5 & RScriptVentura.sh Model/Predict.R 6;}
 
 H 47 04-08,13-14,15-16,20-21,23 * * 1-5 RScriptVentura.sh Communications/Send_Predict.R
-
-V 46 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
-Y 46 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
-W 48 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
-Z 48 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
-I 48 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
-H 48 04-08,13-14,15-16,20-21,23 * * 1-5 KillScriptVentura.sh Model/Predict.R
 
 ### Run technicals for execution
 H 50 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Technicals/Price_Live.R
@@ -305,12 +314,12 @@ Z 50 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Technicals/Live.R 10 & RScriptV
 I 50 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Technicals/Live.R 13 & RScriptVentura.sh Technicals/Live.R 14 & RScriptVentura.sh Technicals/Live.R 15
 H 50 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Technicals/Live.R 16 & RScriptVentura.sh Technicals/Live.R 17 & RScriptVentura.sh Technicals/Live.R 18 & RScriptVentura.sh Technicals/Live.R 19 & RScriptVentura.sh Technicals/Live.R 20
 
-V 47 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 4
-Y 47 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 8
-W 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 1
-Z 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 2 & RScriptVentura.sh Model/Predict.R 7
-I 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 3
-H 49 04-08,15-16,20-21 * * 1-5 RScriptVentura.sh Model/Predict.R 5 & RScriptVentura.sh Model/Predict.R 6
+V 47 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Model/Predict.R && RScriptVentura.sh Model/Predict.R 4
+Y 47 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Model/Predict.R && RScriptVentura.sh Model/Predict.R 8
+W 49 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Model/Predict.R && RScriptVentura.sh Model/Predict.R 1
+Z 49 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Model/Predict.R && { RScriptVentura.sh Model/Predict.R 2 & RScriptVentura.sh Model/Predict.R 7;}
+I 49 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Model/Predict.R && RScriptVentura.sh Model/Predict.R 3
+H 49 04-08,15-16,20-21 * * 1-5 KillScriptVentura.sh Model/Predict.R && {RScriptVentura.sh Model/Predict.R 5 & RScriptVentura.sh Model/Predict.R 6;}
 
 V 05 05-09,16-17,21-22 * * 1-5 KillScriptVentura.sh Predict.R
 Y 05 05-09,16-17,21-22 * * 1-5 KillScriptVentura.sh Predict.R

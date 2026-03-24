@@ -1550,20 +1550,22 @@ function (ticker, expiry, strike, call_put)
 }
 V.modelPredict <-
 function (
-    strats_to_do = 1:length(VENTURA$strats), 
-    live_or_close = "live", 
-    predict_time = Sys.time(),
-    wait_for_technicals = FALSE,
-    pair_list = NULL,
-    with_weights = FALSE
+        strats_to_do = 1:length(VENTURA$strats), 
+        live_or_close = "live", 
+        predict_time = Sys.time(),
+        wait_for_technicals = FALSE,
+        pair_list = NULL,
+        with_weights = FALSE
 ) 
 {
     ####################################################################################################
     ### Script Variables
     ####################################################################################################
-    file_path_model <- paste0(DIRECTORY_DATA_SD, "Models/model_%s.RData")
+    file_path_model <- paste0(DIRECTORY_DATA, "Models_Local/model_%s.RData")
+    file_path_model_2 <- paste0(DIRECTORY_DATA_SD, "Models/model_%s.RData")
     if (with_weights) {
-        file_path_model <- gsub("model_", "model_weights_", file_path_model)    
+        file_path_model <- gsub("model_", "model_weights_", file_path_model)
+        file_path_model_2 <- gsub("model_", "model_weights_", file_path_model_2)
     }
     
     if (is.null(pair_list)) {
@@ -1582,13 +1584,13 @@ function (
     waitForTechnicalsToFinishAfterLoadingFirstModel <- function(dat, i) {
         force(dat)
         if (i == strats_to_do[1]) {
-         #   predict_time <- Sys.time()
-         #   second(predict_time) <- 0
-         #   minute(predict_time) <- U.mround(minute(predict_time)+1, 5)
-         #   predict_time <- predict_time %>% 
-         #       as.character %>% 
-         #       as.POSIXct(tz=TZ_LOCAL)
-         #   predict_time <<- predict_time
+            #   predict_time <- Sys.time()
+            #   second(predict_time) <- 0
+            #   minute(predict_time) <- U.mround(minute(predict_time)+1, 5)
+            #   predict_time <- predict_time %>% 
+            #       as.character %>% 
+            #       as.POSIXct(tz=TZ_LOCAL)
+            #   predict_time <<- predict_time
             if (wait_for_technicals) D.waitTillPreviousJobHasFinished("Live", 3, 20, 5, 7)
             dat_technicals <<- loadTechnicals()
         }
@@ -1596,7 +1598,15 @@ function (
     }
     
     loadModel <- function(i) {
-        load(sprintf(file_path_model, i))
+        local_file <- sprintf(file_path_model, i)
+        nas_file <- sprintf(file_path_model_2, i)
+        if (file.exists(local_file)) {
+            load(local_file)
+            U.printBanner(sprintf("Model %s: loaded model local drive", i))
+        } else {
+            load(nas_file)
+            U.printBanner(sprintf("Model %s: loaded model from NAS", i))
+        }
         dat_trades_models
     }
     

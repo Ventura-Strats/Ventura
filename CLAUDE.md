@@ -178,7 +178,7 @@ Located in `/HD/Scripts/Python/`:
 - `trade_orders.py` - Interactive order placement: exit orders (target+stop OCA), entry orders (chase algo)
 - `order_execution.py` - Chase algorithm for entry order execution (used by trade_orders.py)
 
-## Current Status (Updated 2026-03-22)
+## Current Status (Updated 2026-03-24)
 
 ### Completed
 - **GitHub setup**: Full SSH authentication configured, code on `main` branch, signals on `signals` branch, `GitPushVentura.sh` fixed
@@ -215,6 +215,11 @@ Located in `/HD/Scripts/Python/`:
 - **Strategies documentation** (2026-03-22): New `Documentation/Strategies.md` documenting all 14 strategies from `static_strategy` and `strategy_criteria` tables. Includes scoring system explanation (`T.testAbove`/`T.testBelow` cosine ramp functions as proximity indicators), trade parameters (BB width, max duration), per-strategy criteria tables with plain English translations, `atanh(R²)` transform rationale (Fisher's z-transformation, cforest variable selection nuance), and summary comparison table
 - **Research areas documentation** (2026-03-22): New `Documentation/Research_Areas.md` cataloguing feature and strategy ideas for future investigation. Features: cross-asset regime (VIX, dispersion/N_eff, yield curve, cross-asset correlations), per-instrument (multi-lag autocorrelation, realised variance decomposition, cross-sectional ranks), and strategy historical performance as meta-feature (with overfitting risk analysis). Strategies: volatility regime change, cross-asset divergence, post-gap continuation, carry+trend for FX, breadth divergence
 - **New features implementation prep** (2026-03-22): New `Documentation/New_Features_Implementation.md` with full pipeline trace (Full/Recent/Live paths, T.addXxx chain, EAV storage, T.getTechnicals loading). Identified existing features (Hurst, momersion, autocorrelation already implemented). Architecture decision for date-level features (phantom instrument approach recommended). Data gap analysis (yields stale since Jan 2021, no VIX data). Phased implementation plan with storage impact estimate (~12M new rows, 5.5% increase)
+- **Local model loading** (2026-03-24): `V.modelPredict()` now loads models from local drive (`Models_Local/`) first, falling back to NAS (`SD/Models/`) if local file missing. Fixed `load()` scoping bug (was inside `tryCatch`, objects invisible to parent scope) by using `file.exists()` check instead. Fixed `with_weights` not applied to NAS fallback path. See Session_Notes/2026-03-24_local_models_and_crontab.md
+- **Per-machine model copy crontab** (2026-03-24, user): Each machine copies only its needed model files to local drive, staggered 5min apart. Both `model_` and `model_weights_` files. Brace expansion via `/bin/bash -c 'cp .../model_{1,4,5}.RData ...'`
+- **Crontab kill-then-predict** (2026-03-24, user): Predict kill+start merged into single line (`KillScriptVentura.sh && RScriptVentura.sh`) instead of separate cron entries. Final kill moved to `:05` next hour for extra runtime
+- **Price_Live.R filter change** (2026-03-24, user): Changed `A.filterInstruments("predict")` to `A.filterInstruments("all")` in `getPairList()`
+- **Predict.R machine mapping docs** (2026-03-24, user): Added comments documenting strategy-to-machine assignment (H: 1,4,5,6,9,10,11; I: 2,7,8,13; V: 3,12,14; W: 4,9,11; Y: 3,12,14; Z: 2,7,8,11)
 
 ### Issues Fixed (2026-01-04)
 The IB API scripts were failing with: `error() missing 1 required positional argument: 'advancedOrderRejectJson'`
@@ -322,7 +327,15 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - SQL queries in Technicals.R, Ventura.R, Static_Tables.R, PowerLaw.R still filter directly (can't call R from SQL)
 - Python scripts still filter directly (different language)
 
-### 5. Python Codebase Cleanup
+### 5. Execution Reconciliation via Flex Query
+- **Problem**: `Read_Executions.py` uses IB API `reqExecutions` which only covers the past ~24 hours and misses fills from GTC orders triggered outside the current session (e.g., overnight stop fills, weekend Gateway restarts)
+- **Solution**: Add daily Flex Query reconciliation using existing `B.processTradesFromIB(save_to_db=TRUE)` which already maps all Flex Query fields to `book_trade_leg` columns
+- **Approach**: keep `Read_Executions.py` for real-time capture (every 5 min), add a scheduled Flex Query run (e.g., daily) as catch-up to fill gaps
+- `B.processTradesFromIB` already handles deduplication against existing legs in DB
+- **TODO**: Create a scheduled R script that calls `B.processTradesFromIB(save_to_db=TRUE)` daily
+- **TODO**: Verify Flex Query IDs in `B.readTradesFromIB` are still valid (tokens: account 1 = 106713781439309215279050, account 2 = 5179386948882217289232)
+
+### 6. Python Codebase Cleanup
 - All Python scripts (IB API integration) are poorly written legacy code
 - Need complete refactoring into proper Python style
 - To be done incrementally, with proper specs for each script
@@ -375,6 +388,8 @@ The IB API scripts were failing with: `error() missing 1 required positional arg
 - Project root: `/home/fls/Models/Ventura/`
 - Working directory for R: `/home/fls/Models/Ventura/HD/Code/`
 - Log files: `/home/fls/Data/Ventura/SD/Log/` (subdirs: Python/, Technicals/, Model/, Communications/, Maintenance/, Book/)
+- Crontab generator: `/home/fls/Models/Glenorchy/HD/Scripts/Crontab/Crontab_Generator_user.txt` (note: Glenorchy project, not Ventura)
+- Local model files: `/home/fls/Data/Ventura/Models_Local/` (per-machine, copied from NAS daily)
 - Only look at .R files in Code/ (ignore other file types)
 - The Shiny dashboard works well - low priority for changes
 - Owner is self-taught in R, professional Python developer
