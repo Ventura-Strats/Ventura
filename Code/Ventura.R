@@ -1591,7 +1591,7 @@ function (
             #       as.character %>% 
             #       as.POSIXct(tz=TZ_LOCAL)
             #   predict_time <<- predict_time
-            if (wait_for_technicals) D.waitTillPreviousJobHasFinished("Live", 3, 20, 5, 7)
+            if (wait_for_technicals) D.waitTillPreviousJobHasFinished("Live", 3, 20, 5, 10)
             dat_technicals <<- loadTechnicals()
         }
         dat

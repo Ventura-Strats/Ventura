@@ -51,7 +51,7 @@ whichPairsToDo <- function(exec_time_id_if_just_before_execution) {
   if (!is.na(exec_time_id_if_just_before_execution)) {
     dat_pair <- filter(dat_pair, execution_time_id == exec_time_id_if_just_before_execution)
   }
-  dat_pair$pair
+  dat_pair$pair %>% U.debug("Instruments for predictions:")
 }
 
 ####################################################################################################

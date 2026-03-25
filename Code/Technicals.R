@@ -5138,7 +5138,7 @@ function (pair_list = NULL)
     ### Script variables
     ####################################################################################################
     if (is.null(pair_list)) {
-        pair_list <- A.filterInstruments("predict")
+        pair_list <- A.filterInstruments("all")
     }
     
     yahoo_pairs <- c("STISGD")
