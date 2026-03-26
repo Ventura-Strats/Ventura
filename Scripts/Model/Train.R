@@ -35,8 +35,21 @@ strats_list <- switch(
 ####################################################################################################
 ### Sub routines
 ####################################################################################################
-backupYesterdayModels <- function() {
+backupModels <- function() {
   if (script_arg == 1) {
+    
+    # We wait for all jobs to complete then backup
+    target_time <- as.POSIXct(sprintf("%s 03:30:00", TO_DAY))  # Set your date and time
+    current_time <- Sys.time()
+    
+    wait_seconds <- as.numeric(difftime(target_time, current_time, units = "secs"))
+    
+    if (wait_seconds > 0) {
+      message("Waiting for ", round(wait_seconds / 60, 2), " minutes...")
+      Sys.sleep(wait_seconds)
+    }
+    
+    
     file_list <- paste0(DIRECTORY_DATA_SD, "Models") %>% 
       list.files("model_", full.names = TRUE)
     
@@ -67,9 +80,9 @@ backupYesterdayModels <- function() {
 ### Script
 ####################################################################################################
 Script <- function() {
-  backupYesterdayModels(); I.completeStage(1)
  # D.waitTillPreviousJobHasFinished("Load_Tech", 3, 1, 60, 25); I.completeStage(2)
-  V.prepareMorningModel(strats_list, use_weights); I.completeStage(3)
+  V.prepareMorningModel(strats_list, use_weights); I.completeStage(1)
+  backupModels(); I.completeStage(2)
 }
 
 ####################################################################################################

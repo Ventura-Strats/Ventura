@@ -359,8 +359,7 @@ function ()
     
     .Last <<- function() {
         U.printBanner("Disconnecting from Database...")
-        print(dbCon)
-        try_disconnect <- U.try(dbDisconnect)(dbCon);
+        try_disconnect <- U.try(D.disconnect)();
         fail_success <- U.ifelse(is.null(try_disconnect), "Failed", "Success");
         print_message <- "Disconnection: %s" %>%
             sprintf(fail_success);
