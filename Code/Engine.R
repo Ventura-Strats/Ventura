@@ -560,26 +560,27 @@ function (dat_trades_list, strat_id, export_all_data = FALSE, n_trees = NULL, fe
     
     weight_speed_years <- 10
     
-    limited_training_set <- c(
-        'A50CNY', 'AEXEUR', 'ASXAUD', 'ATXEUR', 'AUDCAD', 
-        'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD', 'BELEUR', 'BMVMXN', 'BVPBRL', 
-        'CADJPY', 'CHFJPY', 'CHFSEK', 'CSICNY', 'DAXEUR', 
-        'DJIUSD', 'DJNNZD', 'EURAUD', 'EURCAD', 'EURCHF', 'EURCZK', 'EURDKK', 'EURGBP', 'EURHUF', 
-        'EURJPY', 'EURNOK', 'EURNZD', 'EURPLN', 'EURSEK', 'EURUSD', 
-        'FTSGBP', 'GBPAUD', 'GBPCAD', 'GBPCHF', 
-        'GBPJPY', 'GBPNZD', 'GBPSEK', 'GBPUSD', 'HSIHKD', 'IBXEUR',
-        'JPYKRW', 'KSPKRW', 'MIBEUR', 'NDQUSD', 
-        'NDXUSD', 'NKYJPY', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD', 'OMHEUR', 
-        'OMXSEK', 'PSIEUR', 'PX1EUR', 'RUTUSD', 'SEKJPY', 'SMICHF', 'SPXUSD', 'SSECNY', 
-        'STISGD', 'STXEUR', 'SZSCNY', 'TAIILS', 'TPXJPY', 'TSXCAD',
-        'USDBRL', 'USDCAD', 'USDCHF', 'USDCLP', 'USDIDR', 'USDILS', 
-        'USDINR', 'USDJPY', 'USDKRW', 'USDMXN', 'USDNOK', 'USDPHP', 'USDRUB', 'USDSEK', 
-        'USDSGD', 'USDTRY', 'USDTWD', 'USDZAR', 'XAGUSD', 'XAUUSD', 'XPDUSD', 
-        'XPTUSD', 'CHFNOK', 'GBPNOK', 'GBPPLN', 'EURRUB', 'NOKSEK', 
-        'EEMUSD')
+  #  limited_training_set <- c(
+  #      'A50CNY', 'AEXEUR', 'ASXAUD', 'ATXEUR', 'AUDCAD', 
+  #      'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD', 'BELEUR', 'BMVMXN', 'BVPBRL', 
+  #      'CADJPY', 'CHFJPY', 'CHFSEK', 'CSICNY', 'DAXEUR', 
+  #      'DJIUSD', 'DJNNZD', 'EURAUD', 'EURCAD', 'EURCHF', 'EURCZK', 'EURDKK', 'EURGBP', 'EURHUF', 
+  #      'EURJPY', 'EURNOK', 'EURNZD', 'EURPLN', 'EURSEK', 'EURUSD', 
+  #      'FTSGBP', 'GBPAUD', 'GBPCAD', 'GBPCHF', 
+  #      'GBPJPY', 'GBPNZD', 'GBPSEK', 'GBPUSD', 'HSIHKD', 'IBXEUR',
+  #      'JPYKRW', 'KSPKRW', 'MIBEUR', 'NDQUSD', 
+  #      'NDXUSD', 'NKYJPY', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD', 'OMHEUR', 
+  #      'OMXSEK', 'PSIEUR', 'PX1EUR', 'RUTUSD', 'SEKJPY', 'SMICHF', 'SPXUSD', 'SSECNY', 
+  #      'STISGD', 'STXEUR', 'SZSCNY', 'TAIILS', 'TPXJPY', 'TSXCAD',
+  #      'USDBRL', 'USDCAD', 'USDCHF', 'USDCLP', 'USDIDR', 'USDILS', 
+  #      'USDINR', 'USDJPY', 'USDKRW', 'USDMXN', 'USDNOK', 'USDPHP', 'USDRUB', 'USDSEK', 
+  #      'USDSGD', 'USDTRY', 'USDTWD', 'USDZAR', 'XAGUSD', 'XAUUSD', 'XPDUSD', 
+  #      'XPTUSD', 'CHFNOK', 'GBPNOK', 'GBPPLN', 'EURRUB', 'NOKSEK', 
+  #      'EEMUSD')
+    
     
     limited_training_set <- INSTRUMENTS %>% 
-        filter(pair %in% limited_training_set) %>%
+        filter(pair %in% A.filterInstruments("training")) %>%
         .$instrument_id
     
     ####################################################################################################
