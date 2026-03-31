@@ -2608,7 +2608,7 @@ function (dat_predict)
         rhandsontable(rowHeaders = NULL) %>%
         hot_col("Execute", readOnly = FALSE) %>%
         hot_col(c("Price", "Target", "Stop", "Notional_for_1k_PnL"), format = "0,000.000000") %>%
-        hot_col("Target_Pct", format = "0.000%")
+        hot_col("Target_Pct", format = "0.00000%")
 }
 G.Trades.Table.sizing <-
 function (dat_predict, aum_total = 1e6, risk_per_bet_pct = 0.5, max_daily_risk_pct = 5, correlation_adjustment = 0, cor_matrix = NULL)
