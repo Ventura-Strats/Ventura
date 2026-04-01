@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026040105001,2026-04-01,6,SXXPIEX:GR,59.29,flat,0,61.6121833184432,56.9678166815568,2026-04-08,56.9678166815568,61.6121833184432,0.039166525863437274,370.90115614495727,2026-04-01 15:50:19,2026-04-01 15:50:00
