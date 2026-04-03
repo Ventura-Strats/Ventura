@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026040308001,2026-04-03,7,EURCHF,0.92238,up,1,0.928282202408388,0.916477797591612,2026-04-10,0.916477797591612,0.928282202408388,0.0063988837663306875,135724.4961069485,2026-04-03 20:50:45,2026-04-03 20:50:00
