@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026041008001,2026-04-10,14,AUDJPY,112.7425,down,-1,111.47769254794201,114.007307452058,2026-04-17,111.477692547942,114.007307452058,0.01121855069790012,125935.03029989904,2026-04-10 20:50:47,2026-04-10 20:50:00
