@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026041306001,2026-04-13,10,EURCZK,24.3515,flat,0,24.4612156696202,24.241784330379804,2026-04-20,24.2417843303798,24.4612156696202,0.004505499440288885,189610.93528988163,2026-04-13 16:50:15,2026-04-13 16:50:00
