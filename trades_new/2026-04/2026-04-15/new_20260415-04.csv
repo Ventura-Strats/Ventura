@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026041504001,2026-04-15,8,SICOM:IND,14504.71,flat,0,15046.6846900153,13962.735309984699,2026-04-22,13962.7353099847,15046.6846900153,0.03736542750701677,12.576039297716248,2026-04-15 07:50:19,2026-04-15 07:50:00
