@@ -771,37 +771,46 @@ function(
     ####################################################################################################
 
     getUnmatchedLegs <- function() {
-        "SELECT L.*, I.pair, I.asset_class
+        instruments_with_identifier <- INSTRUMENTS %>%
+            mutate(
+                identifier = case_when(
+                    asset_class %in% c("fx_dm", "fx_em") ~ instrument_id,
+                    TRUE ~ conid_spot
+                )
+            ) %>%
+            select(pair, asset_class, identifier)
+
+        "SELECT L.*
         FROM book_trade_leg L
-        LEFT JOIN (
-            SELECT instrument_id, pair, asset_class,
-                CASE WHEN asset_class IN ('fx_dm', 'fx_em') THEN instrument_id ELSE conid_spot END AS identifier
-            FROM instrument
-        ) I ON L.identifier = I.identifier
         WHERE L.leg_id NOT IN (SELECT leg_id FROM book_trade_map)
         AND L.timestamp >= '%s'" %>%
             sprintf(TO_DAY - lookback_days) %>%
             D.SQL %>%
             mutate(
                 timestamp = as.POSIXct(timestamp, tz = TZ_LOCAL)
-            )
+            ) %>%
+            left_join(instruments_with_identifier, by = "identifier")
     }
 
     getLiveTrades <- function() {
+        instruments_with_identifier <- INSTRUMENTS %>%
+            mutate(
+                identifier = case_when(
+                    asset_class %in% c("fx_dm", "fx_em") ~ instrument_id,
+                    TRUE ~ conid_spot
+                )
+            ) %>%
+            select(pair, asset_class, identifier)
+
         "SELECT T.trade_id, T.strategy_id, T.date_entry, T.target_pct,
                 M.leg_id AS entry_leg_id, L.identifier, L.buy_sell AS entry_buy_sell,
-                L.price AS entry_price, L.size AS entry_size, L.account_id,
-                I.pair, I.asset_class
+                L.price AS entry_price, L.size AS entry_size, L.account_id
         FROM book_trade T
         JOIN book_trade_map M ON M.trade_id = T.trade_id AND M.trade_category_id = 1
         JOIN book_trade_leg L ON L.leg_id = M.leg_id
-        LEFT JOIN (
-            SELECT instrument_id, pair, asset_class,
-                CASE WHEN asset_class IN ('fx_dm', 'fx_em') THEN instrument_id ELSE conid_spot END AS identifier
-            FROM instrument
-        ) I ON L.identifier = I.identifier
         WHERE T.trade_outcome_id = 0 AND T.date_exit IS NULL" %>%
             D.SQL %>%
+            left_join(instruments_with_identifier, by = "identifier") %>%
             mutate(
                 date_entry = as.Date(date_entry),
                 date_exit_latest = date_entry + 7,
