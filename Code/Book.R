@@ -628,7 +628,15 @@ function(
     sizing_result <- applyPortfolioSizing(dat_signals)
     dat_sized <- sizing_result$dat_sized
 
+    # Aggregate by instrument: multiple strategies on same asset become one order line
     dat_orders_base <- dat_sized %>%
+        group_by(instrument_id, pair, ticker, asset_class, buy_sell, price) %>%
+        summarise(
+            weight = sum(weight),
+            sized_notional = sum(sized_notional),
+            n_effective = first(n_effective),
+            .groups = "drop"
+        ) %>%
         addInstrumentDetails %>%
         calculateTargetsAndStops
 
@@ -673,12 +681,11 @@ function(
             correlation_matrix = sizing_result$cor_matrix
         ),
         exported_files = exported_files,
-        signals_used = dat_orders_base %>%
+        signals_used = dat_sized %>%
             select(
                 strategy_id, instrument_id, pair, ticker, asset_class,
                 price, predict, target, stop, tp_pct,
-                buy_sell, notional, weight, sized_notional, n_effective,
-                date_entry, date_exit_latest
+                buy_sell, notional, weight, sized_notional, n_effective
             )
     )
 }
@@ -1792,6 +1799,155 @@ function ()
                 select(pair, identifier),
             by = "identifier"
         )
+}
+B.sendOrder <-
+function(
+    pair,
+    buy_sell,
+    size,
+    entry_price,
+    target_price,
+    stop_price,
+    account_id,
+    dry_run = TRUE
+) {
+    ####################################################################################################
+    ### Script description:
+    ### Places a bracket order on IB Gateway via Python: entry LMT + target LMT GTC + stop STP GTC.
+    ### In dry_run mode (default), prints order summary without placing anything.
+    ###
+    ### Usage:
+    ###   B.sendOrder("EUR.USD", 1, 25000, 1.0850, 1.0900, 1.0800, account_id = 1)
+    ###   B.sendOrder("EUR.USD", 1, 25000, 1.0850, 1.0900, 1.0800, account_id = 1, dry_run = FALSE)
+    ####################################################################################################
+
+    ####################################################################################################
+    ### Script variables
+    ####################################################################################################
+
+    ####################################################################################################
+    ### Sub routines
+    ####################################################################################################
+
+    resolveInstrument <- function() {
+        inst <- INSTRUMENTS %>% filter(pair == !!pair)
+        if (nrow(inst) == 0) stop(sprintf("Pair '%s' not found in INSTRUMENTS", pair))
+        inst <- inst[1, ]
+
+        tick_sizes <- D.loadTableLocal("instrument_attribute_dbl") %>%
+            filter(attribute_id == 5)
+        tick_size <- tick_sizes %>%
+            filter(instrument_id == inst$instrument_id) %>%
+            pull(value)
+        if (length(tick_size) == 0) tick_size <- 0.00005
+
+        conid <- inst$conid_spot
+        if (inst$asset_class %in% c("index", "bond", "metal")) {
+            futures_active <- D.loadTableLocal("future_active")
+            active <- futures_active %>% filter(future_id == inst$instrument_id)
+            if (nrow(active) > 0) conid <- active$conid[1]
+        }
+
+        list(
+            instrument_id = inst$instrument_id,
+            asset_class = inst$asset_class,
+            conid = conid,
+            tick_size = tick_size,
+            trade_instrument_type = inst$trade_instrument_type
+        )
+    }
+
+    roundToTick <- function(price, tick_size) {
+        round(round(price / tick_size) * tick_size, 10)
+    }
+
+    ####################################################################################################
+    ### Script
+    ####################################################################################################
+
+    # Validate inputs
+    if (!(buy_sell %in% c(1, -1))) stop("buy_sell must be 1 (BUY) or -1 (SELL)")
+    if (size <= 0) stop("size must be > 0")
+
+    action <- ifelse(buy_sell == 1, "BUY", "SELL")
+
+    if (buy_sell == 1 && !(stop_price < entry_price && entry_price < target_price)) {
+        stop("For BUY: stop_price < entry_price < target_price required")
+    }
+    if (buy_sell == -1 && !(target_price < entry_price && entry_price < stop_price)) {
+        stop("For SELL: target_price < entry_price < stop_price required")
+    }
+
+    # Resolve instrument
+    inst <- resolveInstrument()
+    entry_price <- roundToTick(entry_price, inst$tick_size)
+    target_price <- roundToTick(target_price, inst$tick_size)
+    stop_price <- roundToTick(stop_price, inst$tick_size)
+
+    # Print summary
+    U.printBanner(sprintf(
+        "%s ORDER — %s %s x %.0f @ %.5f  |  TP: %.5f  SL: %.5f  |  Account: %d%s",
+        ifelse(dry_run, "DRY RUN", "LIVE"),
+        action, pair, size, entry_price,
+        target_price, stop_price, account_id,
+        ifelse(dry_run, "  [set dry_run=FALSE to send]", "")
+    ))
+
+    order_summary <- list(
+        pair = pair,
+        action = action,
+        size = size,
+        entry_price = entry_price,
+        target_price = target_price,
+        stop_price = stop_price,
+        account_id = account_id,
+        asset_class = inst$asset_class,
+        conid = inst$conid,
+        tick_size = inst$tick_size
+    )
+
+    if (dry_run) return(invisible(order_summary))
+
+    # Build and execute Python command
+    python_path <- "/home/fls/anaconda3/bin/python3.8"
+    script_path <- paste0(DIRECTORY_HD, "Scripts/Python/place_bracket_order.py")
+
+    cmd <- sprintf(
+        paste(
+            '%s %s',
+            '--pair %s --action %s --size %.0f',
+            '--entry_price %.10f --target_price %.10f --stop_price %.10f',
+            '--account_id %d --conid %d --tick_size %.10f --asset_class %s'
+        ),
+        python_path, script_path,
+        pair, action, size,
+        entry_price, target_price, stop_price,
+        account_id, inst$conid, inst$tick_size, inst$asset_class
+    )
+
+    raw <- system(cmd, intern = TRUE)
+    json_str <- paste(raw, collapse = "\n")
+
+    result <- tryCatch(
+        jsonlite::fromJSON(json_str),
+        error = function(e) {
+            warning(sprintf("Failed to parse Python output: %s\nRaw:\n%s", e$message, json_str))
+            list(status = "ERROR", message = json_str)
+        }
+    )
+
+    if (result$status == "OK") {
+        U.printBanner(sprintf(
+            "PLACED — Parent: %s (id %s)  Target: %s (id %s)  Stop: %s (id %s)",
+            result$parent_status, result$parent_order_id,
+            result$target_status, result$target_order_id,
+            result$stop_status, result$stop_order_id
+        ))
+    } else {
+        warning(sprintf("Order failed: %s", result$message))
+    }
+
+    result
 }
 B.save <-
 function() {
