@@ -4132,17 +4132,18 @@ function(save_to_db = FALSE) {
     }
     
     prepareIndexPrice <- function(instruments_to_do) {
-        dat_px <- 
+        dat_px <-
             "SELECT DISTINCT instrument_id, timestamp_px, close AS px_idx
         FROM archive_predict
-        WHERE timestamp_px >= '%s'
+        WHERE timestamp >= '%s'
         AND use_weights = 0
         AND instrument_id IN (%s)" %>%
             sprintf(
                 YESTERDAY,
                 paste(instruments_to_do, collapse=",")
             ) %>%
-            D.SQL
+            D.SQL %>%
+            filter(timestamp_px >= YESTERDAY)
         
         INSTRUMENTS %>%
             filter(instrument_id %in% instruments_to_do) %>%
@@ -4269,22 +4270,14 @@ function(save_to_db = FALSE) {
     
     estimateOHLCForMainIndicesWithFuture <- function() {
         instruments_to_do <- whichInstrumentsToDo()
-    #    instruments_to_do <- 27
-        px_idx <- prepareIndexPrice(instruments_to_do) 
-        U.printBanner("prices idx")
-        print(data.frame(px_idx))
-        px_fut <- prepareFuturePrice(instruments_to_do) %>% U.debug("px fut")
-        U.printBanner("prices fut")
-        print(data.frame(px_fut))
-        
-        px_spread <- estimateSpreads(px_idx, px_fut) %>% U.debug("px spread")
-        dat_live <- estimateLiveIndexPrice(px_idx, px_fut, px_spread) %>% U.debug("px_live")
-        dat_open <- dat_live %>% 
+        px_idx <- prepareIndexPrice(instruments_to_do)
+        px_fut <- prepareFuturePrice(instruments_to_do)
+        px_spread <- estimateSpreads(px_idx, px_fut)
+        dat_live <- estimateLiveIndexPrice(px_idx, px_fut, px_spread)
+        dat_live %>%
             mutate(date = TO_DAY) %>%
             rename(timestamp = timestamp_fut, open = px_idx_live) %>%
-            select(instrument_id, date, timestamp, open) %>%
-            U.debug("live")
-        #        estimateLiveOHLC(dat_live, instruments_to_do) %>% U.debug("expected ohlc")
+            select(instrument_id, date, timestamp, open)
     }
     
     gethistoOHLCFromDB <- function(this_pair) {
@@ -4355,8 +4348,6 @@ function(save_to_db = FALSE) {
             if (length(benchmark_timestamp) == 0) {
                 benchmark_timestamp <- Sys.time()
             }
-            benchmark_timestamp %>% U.debug("timestamp")
-            
             pair_list <- INSTRUMENTS %>%
                 filter(asset_class == "index", grepl(this_region, market)) %>%
                 .$pair %>%
@@ -4375,14 +4366,13 @@ function(save_to_db = FALSE) {
                 lapply(function(this_pair) 
                     estimateOpenPriceForPairFromMainMarket(this_pair, dat_benchmark) 
                 ) %>%
-                bind_rows %>% 
-                U.debug(paste0("Estimated open for ", this_region)) %>%
+                bind_rows %>%
                 mutate(
                     instrument_id = A.getInstrumentId(pair), 
                     date = TO_DAY,
                     timestamp = benchmark_timestamp
                 ) %>%
-                select(instrument_id, date, timestamp, open) %>% U.debug("With instruments")
+                select(instrument_id, date, timestamp, open)
         }
         dat_derived
     }
@@ -4400,13 +4390,12 @@ function(save_to_db = FALSE) {
     ####################################################################################################
     ### Script
     ####################################################################################################
-    dat_main <- estimateOHLCForMainIndicesWithFuture() 
-    
-    dat_derived_europe <- estimateOpenForDerivedMarkets(dat_main, "Europe") 
-    dat_derived_america <- estimateOpenForDerivedMarkets(dat_main, "America")     
-    
+    dat_main <- estimateOHLCForMainIndicesWithFuture()
+    dat_derived_europe <- estimateOpenForDerivedMarkets(dat_main, "Europe")
+    dat_derived_america <- estimateOpenForDerivedMarkets(dat_main, "America")
+
     rbind(dat_main, dat_derived_europe, dat_derived_america) %>%
-        mutate(high = open, low = open, close = open) %>% 
+        mutate(high = open, low = open, close = open) %>%
         saveToDB
     
 }

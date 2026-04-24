@@ -1594,16 +1594,18 @@ function (
             if (wait_for_technicals) D.waitTillPreviousJobHasFinished("Live", 3, 20, 5, 10)
             dat_technicals <<- loadTechnicals()
         }
-        dat
+        dat %>% U.debug("Finished waiting")
     }
     
     loadModel <- function(i) {
         local_file <- sprintf(file_path_model, i)
         nas_file <- sprintf(file_path_model_2, i)
         if (file.exists(local_file)) {
+            U.printBanner(sprintf("Model %s: loading model from local drive", i))
             load(local_file)
-            U.printBanner(sprintf("Model %s: loaded model local drive", i))
+            U.printBanner(sprintf("Model %s: loaded model from local drive", i))
         } else {
+            U.printBanner(sprintf("Model %s: loading model from NAS", i))
             load(nas_file)
             U.printBanner(sprintf("Model %s: loaded model from NAS", i))
         }
@@ -1611,7 +1613,7 @@ function (
     }
     
     predictModel <- function(dat_model, dat_tech) {
-        dat_predict <- E.modelPredict(dat_tech, dat_model, TRUE)
+        dat_predict <- E.modelPredict(dat_tech, dat_model, TRUE) %>% U.debug("Predict Model done")
         colnames(dat_predict) <- gsub("predict_proba_", "proba_", colnames(dat_predict))
         dat_predict
     }
@@ -2926,12 +2928,13 @@ function (strats_list = NULL)
     ####################################################################################################
     file_names_normal <- strats_list %>%
         U.sapply(function(i) sprintf(file_name_normal, path_backtest, i))
-    file_names_weights <- gsub("_stitched.csv", "_weights_stitched.csv", file_names_normal)
+    file_names_weights <- gsub(".csv", "_weights.csv", file_names_normal)
     
     cols_to_keep <- c(
         "instrument_id", "date", "predict", "t_up", "t_dn", 
         "tgt", "close", "px_exit", "date_exit", "duration",
-        "proba_signal", "proba_signal_plus_flat")
+        "proba_signal", "proba_signal_plus_flat"
+        )
     
     ####################################################################################################
     ### Sub routines

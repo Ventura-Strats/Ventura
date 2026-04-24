@@ -1812,8 +1812,7 @@ function(
     buy_sell,
     size,
     entry_price,
-    target_price,
-    stop_price,
+    tgt_pct,
     account_id,
     dry_run = TRUE
 ) {
@@ -1831,10 +1830,13 @@ function(
     ### Script variables
     ####################################################################################################
 
+    target_price <- entry_price * (1 + buy_sell * tgt_pct)
+    stop_price <- entry_price * (1 - buy_sell * tgt_pct)
+    
     ####################################################################################################
     ### Sub routines
     ####################################################################################################
-
+    
     resolveInstrument <- function() {
         inst <- INSTRUMENTS %>% filter(pair == !!pair)
         if (nrow(inst) == 0) stop(sprintf("Pair '%s' not found in INSTRUMENTS", pair))
