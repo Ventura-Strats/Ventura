@@ -84,16 +84,23 @@ function(dat_trd) {
     dat_book <- getPositionsFromBook()
     nb_accounts <- ncol(select(dat_book, starts_with("Actual_")))
 
-    dat <- select(dat_from_trd, CCY) %>% 
+    dat <- select(dat_from_trd, CCY) %>%
         rbind(select(dat_book, CCY)) %>%
         unique %>%
         filter(CCY != "USD") %>%
         arrange(CCY) %>%
         left_join(dat_from_trd, by = "CCY") %>%
         left_join(dat_book, by = "CCY") %>%
-        U.dfReplaceNAColumnsWithZero(colnames(.)) 
-    
-    res <- select(dat, CCY) 
+        U.dfReplaceNAColumnsWithZero(colnames(.))
+
+    for (i in 1:nb_accounts) {
+        if (!paste0("Expected_", i) %in% colnames(dat)) dat[[paste0("Expected_", i)]] <- 0
+        if (!paste0("Actual_", i) %in% colnames(dat)) dat[[paste0("Actual_", i)]] <- 0
+    }
+    if (!"Total_Expected" %in% colnames(dat)) dat$Total_Expected <- 0
+    if (!"Total_Actual" %in% colnames(dat)) dat$Total_Actual <- 0
+
+    res <- select(dat, CCY)
     for (i in 1:nb_accounts) {
         res <- cbind(res, select(dat, ends_with(as.character(i))))
         res[[paste0("Diff_", i)]] <- res[[paste0("Actual_", i)]] - res[[paste0("Expected_", i)]]
@@ -108,6 +115,95 @@ function(dat_trd) {
         formats_list[[colnames(res)[i]]] <- "#,###"
     }
     
+    res %>%
+        gvisTable(formats = formats_list)
+}
+G.Book.Position.Table.etf_position <-
+function(dat_trd) {
+
+    ####################################################################################################
+    ### Script variables
+    ####################################################################################################
+    path_px_position <- paste0(DIRECTORY_DATA_HD, "Account_Data/Px_Position/")
+
+    ETF <- D.loadTableLocal("ETF") %>%
+        left_join(select(INSTRUMENTS, instrument_id, pair), by = "instrument_id")
+
+    ####################################################################################################
+    ### Sub routines
+    ####################################################################################################
+    getExpectedFromTrades <- function() {
+        dat_trd$trd_live %>%
+            filter(instrument_type == "ETF") %>%
+            mutate(
+                account_id = paste0("Expected_", account_id),
+                position = buy_sell * size
+            ) %>%
+            group_by(pair, account_id) %>%
+            summarize(position = sum(position)) %>%
+            ungroup %>%
+            spread(account_id, position, fill = 0) %>%
+            mutate(
+                Total_Expected = rowSums(select(., starts_with("Expected_")))
+            )
+    }
+
+    getActualFromBook <- function() {
+        dat_1 <- U.try(U.read.csv)(paste0(path_px_position, "px_position_1_last.csv"))
+        dat_2 <- U.try(U.read.csv)(paste0(path_px_position, "px_position_2_last.csv"))
+
+        rbind(dat_1, dat_2) %>%
+            filter(secType == "STK") %>%
+            mutate(
+                conid = as.integer(conid),
+                position = as.numeric(position)
+            ) %>%
+            left_join(select(ETF, conid, pair), by = "conid") %>%
+            filter(!is.na(pair)) %>%
+            mutate(account_id = paste0("Actual_", account_id)) %>%
+            group_by(pair, account_id) %>%
+            summarize(position = sum(position)) %>%
+            ungroup %>%
+            spread(account_id, position, fill = 0) %>%
+            mutate(Total_Actual = rowSums(select(., starts_with("Actual_"))))
+    }
+
+    ####################################################################################################
+    ### Script
+    ####################################################################################################
+    dat_expected <- U.try(getExpectedFromTrades, tibble(pair = character()))()
+    dat_actual <- U.try(getActualFromBook, tibble(pair = character()))()
+
+    if (nrow(dat_expected) == 0 && nrow(dat_actual) == 0) {
+        return(tibble(Pair = "No positions") %>% gvisTable)
+    }
+
+    dat <- select(dat_expected, pair) %>%
+        rbind(select(dat_actual, pair)) %>%
+        unique %>%
+        arrange(pair) %>%
+        left_join(dat_expected, by = "pair") %>%
+        left_join(dat_actual, by = "pair") %>%
+        U.dfReplaceNAColumnsWithZero(colnames(.)) %>%
+        rename(Pair = pair)
+
+    nb_accounts <- ncol(select(dat, starts_with("Actual_")))
+
+    res <- select(dat, Pair)
+    for (i in 1:nb_accounts) {
+        res <- cbind(res, select(dat, ends_with(as.character(i))))
+        res[[paste0("Diff_", i)]] <- res[[paste0("Actual_", i)]] - res[[paste0("Expected_", i)]]
+    }
+
+    res <- res %>%
+        cbind(select(dat, "Total_Expected", "Total_Actual")) %>%
+        mutate(Diff_Total = Total_Actual - Total_Expected)
+
+    formats_list <- {}
+    for (i in 2:ncol(res)) {
+        formats_list[[colnames(res)[i]]] <- "#,###"
+    }
+
     res %>%
         gvisTable(formats = formats_list)
 }
@@ -1617,7 +1713,8 @@ function ()
     MARKETS <- D.loadTableLocal("market")
     
     PROBAS <- D.loadTableLocal("probability_threshold") %>% 
-        rename(threshold = proba_threshold)
+        rename(threshold = proba_threshold) %>%
+        mutate(threshold = 0) # FOR NOW
     
     ####################################################################################################
     ### Sub routines
@@ -1710,6 +1807,12 @@ function ()
                 predict_w = outcome_w
             ) %>%
             mutate(
+                # This is is experimental because strategy 5 is consistently wrong !
+                predict = case_when(
+                    (strategy_id == 5) & (predict == "up") ~ "down",
+                    (strategy_id == 5) & (predict == "down") ~ "up",
+                    TRUE ~ predict
+                ),
                 models_agree = (predict == predict_w),
                 buy_sell = (predict == "up") - (predict == "down"),
                 target = case_when(
@@ -1766,8 +1869,9 @@ function ()
                 proba_ok,
                 score_ok,
                 signal_ok, buy_sell, notional
-            ) %>%
-            filter(!(strategy_id %in% c(4,5)))
+            ) #%>% #filter(!(strategy_id %in% c(4,5)))
+
+            
     }
    
     ####################################################################################################
@@ -2043,7 +2147,7 @@ function (dat_predict, output = "screen")
                     2) %>%
                 formatRound(c("price", "target", "stop"), digits = 5) %>%
                 formatRound(c("score"), digits = 3) %>%
-                formatPercentage(c("tp_pct"), digits = 3)
+                formatPercentage(c("tp_pct"), digits = 4)
             
         }
         else {

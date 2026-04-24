@@ -77,12 +77,16 @@ shinyUI(
         "Book",
         tabsetPanel(
           tabPanel(
-            "FX position", 
+            "Position",
             fluidRow(
-              column(2, actionButton("Book.FX.Button.refresh", "Refresh", styleclass = "primary")),
-              hr(),
-              htmlOutput("Book.FX.Table.fx_position")
-            )
+              column(2, actionButton("Book.Position.Button.refresh", "Refresh", styleclass = "primary"))
+            ),
+            hr(),
+            h4("ETF"),
+            htmlOutput("Book.Position.Table.etf_position"),
+            hr(),
+            h4("FX"),
+            htmlOutput("Book.Position.Table.fx_position")
           ),
           tabPanel(
             "Trades Closed", 

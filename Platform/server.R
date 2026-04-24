@@ -85,13 +85,16 @@ shinyServer(function(input, output, session) {
   ### Tab 5: Book
   ####################################################################################################
   Book.Trades.Data.trades <- reactive({
-    input$Book.FX.Button.refresh; input$Book.Trades_Closed.Button.refresh; input$Book.Trades_Live.Button.refresh; 
+    input$Book.Position.Button.refresh; input$Book.Trades_Closed.Button.refresh; input$Book.Trades_Live.Button.refresh;
     TO_DAY <<- Sys.Date()
     B.readTradesFromDB()
     })
-  
-  Book.FX.Table.fx_position <- reactive(G.Book.FX.Table.fx_position(Book.Trades.Data.trades()))
-  output$Book.FX.Table.fx_position <- renderGvis(Book.FX.Table.fx_position())
+
+  Book.Position.Table.etf_position <- reactive(G.Book.Position.Table.etf_position(Book.Trades.Data.trades()))
+  output$Book.Position.Table.etf_position <- renderGvis(Book.Position.Table.etf_position())
+
+  Book.Position.Table.fx_position <- reactive(G.Book.FX.Table.fx_position(Book.Trades.Data.trades()))
+  output$Book.Position.Table.fx_position <- renderGvis(Book.Position.Table.fx_position())
   
   Book.Trades_Closed.Table.trades_closed <- reactive(G.Book.Trades_Closed.Table.trades_closed(Book.Trades.Data.trades(), input$Book.Trades_Closed.Select.dateFrom))
   output$Book.Trades_Closed.Table.trades_closed <- renderDataTable(Book.Trades_Closed.Table.trades_closed())

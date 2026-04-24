@@ -84,6 +84,9 @@ def place_bracket_order(ib: IB, contract, args):
     take_profit.tif = "GTC"
     stop_loss.tif = "GTC"
 
+    # Allow target to fill outside regular trading hours (not the stop)
+    take_profit.outsideRth = True
+
     # Place all three orders
     trades = []
     for order in bracket:
@@ -111,7 +114,7 @@ def place_bracket_order(ib: IB, contract, args):
 
 def main():
     args = parse_args()
-    port = 7496 + args.account_id - 1
+    port = 7498 + args.account_id - 1
 
     result = {
         "status": "ERROR",
