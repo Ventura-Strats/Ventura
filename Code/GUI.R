@@ -1799,7 +1799,7 @@ function ()
                 rename(TRADE_OUTCOMES, outcome_w = outcome, outcome_id_w = outcome_id),
                 by = "outcome_id_w"
             ) %>%
-            mutate(code = substr(pair, nchar(pair) - 2, nchar(pair))) %>%
+            mutate(code = substr(pair, 1, 3)) %>%
             left_join(fx_spot_vs_usd, by = "code") %>% 
             rename(
                 price = close,
@@ -1934,7 +1934,7 @@ function (dat_predict = NULL, output = "screen")
                 rename(TRADE_OUTCOMES, outcome_w = outcome, outcome_id_w = outcome_id),
                 by = "outcome_id_w"
             ) %>%
-            mutate(code = substr(pair, nchar(pair) - 2, nchar(pair))) %>%
+            mutate(code = substr(pair, 1, 3)) %>%
             left_join(fx_spot_vs_usd, by = "code") %>% 
             arrange(-score, region_id, asset_class, strategy_id, pair) %>%
             rename(
@@ -2354,7 +2354,7 @@ function (dat_predict, view_what, strat_id = NULL)
                 score == 10,
                 pair %in% A.filterInstruments("predict")
             ) %>%
-            mutate(code = substr(pair, nchar(pair) - 2, nchar(pair))) %>%
+            mutate(code = substr(pair, 1, 3)) %>%
             left_join(fx_spot_vs_usd, by = "code") %>% 
             rename(
                 predict = outcome, 

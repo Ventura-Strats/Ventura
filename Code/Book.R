@@ -357,7 +357,7 @@ function(
     }
 }
 B.createNewTradeIDFromLegs <-
-function (trade_date, strategy_id, tp_pct, leg_id_list) {
+function (strategy_id, tp_pct, leg_id_list, trade_date = NULL) {
     
     ####################################################################################################
     ### Script variables
@@ -368,12 +368,23 @@ function (trade_date, strategy_id, tp_pct, leg_id_list) {
     ####################################################################################################
     getNewTradeId <- function() 1 + U.vectorize(D.SQL("SELECT MAX(trade_id) FROM book_trade"))
     
+    getDateEntry <- function() {
+        if (is.null(trade_date)) {
+            trade_date <- "SELECT timestamp FROM book_trade_leg WHERE leg_id = %s"%>% 
+                sprintf(leg_id_list[1]) %>% 
+                D.select %>% 
+                .$timestamp %>% 
+                as.Date
+        }
+        trade_date
+    }
+    
     createNewTradeIdEntry <- function(trade_id) {
         data.frame(
             trade_id,
             strategy_id,
             trade_outcome_id = 0,
-            date_entry = trade_date,
+            date_entry = getDateEntry(),
             date_exit = DATE_NA,
             target_pct = 100 * tp_pct
         ) %>%
@@ -397,91 +408,13 @@ function (trade_date, strategy_id, tp_pct, leg_id_list) {
     ####################################################################################################
     ### Script
     ####################################################################################################
+
+    
+    
+    
     getNewTradeId() %>%
         createNewTradeIdEntry %>%
         addEntryLegsMap
-}
-B.resolveETFProxy <-
-function (dat_orders) {
-
-    ####################################################################################################
-    ### Script description:
-    ### Translates index instrument details to ETF proxy equivalents for instruments where
-    ### trade_instrument_type == "ETF". Overrides conid, tick_size, future_id with ETF proxy values,
-    ### and converts sized_notional from index units to ETF share count.
-    ###
-    ### Parameters:
-    ###   dat_orders: tibble with at least instrument_id, trade_instrument_type, sized_notional columns
-    ###
-    ### Returns:
-    ###   dat_orders with ETF proxy overrides applied where applicable
-    ####################################################################################################
-
-    ####################################################################################################
-    ### Sub routines
-    ####################################################################################################
-
-    getETFPrices <- function() {
-        etf_proxy <- D.loadTableLocal("etf_proxy") %>%
-            select(conid, ib_symbol)
-        path_ib <- paste0(DIRECTORY_DATA_HD, "Spot/IB/")
-
-        etf_proxy %>%
-            rowwise %>%
-            mutate(
-                px_etf = {
-                    f <- paste0(path_ib, "ETF_", ib_symbol, "_histo.csv")
-                    dat <- U.try(U.read.csv)(f)
-                    if (is.null(dat) || nrow(dat) == 0) NA_real_
-                    else as.numeric(tail(dat$close, 1))
-                }
-            ) %>%
-            ungroup %>%
-            filter(!is.na(px_etf), px_etf > 0) %>%
-            select(conid, px_etf)
-    }
-
-    ####################################################################################################
-    ### Script
-    ####################################################################################################
-
-    if (!"trade_instrument_type" %in% colnames(dat_orders)) return(dat_orders)
-    if (!any(dat_orders$trade_instrument_type == "ETF", na.rm = TRUE)) return(dat_orders)
-
-    ETF_PROXY <- D.loadTableLocal("etf_proxy") %>%
-        select(instrument_id, conid_etf = conid, tick_size_etf = tick_size, lot_size_etf = lot_size)
-
-    etf_prices <- getETFPrices()
-
-    result <- dat_orders %>%
-        left_join(ETF_PROXY, by = "instrument_id") %>%
-        left_join(etf_prices, by = c("conid_etf" = "conid")) %>%
-        mutate(
-            conid = ifelse(trade_instrument_type == "ETF" & !is.na(conid_etf), conid_etf, conid),
-            tick_size = ifelse(trade_instrument_type == "ETF" & !is.na(tick_size_etf), tick_size_etf, tick_size),
-            future_id = ifelse(trade_instrument_type == "ETF", NA_integer_, future_id),
-            sized_notional = ifelse(
-                trade_instrument_type == "ETF" & !is.na(px_etf),
-                sized_notional / px_etf,
-                sized_notional
-            )
-        ) %>%
-        select(-conid_etf, -tick_size_etf, -lot_size_etf, -px_etf)
-
-    # Warn if any ETF instruments didn't get a price for conversion
-    etf_no_price <- dat_orders %>%
-        filter(trade_instrument_type == "ETF") %>%
-        left_join(ETF_PROXY, by = "instrument_id") %>%
-        left_join(etf_prices, by = c("conid_etf" = "conid")) %>%
-        filter(is.na(px_etf))
-    if (nrow(etf_no_price) > 0) {
-        warning(sprintf(
-            "No ETF price for: %s — sized_notional left as index units",
-            paste(etf_no_price$pair, collapse = ", ")
-        ))
-    }
-
-    result
 }
 B.generateOrders <-
 function(
@@ -1882,6 +1815,88 @@ function ()
                 select(pair, identifier),
             by = "identifier"
         )
+}
+B.resolveETFProxy <-
+function (dat_orders) {
+
+    ####################################################################################################
+    ### Script description:
+    ### Translates index instrument details to ETF proxy equivalents for instruments where
+    ### trade_instrument_type == "ETF". Overrides conid, tick_size, future_id with ETF proxy values,
+    ### and converts sized_notional from index units to ETF share count.
+    ###
+    ### Parameters:
+    ###   dat_orders: tibble with at least instrument_id, trade_instrument_type, sized_notional columns
+    ###
+    ### Returns:
+    ###   dat_orders with ETF proxy overrides applied where applicable
+    ####################################################################################################
+
+    ####################################################################################################
+    ### Sub routines
+    ####################################################################################################
+
+    getETFPrices <- function() {
+        etf_proxy <- D.loadTableLocal("etf_proxy") %>%
+            select(conid, ib_symbol)
+        path_ib <- paste0(DIRECTORY_DATA_HD, "Spot/IB/")
+
+        etf_proxy %>%
+            rowwise %>%
+            mutate(
+                px_etf = {
+                    f <- paste0(path_ib, "ETF_", ib_symbol, "_histo.csv")
+                    dat <- U.try(U.read.csv)(f)
+                    if (is.null(dat) || nrow(dat) == 0) NA_real_
+                    else as.numeric(tail(dat$close, 1))
+                }
+            ) %>%
+            ungroup %>%
+            filter(!is.na(px_etf), px_etf > 0) %>%
+            select(conid, px_etf)
+    }
+
+    ####################################################################################################
+    ### Script
+    ####################################################################################################
+
+    if (!"trade_instrument_type" %in% colnames(dat_orders)) return(dat_orders)
+    if (!any(dat_orders$trade_instrument_type == "ETF", na.rm = TRUE)) return(dat_orders)
+
+    ETF_PROXY <- D.loadTableLocal("etf_proxy") %>%
+        select(instrument_id, conid_etf = conid, tick_size_etf = tick_size, lot_size_etf = lot_size)
+
+    etf_prices <- getETFPrices()
+
+    result <- dat_orders %>%
+        left_join(ETF_PROXY, by = "instrument_id") %>%
+        left_join(etf_prices, by = c("conid_etf" = "conid")) %>%
+        mutate(
+            conid = ifelse(trade_instrument_type == "ETF" & !is.na(conid_etf), conid_etf, conid),
+            tick_size = ifelse(trade_instrument_type == "ETF" & !is.na(tick_size_etf), tick_size_etf, tick_size),
+            future_id = ifelse(trade_instrument_type == "ETF", NA_integer_, future_id),
+            sized_notional = ifelse(
+                trade_instrument_type == "ETF" & !is.na(px_etf),
+                sized_notional * price / px_etf,
+                sized_notional
+            )
+        ) %>%
+        select(-conid_etf, -tick_size_etf, -lot_size_etf, -px_etf)
+
+    # Warn if any ETF instruments didn't get a price for conversion
+    etf_no_price <- dat_orders %>%
+        filter(trade_instrument_type == "ETF") %>%
+        left_join(ETF_PROXY, by = "instrument_id") %>%
+        left_join(etf_prices, by = c("conid_etf" = "conid")) %>%
+        filter(is.na(px_etf))
+    if (nrow(etf_no_price) > 0) {
+        warning(sprintf(
+            "No ETF price for: %s — sized_notional left as index units",
+            paste(etf_no_price$pair, collapse = ", ")
+        ))
+    }
+
+    result
 }
 B.save <-
 function() {
