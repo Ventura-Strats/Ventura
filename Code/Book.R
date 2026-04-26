@@ -421,18 +421,24 @@ function (dat_orders) {
     ### Sub routines
     ####################################################################################################
 
-    getETFPricesFromBook <- function() {
-        path_px_position <- paste0(DIRECTORY_DATA_HD, "Account_Data/Px_Position/")
-        dat_1 <- U.try(U.read.csv)(paste0(path_px_position, "px_position_1_last.csv"))
-        dat_2 <- U.try(U.read.csv)(paste0(path_px_position, "px_position_2_last.csv"))
+    getETFPrices <- function() {
+        etf_proxy <- D.loadTableLocal("etf_proxy") %>%
+            select(conid, ib_symbol)
+        path_ib <- paste0(DIRECTORY_DATA_HD, "Spot/IB/")
 
-        rbind(dat_1, dat_2) %>%
-            filter(secType == "STK") %>%
-            mutate(conid = as.integer(conid), price = as.numeric(price)) %>%
-            filter(!is.na(price), price > 0) %>%
-            group_by(conid) %>%
-            summarize(px_etf = mean(price)) %>%
-            ungroup
+        etf_proxy %>%
+            rowwise %>%
+            mutate(
+                px_etf = {
+                    f <- paste0(path_ib, "ETF_", ib_symbol, "_histo.csv")
+                    dat <- U.try(U.read.csv)(f)
+                    if (is.null(dat) || nrow(dat) == 0) NA_real_
+                    else as.numeric(tail(dat$close, 1))
+                }
+            ) %>%
+            ungroup %>%
+            filter(!is.na(px_etf), px_etf > 0) %>%
+            select(conid, px_etf)
     }
 
     ####################################################################################################
@@ -445,7 +451,7 @@ function (dat_orders) {
     ETF_PROXY <- D.loadTableLocal("etf_proxy") %>%
         select(instrument_id, conid_etf = conid, tick_size_etf = tick_size, lot_size_etf = lot_size)
 
-    etf_prices <- getETFPricesFromBook()
+    etf_prices <- getETFPrices()
 
     result <- dat_orders %>%
         left_join(ETF_PROXY, by = "instrument_id") %>%

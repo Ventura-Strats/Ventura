@@ -314,9 +314,12 @@ def getBookLivePriceAndPositions(account_id):
     ib_client_id = xu.getIBClientId(script_name)
     ib_app.connect("127.0.0.1", ib_port, ib_client_id)
     ib_app.account_id = account_id
-    ib_app.run()    
+    ib_app.run()
     global AAA
     AAA = ib_app.px_position
+    if ib_app.account_data.empty or ib_app.px_position.empty:
+        ut.printBanner("No data received for account " + str(account_id) + " — skipping file save", False)
+        return
     saveAccountFile(ib_app.account_data, account_id)
     savePxPositionFile(ib_app.px_position, account_id)
     saveNAVToDB(ib_app.account_data, ib_app.px_position, account_id)

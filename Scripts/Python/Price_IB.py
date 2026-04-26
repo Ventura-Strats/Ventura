@@ -200,10 +200,28 @@ def formatAssetDat(dat):
     dat = dat[["pair","symbol", "secType", "exchange", "currency", "data_type"]]
     return dat
 
+def getETFProxyAssetData():
+    CURRENCIES = db.loadTableLocal("currency")
+    etf_proxy = db.loadTableLocal("etf_proxy")
+    etf_proxy = etf_proxy.merge(
+        CURRENCIES[["ccy_id", "ccy"]], on="ccy_id", how="left"
+    )
+    dat = pd.DataFrame({
+        "pair": "ETF_" + etf_proxy["ib_symbol"],
+        "symbol": etf_proxy["ib_symbol"],
+        "secType": "STK",
+        "exchange": "SMART",
+        "currency": etf_proxy["ccy"],
+        "data_type": "TRADES"
+    })
+    return dat
+
 @ut.tryDiagnosticNone()
 def buildAssetList():
     dat = getDBAssetData()
     dat = formatAssetDat(dat)
+    dat_etf_proxy = getETFProxyAssetData()
+    dat = pd.concat([dat, dat_etf_proxy], ignore_index=True)
     return dat
 
 def determineDateFormat():
