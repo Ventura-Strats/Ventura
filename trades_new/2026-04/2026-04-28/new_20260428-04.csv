@@ -1,0 +1,2 @@
+trade_id,date_trade,strategy,ticker,price_entry,predict,buy_sell,target,stop_loss,date_exit_latest,range_dn,range_up,tp_pct,notional_for_1k_pnl,timestamp_px,timestamp_signal
+V2026042804001,2026-04-28,14,FTXIN9:IND,15529.01,up,1,15747.9868083066,15310.033191693401,2026-05-05,15310.0331916934,15747.9868083066,0.01410114413646446,31.215999780347722,2026-04-28 07:50:18,2026-04-28 07:50:00
