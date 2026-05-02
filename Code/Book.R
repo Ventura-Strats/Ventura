@@ -39,12 +39,20 @@ function (dat_nav) {
         )    
 }
 B.closeTradeFromLegs <-
-function (trade_id, exit_type, exit_date, leg_id_list) {
+function (trade_id, exit_type, leg_id_list, exit_date=NULL) {
     
     ####################################################################################################
     ### Script variables
     ####################################################################################################
     exit_type <- tolower(exit_type)
+    
+    if (is.null(exit_date)) {
+        exit_date <- "SELECT timestamp FROM book_trade_leg WHERE leg_id = %s"%>% 
+            sprintf(leg_id_list[1]) %>% 
+            D.select %>% 
+            .$timestamp %>% 
+            as.Date
+    }
     
     ####################################################################################################
     ### Sub routines
