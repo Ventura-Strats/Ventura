@@ -7,7 +7,7 @@ Entry orders delegate to the chase algorithm in order_execution.py.
 
 Usage:
     import sys
-    sys.path.insert(0, '/home/fls/Models/Ventura/HD/Scripts/Python')
+    sys.path.insert(0, '/home/fls/Models/Ventura/HD/Code/Python')
     from trade_orders import show_live_trades, exit_orders, exit_orders_all
 
     show_live_trades(account_id=1)

@@ -2,6 +2,13 @@
 
 Historical record of completed work. For current status, see CLAUDE.md. For full details, see Session_Notes/.
 
+## 2026-05-02
+- **Codebase reorganization**: R modules to Code/R/, Python scripts to Code/Python/, junk files to Code/Old/
+- **Path references updated**: All dump() calls, Init.R setwd/load, Book.R python path, Platform setwd, Python init.py chdir, .gitignore
+- **Shell launchers updated**: RScriptVentura.sh and PScriptVentura.sh point to new Code/R/ and Code/Python/ paths
+- **Safety symlink**: Scripts/Python -> Code/Python for backward compatibility
+- **B.closeTradeFromLegs()**: Made exit_date optional, auto-derived from leg timestamp
+
 ## 2026-03-24
 - **Local model loading**: V.modelPredict() loads from Models_Local/ first, NAS fallback
 - **Per-machine model copy crontab**: Each machine copies only its needed model files, staggered 5min apart

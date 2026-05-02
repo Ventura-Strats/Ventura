@@ -470,7 +470,7 @@ function (text_from, text_to = "", find_or_replace = "find", do_backup = FALSE)
     ####################################################################################################
     ### Script variables
     ####################################################################################################
-    file_path_list <- c("Code", "Platform", "Scripts") %>% 
+    file_path_list <- c("Code/R", "Platform", "Scripts") %>%
         paste0(DIRECTORY_CODE_HD, "", ., "/")
     
     ####################################################################################################
@@ -971,7 +971,7 @@ U.save <-
 function() {
     All_Objects <- ls(".GlobalEnv", pattern = "U.");
     All_Objects <- All_Objects[substr(All_Objects,1,2) == "U."];
-    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/Utils.R"));
+    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/R/Utils.R"));
   }
 U.saveAll <-
 function () 

@@ -290,7 +290,7 @@ function ()
         rootDirectoryBase()
         rootDirectoryData()
         print(DIRECTORY_CODE_HD)
-        setwd(paste0(DIRECTORY_CODE_HD, "Code/"))
+        setwd(paste0(DIRECTORY_CODE_HD, "Code/R/"))
         U.printBanner(paste0("Current directory: ", getwd()), FALSE)
         
         CHAR_NA <<- as.character(NA)
@@ -332,7 +332,7 @@ function ()
     }
 
     initializeVenturaVariables <- function() {
-        load(paste0(DIRECTORY_CODE_HD, "Code/VenturaStrat.RData"))
+        load(paste0(DIRECTORY_CODE_HD, "Code/Old/VenturaStrat.RData"))
         VENTURA$technical_param$max_date <- YESTERDAY
         MAX_TRAIN_DATE <<- YESTERDAY
         VENTURA <<- VENTURA
@@ -372,7 +372,7 @@ I.save <-
 function() {
     All_Objects <- ls(".GlobalEnv", pattern = "I.");
     All_Objects <- All_Objects[substr(All_Objects,1,2) == "I."];
-    file_path_name <- paste0(DIRECTORY_CODE_HD, "Code/Init.R")
+    file_path_name <- paste0(DIRECTORY_CODE_HD, "Code/R/Init.R")
     dump(All_Objects, file_path_name);
     file_path_name %>% 
         readLines %>%

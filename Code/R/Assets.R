@@ -445,5 +445,5 @@ A.save <-
 function() {
     All_Objects <- ls(".GlobalEnv", pattern = "A.");
     All_Objects <- All_Objects[substr(All_Objects,1,2) == "A."];
-    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "/Code/Assets.R"));
+    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/R/Assets.R"));
 }

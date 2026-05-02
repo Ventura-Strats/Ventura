@@ -519,7 +519,7 @@ E.save <-
 function() {
         All_Objects <- ls(".GlobalEnv", pattern = "E.");
         All_Objects <- All_Objects[substr(All_Objects,1,2) == "E."];
-        dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/Engine.R"));
+        dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/R/Engine.R"));
     }
 E.trainModel <-
 function (dat_trades_list, strat_id, export_all_data = FALSE, n_trees = NULL, features_to_ignore = "",

@@ -3,7 +3,7 @@ Data/
 *.csv
 *.rds
 *.RData
-!Code/VenturaStrat.RData
+!Code/Old/VenturaStrat.RData
 
 # Old/backup folders
 Git/

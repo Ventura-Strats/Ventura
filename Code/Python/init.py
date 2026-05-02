@@ -67,7 +67,7 @@ def initializeApplicationVariables():
     
     DIRECTORY_CODE = rootDirectoryBase()
     DIRECTORY_DATA = rootDirectoryData()
-    os.chdir(DIRECTORY_CODE + "Scripts/Python/")
+    os.chdir(DIRECTORY_CODE + "Code/Python/")
     ut.printBanner("Current directory: " + os.getcwd(), False)
 
 def initializeInstrumentTable():

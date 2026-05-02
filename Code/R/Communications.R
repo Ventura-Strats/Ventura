@@ -35,7 +35,7 @@ C.save <-
 function() {
     All_Objects <- ls(".GlobalEnv", pattern = "C.");
     All_Objects <- All_Objects[substr(All_Objects,1,2) == "C."];
-    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "/Code/Communications.R"));
+    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/R/Communications.R"));
 }
 C.sendJobsStatus <-
 function () 

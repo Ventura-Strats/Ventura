@@ -714,7 +714,7 @@ function ()
     ####################################################################################################
     path_base <- paste0(DIRECTORY_DATA_HD, "Git/Ventura/trades_")
     path_trd_new <- paste0(path_base, "new")
-    path_trd_ledger <- paste0(DIRECTORY_CODE_HD, "Code")
+    path_trd_ledger <- paste0(DIRECTORY_CODE_HD, "Code/Old")
     
     ####################################################################################################
     ### Sub routines
@@ -884,7 +884,7 @@ function ()
     ### Script Variables
     ####################################################################################################
     
-    path_backtest <- paste0(DIRECTORY_CODE_HD, "Code/")
+    path_backtest <- paste0(DIRECTORY_CODE_HD, "Code/Old/")
     file_names <- "trades_ventura.csv"
     
     file_names <- paste0(path_backtest, file_names)
@@ -3926,7 +3926,7 @@ V.save <-
 function() {
     All_Objects <- ls(".GlobalEnv", pattern = "V.");
     All_Objects <- All_Objects[substr(All_Objects,1,2) == "V."];
-    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/Ventura.R"));
+    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/R/Ventura.R"));
   }
 V.saveTradesNewToGithub <-
 function (dat_run) 

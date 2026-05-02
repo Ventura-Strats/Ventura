@@ -6,9 +6,11 @@ R trading model with Python IB API integration. Random forest predictions, techn
 
 ```
 /home/fls/Models/Ventura/
-├── HD/Code/           # Core R modules (Init, Utils, DB, Assets, Book, Communications, Engine, GUI, Technicals, Ventura)
+├── HD/Code/R/         # Core R modules (Init, Utils, DB, Assets, Book, Communications, Engine, GUI, Technicals, Ventura)
+├── HD/Code/Python/    # Python IB API modules (init, db, utils, execution_utils, trade_orders, etc.)
+├── HD/Code/Old/       # Archived files (VenturaStrat.RData, old CSVs, Rmd reports)
 ├── HD/Platform/       # Shiny dashboard (server.R, ui.R)
-├── HD/Scripts/        # Scheduled jobs (Model/, Technicals/, Book/, Communications/, Maintenance/, Scenario/, Crontab/, Python/)
+├── HD/Scripts/        # Scheduled jobs (Model/, Technicals/, Book/, Communications/, Maintenance/, Scenario/, Crontab/)
 ├── HD/Documentation/  # Feature selection, strategies, technical features, research areas
 ├── HD/Session_Notes/  # Per-session change logs
 └── SD/                # SSD mount (models, fast storage)
@@ -40,7 +42,8 @@ All scripts: set `start_time`, `script_name`, `max_time_hours`, define `Script()
 ## Key Paths
 
 - Project root: `/home/fls/Models/Ventura/`
-- R working directory: `/home/fls/Models/Ventura/HD/Code/`
+- R working directory: `/home/fls/Models/Ventura/HD/Code/R/`
+- Python working directory: `/home/fls/Models/Ventura/HD/Code/Python/`
 - Log files: `/home/fls/Data/Ventura/SD/Log/`
 - Local models: `/home/fls/Data/Ventura/Models_Local/`
 - NAS models: `/home/fls/Data/Ventura/SD/Models/`
@@ -62,7 +65,7 @@ All scripts: set `start_time`, `script_name`, `max_time_hours`, define `Script()
 
 ## Preferences
 
-- Only look at .R files in Code/ (ignore other file types)
+- R modules in Code/R/, Python modules in Code/Python/
 - Shiny dashboard works well — low priority for changes
 - Owner is self-taught in R, professional Python developer
 

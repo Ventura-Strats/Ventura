@@ -183,7 +183,7 @@ D.save <-
 function() {
     All_Objects <- ls(".GlobalEnv", pattern = "D.");
     All_Objects <- All_Objects[substr(All_Objects,1,2) == "D."];
-    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/DB.R"));
+    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/R/DB.R"));
 }
 D.select <-
 function(sql_query, data2Tibble = TRUE, noRowsNull = TRUE) {

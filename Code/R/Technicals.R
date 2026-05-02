@@ -8496,7 +8496,7 @@ T.save <-
 function() {
     All_Objects <- ls(".GlobalEnv", pattern = "T.");
     All_Objects <- All_Objects[substr(All_Objects,1,2) == "T."];
-    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "/Code/Technicals.R"));
+    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/R/Technicals.R"));
 }
 T.testAbove <-
 function(x, x_lvl, width) {

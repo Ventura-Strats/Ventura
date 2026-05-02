@@ -1910,7 +1910,7 @@ B.save <-
 function() {
     All_Objects <- ls(".GlobalEnv", pattern = "B.");
     All_Objects <- All_Objects[substr(All_Objects,1,2) == "B."];
-    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "/Code/Book.R"));
+    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/R/Book.R"));
 }
 B.sendOrder <-
 function(
@@ -2034,7 +2034,7 @@ function(
 
     # Build and execute Python command
     python_path <- "/home/fls/anaconda3/bin/python3.8"
-    script_path <- paste0(DIRECTORY_CODE_HD, "Scripts/Python/place_bracket_order.py")
+    script_path <- paste0(DIRECTORY_CODE_HD, "Code/Python/place_bracket_order.py")
 
     cmd <- sprintf(
         paste(

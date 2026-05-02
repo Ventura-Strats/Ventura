@@ -2448,7 +2448,7 @@ G.save <-
 function() {
     All_Objects <- ls(".GlobalEnv", pattern = "G.");
     All_Objects <- All_Objects[substr(All_Objects,1,2) == "G."];
-    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/GUI.R"));
+    dump(All_Objects, paste0(DIRECTORY_CODE_HD, "Code/R/GUI.R"));
 }
 G.Scenario.Data.dat_scenario <-
 function () 
