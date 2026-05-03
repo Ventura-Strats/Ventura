@@ -12,13 +12,13 @@ Data flow:
 4. Execute via order_execution module
 
 Usage:
-    from signal_to_orders import SignalConverter
+    from ventura.signals.signal_converter import SignalConverter
 
     converter = SignalConverter(account_id=1, execution_time_id=7)
     orders = converter.prepare_orders(aum_total=100_000)
 
     # Execute
-    from order_execution import execute_orders
+    from ventura.ib.orders import execute_orders
     results = execute_orders(orders, port=7497)
 """
 
@@ -32,10 +32,10 @@ import logging
 
 # Local imports
 try:
-    from order_execution import Order, AssetClass, OrderStatus
-    from portfolio_sizing import PortfolioSizer, SizingConfig
-    import db
-    import init
+    from ventura.signals.sizing import PortfolioSizer, SizingConfig
+    from ventura.ib.orders import Order, AssetClass, OrderStatus
+    from ventura.db import Database
+    from ventura.config import VenturaConfig
 except ImportError as e:
     logging.warning(f"Import error (may be OK for standalone testing): {e}")
 
@@ -79,8 +79,8 @@ class SignalConverter:
         # Set data directory
         if data_dir is None:
             try:
-                self.data_dir = Path(init.DIRECTORY_DATA)
-            except:
+                self.data_dir = Path(VenturaConfig._resolve_data_dir())
+            except Exception:
                 self.data_dir = Path("/home/fls/Mount/Synology/Models/Ventura/Data")
         else:
             self.data_dir = Path(data_dir)
@@ -88,8 +88,9 @@ class SignalConverter:
         # Database connection
         self._db_select = None
         try:
-            self._db_select = db.select
-        except:
+            _db = Database()
+            self._db_select = _db.select
+        except Exception:
             logger.warning("Database module not available")
 
         # Portfolio sizer
@@ -101,10 +102,7 @@ class SignalConverter:
 
     def _get_today_str(self) -> str:
         """Get today's date string."""
-        try:
-            return init.TODAY_STR
-        except:
-            return datetime.now().strftime("%Y-%m-%d")
+        return datetime.now().strftime("%Y-%m-%d")
 
     def _find_execution_time(self) -> int:
         """Determine current execution time ID based on time of day."""
@@ -431,7 +429,7 @@ def prepare_and_execute(
     Returns:
         List of Order objects (with results if not dry_run)
     """
-    from order_execution import execute_orders
+    from ventura.ib.orders import execute_orders
 
     # Prepare orders
     converter = SignalConverter(

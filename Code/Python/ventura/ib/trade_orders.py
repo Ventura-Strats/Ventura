@@ -8,7 +8,7 @@ Entry orders delegate to the chase algorithm in order_execution.py.
 Usage:
     import sys
     sys.path.insert(0, '/home/fls/Models/Ventura/HD/Code/Python')
-    from trade_orders import show_live_trades, exit_orders, exit_orders_all
+    from ventura.ib.trade_orders import show_live_trades, exit_orders, exit_orders_all
 
     show_live_trades(account_id=1)
     exit_orders(42, account_id=1)                  # dry run
@@ -23,10 +23,20 @@ import pandas as pd
 
 from ib_insync import IB, Contract, Forex, Stock, Future, LimitOrder, StopOrder
 
-import db
+from ventura.db import Database
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
+
+# Module-level database instance (lazy init)
+_db: Optional[Database] = None
+
+
+def _get_db() -> Database:
+    """Get or create the module-level Database instance."""
+    global _db
+    if _db is None:
+        _db = Database()
+    return _db
 
 
 # ---------------------------------------------------------------------------
@@ -64,13 +74,17 @@ def round_to_tick(price: float, tick_size: float) -> float:
     return round(round(price / tick_size) * tick_size, 10)
 
 
-def _load_instrument_lookup():
+def _load_instrument_lookup(data_dir: Optional[str] = None):
     """Load instrument, future, and ETF reference data from local CSVs."""
-    instruments = db.loadTableLocal("INSTRUMENTS")
-    futures = db.loadTableLocal("future_contract")
-    future_active = db.loadTableLocal("future_active")
-    future_expiry = db.loadTableLocal("future_expiry")
-    etf = db.loadTableLocal("ETF")
+    db = _get_db()
+    if data_dir is None:
+        from ventura.config import VenturaConfig
+        data_dir = VenturaConfig._resolve_data_dir()
+    instruments = db.load_table_local("INSTRUMENTS", data_dir)
+    futures = db.load_table_local("future_contract", data_dir)
+    future_active = db.load_table_local("future_active", data_dir)
+    future_expiry = db.load_table_local("future_expiry", data_dir)
+    etf = db.load_table_local("ETF", data_dir)
     return instruments, futures, future_active, future_expiry, etf
 
 
@@ -211,7 +225,7 @@ class TradeOrderManager:
             AND T.trade_outcome_id = 0
             AND M.trade_category_id = 1
         """
-        dat = db.select(sql)
+        dat = _get_db().select(sql)
 
         if dat is None or len(dat) == 0:
             raise ValueError(f"Trade {trade_id} not found or not live (trade_outcome_id != 0)")
@@ -284,7 +298,7 @@ class TradeOrderManager:
             AND T.date_exit IS NULL
             AND M.trade_category_id = 1
         """
-        dat = db.select(sql)
+        dat = _get_db().select(sql)
         if dat is None or len(dat) == 0:
             print("No live trades found.")
             return pd.DataFrame()
@@ -509,7 +523,7 @@ class TradeOrderManager:
             price_limit: Worst acceptable price
             dry_run: If True (default), only print what would be done.
         """
-        from order_execution import Order as ExecOrder, OrderExecutor, AssetClass
+        from ventura.ib.orders import Order as ExecOrder, OrderExecutor, AssetClass
 
         instruments, futures, future_active, future_expiry, etf = _load_instrument_lookup()
         inst = instruments[instruments["instrument_id"] == instrument_id]

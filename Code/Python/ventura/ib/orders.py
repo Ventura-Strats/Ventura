@@ -6,7 +6,7 @@ Clean implementation for executing orders via Interactive Brokers API.
 Uses a "chase" strategy: start at favorable price, tick toward limit until filled.
 
 Usage:
-    from order_execution import Order, OrderExecutor
+    from ventura.ib.orders import Order, OrderExecutor
 
     executor = OrderExecutor(host='127.0.0.1', port=7497, client_id=10)
     executor.connect()
@@ -35,7 +35,6 @@ import logging
 
 from ib_insync import IB, Contract, Forex, Stock, Future, LimitOrder, Trade
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -378,7 +377,7 @@ if __name__ == "__main__":
     print()
     print("Example:")
     print("""
-    from order_execution import Order, OrderExecutor, AssetClass
+    from ventura.ib.orders import Order, OrderExecutor, AssetClass
 
     executor = OrderExecutor(port=7497)
     executor.connect()

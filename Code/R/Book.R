@@ -2034,7 +2034,7 @@ function(
 
     # Build and execute Python command
     python_path <- "/home/fls/anaconda3/bin/python3.8"
-    script_path <- paste0(DIRECTORY_CODE_HD, "Code/Python/place_bracket_order.py")
+    script_path <- paste0(DIRECTORY_CODE_HD, "Scripts/Python/place_bracket_order.py")
 
     cmd <- sprintf(
         paste(
