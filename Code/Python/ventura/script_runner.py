@@ -9,6 +9,7 @@ Provides the ``run_script()`` entry point that handles:
 
 from __future__ import annotations
 
+import logging
 import os
 import sys
 import time
@@ -148,6 +149,13 @@ def run_script(
             run_script("My_Script", main_fn=main, max_time_hours=0.5)
     """
     start_time = datetime.now()
+
+    # Configure root logger so all ventura.* module loggers output to console
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s | %(name)-30s | %(levelname)-7s | %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
     print_banner(f"Script: {script_name}")
     print_banner(f"PID: {os.getpid()}", False)

@@ -5,6 +5,7 @@ import sys
 sys.path.insert(0, "/home/fls/Models/Ventura/HD/Code/Python")
 
 from ventura.script_runner import run_script, ScriptContext
+from ventura.scheduling import find_execution_time
 from ventura.ib.connection import IBConnection
 from ventura.ib.orders import Order, OrderExecutor, AssetClass, OrderStatus
 from ventura.signals.order_list import read_order_list
@@ -17,8 +18,7 @@ def main(ctx: ScriptContext) -> None:
     db = ctx.db
     cfg = ctx.config
 
-    import execution_utils as vx
-    execution_time_id = vx.findExecutionTime()
+    execution_time_id = find_execution_time(db, cfg.data_dir, ctx.start_time)
 
     for account_id in ACCOUNT_IDS:
         print_banner(f"Execute orders — account {account_id}")

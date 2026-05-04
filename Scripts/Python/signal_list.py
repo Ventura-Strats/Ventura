@@ -7,6 +7,7 @@ sys.path.insert(0, "/home/fls/Models/Ventura/HD/Code/Python")
 
 from ventura.script_runner import run_script, ScriptContext
 from ventura.ib.connection import IBConnection
+from ventura.scheduling import find_execution_time, wait_for_previous_job
 from ventura.signals.predictions import PrepareSignalsList
 from ventura.signals.github import GithubSignalExporter
 from ventura.signals.order_list import NewOrdersBuilder
@@ -29,30 +30,10 @@ def get_fx_vs_usd(db):
     return db.select(sql)
 
 
-def find_execution_time(db, cfg):
-    """Determine execution_time_id from schedule + current time."""
-    from ventura.ib.connection import IBConnection
-    # Re-use existing logic from execution_utils
-    import execution_utils as vx
-    return vx.findExecutionTime()
-
-
 def send_telegram_signals():
     """Trigger R scripts to send Telegram notifications."""
     os.system("RScriptVentura.sh Communications/Send_Predict.R")
     os.system("RScriptVentura.sh Communications/Send_Signal.R")
-
-
-def wait_for_predict(db, cfg):
-    """Wait for the Predict script to finish (re-uses existing logic)."""
-    import execution_utils as vx
-    vx.waitTillPreviousJobHasFinished(
-        previous_script_name="Predict",
-        last_completed_stage=1,
-        nb_jobs_total=8,
-        max_lag_prices_minutes=7,
-        max_wait_time_before_continuing_minutes=4,
-    )
 
 
 def main(ctx: ScriptContext) -> None:
@@ -60,10 +41,17 @@ def main(ctx: ScriptContext) -> None:
     cfg = ctx.config
 
     # Wait for Predict to finish
-    wait_for_predict(db, cfg)
+    wait_for_previous_job(
+        db, cfg.data_dir,
+        previous_script_name="Predict",
+        last_completed_stage=1,
+        nb_jobs_total=8,
+        max_lag_prices_minutes=7,
+        max_wait_time_minutes=4,
+    )
 
     # Determine execution time
-    execution_time_id = find_execution_time(db, cfg)
+    execution_time_id = find_execution_time(db, cfg.data_dir, ctx.start_time)
 
     # FX rates
     fx_vs_usd = get_fx_vs_usd(db)

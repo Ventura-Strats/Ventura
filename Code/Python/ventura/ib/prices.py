@@ -477,3 +477,270 @@ class FuturePriceRetriever:
 
         dat["mid"].values[i] = mid
         dat["price"].values[i] = price
+
+
+# ---------------------------------------------------------------------------
+# Execution-time live prices (replaces Price_IB_Exec.py)
+# ---------------------------------------------------------------------------
+
+class ExecPriceRetriever:
+    """Fetch live prices for instruments with active combined orders.
+
+    Runs in a loop during order execution to provide real-time mark-to-market.
+    Reads the combined_orders CSV to know which conids to price, fetches
+    bid/ask/last/histo/book from IB, calculates a weighted-average best price,
+    and saves to ``live_px_exec`` DB table + CSV.
+
+    Usage::
+
+        with IBConnection(port=7497, client_id=15) as conn:
+            retriever = ExecPriceRetriever(conn, db, cfg, execution_time_id)
+            retriever.run_once()  # single pass
+            # or loop externally with run_once() + sleep
+    """
+
+    PRICE_COLS = ["bid", "ask", "mid", "last", "histo", "book"]
+
+    def __init__(
+        self,
+        conn: IBConnection,
+        db: Database,
+        cfg: VenturaConfig,
+        execution_time_id: int,
+        start_time: datetime,
+        account_ids: list = None,
+        wait_seconds: float = 5.0,
+        recent_threshold_minutes: int = 5,
+    ) -> None:
+        self.conn = conn
+        self.db = db
+        self.cfg = cfg
+        self.execution_time_id = execution_time_id
+        self.start_time = start_time
+        self.account_ids = account_ids or [1, 2]
+        self.wait_seconds = wait_seconds
+        self.recent_threshold_minutes = recent_threshold_minutes
+
+        self.timestamp_str = start_time.strftime("%Y-%m-%d %H:%M:%S")
+        self.file_path = cfg.data_dir + "Spot/Live_Exec/"
+
+    def run_once(self) -> pd.DataFrame:
+        """Single pass: read orders, fetch prices, save. Returns priced df."""
+        contract_list = self._read_instruments_list()
+        if contract_list.empty:
+            logger.info("No instruments to price")
+            return contract_list
+
+        contract_list = self._fetch_ib_prices(contract_list)
+        contract_list = self._read_investing_prices(contract_list)
+        contract_list = self._calc_prices(contract_list)
+        contract_list = contract_list.dropna(subset=["price"])
+
+        self._save(contract_list)
+        return contract_list
+
+    def erase_live_prices(self) -> None:
+        """Clear previous execution prices (call at start of exec session)."""
+        import os
+        file_name = self.file_path + "px_live_exec.csv"
+        try:
+            os.remove(file_name)
+        except OSError:
+            pass
+        self.db.execute("TRUNCATE TABLE live_px_exec")
+
+    # -- Read combined orders to get instrument list --------------------------
+
+    def _read_instruments_list(self) -> pd.DataFrame:
+        """Read combined order CSVs for all accounts, deduplicate."""
+        from ventura.signals.order_list import read_order_list
+
+        frames = []
+        for account_id in self.account_ids:
+            try:
+                df = read_order_list(
+                    account_id, "Combined",
+                    self.cfg, self.execution_time_id,
+                    self.cfg.data_dir + "Orders/",
+                )
+                df = df[["instrument_id", "ticker", "asset_class",
+                         "future_id", "conid"]].copy()
+                for col in ["instrument_id", "future_id", "conid"]:
+                    df[col] = df[col].astype(int)
+                frames.append(df)
+            except Exception as exc:
+                logger.warning("Could not read combined orders for account %d: %s",
+                               account_id, exc)
+
+        if not frames:
+            return pd.DataFrame()
+
+        df = pd.concat(frames, ignore_index=True).drop_duplicates()
+        return self._format_contracts(df)
+
+    def _format_contracts(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Add price columns and data_type."""
+        df = df.copy()
+        df["timestamp"] = self.timestamp_str
+        for col in self.PRICE_COLS:
+            df[col] = np.nan
+        df["data_type"] = "MIDPOINT"
+        df.loc[df["asset_class"] == "index", "data_type"] = "TRADES"
+        return df
+
+    # -- IB price fetching ----------------------------------------------------
+
+    def _fetch_ib_prices(self, dat: pd.DataFrame) -> pd.DataFrame:
+        """Fetch bid/ask/last/histo/book from IB for each conid."""
+        ib = self.conn.ib
+
+        # Book prices from portfolio
+        portfolio = ib.portfolio()
+        for item in portfolio:
+            mask = dat["conid"] == item.contract.conId
+            if mask.any():
+                dat.loc[mask, "book"] = item.marketPrice
+
+        # Per-contract market data + historical
+        for i, row in dat.iterrows():
+            conid = int(row["conid"])
+            contract = Contract(conId=conid)
+
+            try:
+                qualified = ib.qualifyContracts(contract)
+                if not qualified:
+                    logger.warning("Could not qualify conid %d", conid)
+                    continue
+            except Exception as exc:
+                logger.warning("Qualify failed for conid %d: %s", conid, exc)
+                continue
+
+            # Market data snapshot
+            try:
+                ticker = ib.reqMktData(contract, snapshot=True)
+                ib.sleep(self.wait_seconds)
+                if ticker.bid and ticker.bid > 0 and ticker.bid != -1:
+                    dat.at[i, "bid"] = ticker.bid
+                if ticker.ask and ticker.ask > 0 and ticker.ask != -1:
+                    dat.at[i, "ask"] = ticker.ask
+                if ticker.last and ticker.last > 0 and ticker.last != -1:
+                    dat.at[i, "last"] = ticker.last
+                ib.cancelMktData(contract)
+            except Exception as exc:
+                logger.warning("Market data failed for conid %d: %s", conid, exc)
+
+            # Historical close (today only)
+            try:
+                bars = ib.reqHistoricalData(
+                    contract,
+                    endDateTime="",
+                    durationStr="1 D",
+                    barSizeSetting="1 day",
+                    whatToShow=row["data_type"],
+                    useRTH=False,
+                    formatDate=1,
+                )
+                for bar in bars:
+                    bar_date = pd.to_datetime(str(bar.date), format="%Y%m%d")
+                    if bar_date.date() >= self.cfg.today:
+                        dat.at[i, "histo"] = float(bar.close)
+            except Exception as exc:
+                logger.warning("Historical data failed for conid %d: %s", conid, exc)
+
+        return dat
+
+    # -- DB fallback prices ---------------------------------------------------
+
+    def _read_investing_prices(self, dat: pd.DataFrame) -> pd.DataFrame:
+        """Merge with recent prices from live_px_future as fallback."""
+        time_limit = self.start_time - timedelta(minutes=self.recent_threshold_minutes)
+        time_str = time_limit.strftime("%Y-%m-%d %H:%M:%S")
+
+        sql = f"""
+            SELECT J.conid, L.price AS investing
+            FROM (
+                SELECT conid, MAX(timestamp) AS timestamp
+                FROM live_px_future
+                GROUP BY conid
+            ) J
+            LEFT JOIN live_px_future L ON L.conid = J.conid AND L.timestamp = J.timestamp
+            WHERE J.timestamp >= '{time_str}'
+        """
+        dat_px = self.db.select(sql)
+        if dat_px.empty:
+            dat["investing"] = np.nan
+            return dat
+        return dat.merge(dat_px, on="conid", how="left")
+
+    # -- Price calculation (same logic as FuturePriceRetriever) ---------------
+
+    def _calc_prices(self, dat: pd.DataFrame) -> pd.DataFrame:
+        """Calculate weighted-average best price for each row."""
+        dat["price"] = np.nan
+        for i in range(len(dat)):
+            self._calc_single_price(dat, i)
+        return dat
+
+    @staticmethod
+    def _calc_single_price(dat: pd.DataFrame, i: int) -> None:
+        """Determine best usable price for row i.
+
+        Weights: mid=400, last=200, histo=200, book=100, investing=1.
+        """
+        bid = dat["bid"].values[i]
+        ask = dat["ask"].values[i]
+        last = dat["last"].values[i]
+        histo = dat["histo"].values[i]
+        book = dat["book"].values[i]
+        investing = dat["investing"].values[i] if "investing" in dat.columns else np.nan
+
+        mid = np.nan
+
+        if np.isnan(bid) or np.isnan(ask):
+            bid = ask = np.nan
+        elif ask <= bid:
+            bid = ask = np.nan
+        else:
+            mid = 0.5 * (bid + ask)
+            bid_ask_pct = 100 * (ask - bid) / mid
+            if bid_ask_pct > 0.1:
+                bid = ask = mid = np.nan
+            elif bid_ask_pct <= 0.002:
+                last = histo = book = np.nan
+
+        if not np.isnan(mid):
+            if not np.isnan(last) and not (bid <= last <= ask):
+                last = np.nan
+            if not np.isnan(histo) and not (bid <= histo <= ask):
+                histo = np.nan
+            if not np.isnan(book) and not (bid <= book <= ask):
+                book = np.nan
+
+        prices = pd.DataFrame({
+            "weight": [400, 200, 200, 100, 1],
+            "price": [mid, last, histo, book, investing],
+        }).dropna(subset=["price"])
+
+        price = np.nan
+        if len(prices) > 0:
+            price = (prices["weight"] * prices["price"]).sum() / prices["weight"].sum()
+
+        dat["mid"].values[i] = mid
+        dat["price"].values[i] = price
+
+    # -- Save -----------------------------------------------------------------
+
+    def _save(self, dat: pd.DataFrame) -> None:
+        """Save prices to CSV and DB."""
+        out_cols = ["conid", "timestamp",
+                    "bid", "ask", "mid", "last", "histo", "book",
+                    "investing", "price"]
+        # Ensure all columns exist
+        for col in out_cols:
+            if col not in dat.columns:
+                dat[col] = np.nan
+
+        dat.to_csv(self.file_path + "px_live_exec.csv", index=False)
+        dat_db = dat[out_cols]
+        self.db.replace("live_px_exec", dat_db)
+        logger.info("Saved %d exec prices to live_px_exec", len(dat_db))
