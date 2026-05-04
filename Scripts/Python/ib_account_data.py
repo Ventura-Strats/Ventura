@@ -14,16 +14,16 @@ ACCOUNT_IDS = [1, 2]
 
 def main(ctx: ScriptContext) -> None:
     timestamp_str = ctx.start_time.strftime("%Y-%m-%d %H:%M:%S")
-    port = IBConnection.get_port(1, ctx.config.this_computer)
     client_id = IBConnection.get_client_id(ctx.script_name, ctx.db, ctx.config.data_dir)
 
-    with IBConnection(port=port, client_id=client_id, readonly=True) as conn:
-        retriever = AccountDataRetriever(conn, ctx.db, ctx.config, timestamp_str)
+    retriever = AccountDataRetriever(db=ctx.db, cfg=ctx.config, timestamp_str=timestamp_str)
 
-        for account_id in ACCOUNT_IDS:
-            retriever.get_account_data(account_id)
+    for account_id in ACCOUNT_IDS:
+        port = IBConnection.get_port(account_id, ctx.config.this_computer)
+        with IBConnection(port=port, client_id=client_id, readonly=True) as conn:
+            retriever.get_account_data(account_id, conn)
 
-        retriever.save_fx_to_db()
+    retriever.save_fx_to_db()
 
 
 if __name__ == "__main__":

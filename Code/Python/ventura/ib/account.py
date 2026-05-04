@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
+from typing import Dict
 
 import pandas as pd
 
@@ -31,23 +32,19 @@ class AccountDataRetriever:
 
     Usage::
 
-        with IBConnection(port=7497, client_id=123) as conn:
-            retriever = AccountDataRetriever(conn, db, cfg, timestamp_str)
-            retriever.get_account_data(account_id=1)
-
-    After calling ``get_account_data`` for all accounts::
-
+        retriever = AccountDataRetriever(db=db, cfg=cfg, timestamp_str=ts)
+        for account_id in [1, 2]:
+            with IBConnection(port=get_port(account_id), ...) as conn:
+                retriever.get_account_data(account_id, conn)
         retriever.save_fx_to_db()
     """
 
     def __init__(
         self,
-        conn: IBConnection,
         db: Database,
         cfg: VenturaConfig,
         timestamp_str: str,
     ) -> None:
-        self.conn = conn
         self.db = db
         self.cfg = cfg
         self.timestamp_str = timestamp_str
@@ -58,17 +55,20 @@ class AccountDataRetriever:
         self.path_px_position = data_dir + "Px_Position/"
 
         # Accumulated across accounts for FX/position DB writes
-        self._account_dfs: dict[int, pd.DataFrame] = {}
+        self._account_dfs: Dict[int, pd.DataFrame] = {}
 
     # -- Main entry point per account --------------------------------------
 
-    def get_account_data(self, account_id: int) -> None:
-        """Retrieve and save account data for one IB account."""
+    def get_account_data(self, account_id: int, conn: IBConnection) -> None:
+        """Retrieve and save account data for one IB account.
+
+        Each account requires its own IBConnection (different port per account).
+        """
         print_banner(f"Retrieving data for account {account_id}")
 
         # Request account summary + portfolio from IB
-        account_values = self._fetch_account_values()
-        portfolio = self._fetch_portfolio(account_id)
+        account_values = self._fetch_account_values(conn)
+        portfolio = self._fetch_portfolio(conn, account_id)
 
         if account_values.empty or portfolio.empty:
             print_banner(
@@ -89,9 +89,9 @@ class AccountDataRetriever:
 
     # -- IB data fetching --------------------------------------------------
 
-    def _fetch_account_values(self) -> pd.DataFrame:
+    def _fetch_account_values(self, conn: IBConnection) -> pd.DataFrame:
         """Fetch account values (key/value/currency rows) via ib_insync."""
-        values = self.conn.ib.accountValues()
+        values = conn.ib.accountValues()
         if not values:
             return pd.DataFrame()
 
@@ -101,9 +101,9 @@ class AccountDataRetriever:
         ]
         return pd.DataFrame(rows)
 
-    def _fetch_portfolio(self, account_id: int) -> pd.DataFrame:
+    def _fetch_portfolio(self, conn: IBConnection, account_id: int) -> pd.DataFrame:
         """Fetch portfolio positions via ib_insync, format to match old CSV."""
-        positions = self.conn.ib.portfolio()
+        positions = conn.ib.portfolio()
         if not positions:
             return pd.DataFrame()
 
