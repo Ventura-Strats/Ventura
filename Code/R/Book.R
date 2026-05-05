@@ -1711,7 +1711,7 @@ function () {
     )
 }
 B.readTradesFromIB <-
-function (this_account_id, this_query) {
+function (this_account_id, this_query, insert_db = FALSE) {
     
     ####################################################################################################
     ### Script variables
@@ -1720,14 +1720,14 @@ function (this_account_id, this_query) {
     
     ib_token <- switch(
         this_account_id,
-        "1" = "106713781439309215279050",
-        "2" = "5179386948882217289232"
+        "1" = "117385057084061585882317",
+        "2" = "955177704544548098011996"
     )
     
     flex_query_id <- switch(
         this_account_id, 
         "1" = switch(this_query, "Trades" = 193803, "Trades_Today" = 235641, "PnL" = 254909),
-        "2" = switch(this_query, "Trades" = 254481, "Trades_Today" = 254717)
+        "2" = switch(this_query, "Trades" = 476987, "Trades_Today" = 476988)
     )
     
     url_ib <- "https://gdcdyn.interactivebrokers.com/Universal/servlet/FlexStatementService."
@@ -1791,12 +1791,79 @@ function (this_account_id, this_query) {
     retrieveIBReport <- function(ib_code)
         U.tryNull(retrieveIBReport_Try, ib_code)
     
+    renderOutput <- function(dat) {
+        if (insert_db) {
+            max_leg_id <- U.vectorize(D.select("SELECT MAX(leg_id) FROM book_trade_leg"))
+            all_legs <- D.loadTable("book_trade_leg")
+            dat$leg_id <- 0
+            dat <- dat %>% 
+                rename(
+                    ib_trade_id = TradeID,
+                    ib_exec_id = ExecID,
+                    identifier = Conid,
+                    timestamp = "Date.Time", 
+                    size = Quantity,
+                    price = Price,
+                    ccy = CommissionCurrency,
+                    tax = Tax
+                ) %>%
+                mutate(
+                    buy_sell = sign(size),
+                    size = abs(size),
+                    fees = Commission + BrokerExecutionCommission + BrokerClearingCommission + 
+                        ThirdPartyExecutionCommission + ThirdPartyClearingCommission +
+                        ThirdPartyRegulatoryCommission + OtherCommission,
+                    fees = case_when(is.na(fees) ~ 0, TRUE ~ fees),
+                    timestamp = as.POSIXct(timestamp, format = "%Y%m%d;%H%M%S", tz="America/New_York"),
+                    timestamp = format(timestamp, tz="Europe/London"),
+                    timestamp = as.POSIXct(timestamp)
+                ) %>%
+                left_join(select(CURRENCIES, ccy_id, ccy), by="ccy") %>%
+                rename(fees_ccy_id = ccy_id) %>%
+                left_join(
+                    INSTRUMENTS %>% 
+                        filter(substr(asset_class, 1, 2) == "fx") %>%
+                        select(instrument_id, conid_spot) %>% 
+                        rename(identifier = conid_spot), 
+                    by="identifier"
+                ) %>%
+                mutate(
+                    identifier = case_when(
+                        !is.na(instrument_id) ~ instrument_id,
+                        TRUE ~ identifier
+                    )
+                ) %>%
+                left_join(
+                    select(INSTRUMENTS, instrument_id, pair) %>% 
+                        rename(identifier = instrument_id), 
+                    by="identifier"
+                ) %>%
+                select(
+                    leg_id, ib_trade_id, ib_exec_id, account_id, identifier,
+                    timestamp, buy_sell, size, price, fees, fees_ccy_id, tax, pair
+                ) %>% 
+                arrange(timestamp) %>% 
+                anti_join(all_legs, by="ib_exec_id")
+            
+            print(dat)
+            
+            if (nrow(dat) > 0) {
+                dat$leg_id <- max_leg_id + 1:nrow(dat)
+                dat %>% 
+                    select(-pair) %>%
+                    D.insertDataIntoTable("book_trade_leg", ., FALSE)
+            }
+        }
+        dat
+    }
+    
     ####################################################################################################
     ### Script
     ####################################################################################################
     
     retrievePageLinkCode() %>%
-        retrieveIBReport
+        retrieveIBReport %>% 
+        renderOutput
 }
 B.recentLegsNotMatched <-
 function () 
