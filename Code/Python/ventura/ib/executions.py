@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
+from typing import List, Optional
 
 import pandas as pd
+import pytz
 
 from ventura.config import VenturaConfig
 from ventura.db import Database
@@ -28,11 +30,10 @@ class ExecutionReader:
 
     Usage::
 
-        with IBConnection(port=7497, client_id=5) as conn:
-            reader = ExecutionReader(conn, db, cfg, start_time)
-            reader.read_executions(account_id=1)
-            reader.read_executions(account_id=2)
-            all_fills = reader.all_executions()
+        reader = ExecutionReader(db=db, cfg=cfg, start_time=start_time)
+        for account_id in [1, 2]:
+            with IBConnection(port=get_port(account_id), ...) as conn:
+                reader.read_executions(account_id, conn)
 
         reader.save_to_files()
         reader.save_to_db()
@@ -40,12 +41,10 @@ class ExecutionReader:
 
     def __init__(
         self,
-        conn: IBConnection,
         db: Database,
         cfg: VenturaConfig,
         start_time: datetime,
     ) -> None:
-        self.conn = conn
         self.db = db
         self.cfg = cfg
         self.start_time = start_time
@@ -68,15 +67,18 @@ class ExecutionReader:
         self._file_last = "executions_last.csv"
 
         # Accumulated results
-        self._results: list[pd.DataFrame] = []
+        self._results: List[pd.DataFrame] = []
 
     # -- Main entry point per account --------------------------------------
 
-    def read_executions(self, account_id: int) -> pd.DataFrame:
-        """Fetch executions for one account and accumulate."""
+    def read_executions(self, account_id: int, conn: IBConnection) -> pd.DataFrame:
+        """Fetch executions for one account and accumulate.
+
+        Each account requires its own IBConnection (different port per account).
+        """
         print_banner(f"Reading executions for account {account_id}")
 
-        fills = self.conn.ib.fills()
+        fills = conn.ib.fills()
         if not fills:
             logger.info("No fills returned for account %s", account_id)
             return pd.DataFrame()
@@ -129,7 +131,7 @@ class ExecutionReader:
 
     # -- Identifier resolution ---------------------------------------------
 
-    def _find_identifier(self, contract) -> int | None:
+    def _find_identifier(self, contract) -> Optional[int]:
         """Map an IB contract to a Ventura identifier.
 
         FX:      instrument_id matched by pair (e.g. EURUSD)
@@ -144,19 +146,19 @@ class ExecutionReader:
             return self._match_stock_conid(contract)
         return None
 
-    def _match_fx_pair(self, contract) -> int | None:
+    def _match_fx_pair(self, contract) -> Optional[int]:
         pair = contract.symbol + contract.currency
         matches = self._instruments[self._instruments["pair"] == pair]
         if len(matches) > 0:
             return int(matches["instrument_id"].values[0])
         return None
 
-    def _match_future_conid(self, contract) -> int | None:
+    def _match_future_conid(self, contract) -> Optional[int]:
         if contract.conId in self._future_expiry["conid"].values:
             return int(contract.conId)
         return None
 
-    def _match_stock_conid(self, contract) -> int | None:
+    def _match_stock_conid(self, contract) -> Optional[int]:
         if contract.conId in self._etf["conid"].values:
             return int(contract.conId)
         return None
@@ -164,12 +166,25 @@ class ExecutionReader:
     # -- Timestamp parsing -------------------------------------------------
 
     @staticmethod
-    def _parse_execution_time(time_str: str) -> datetime:
-        """Parse IB execution time string with dynamic timezone.
+    def _parse_execution_time(time_val) -> datetime:
+        """Convert IB execution time to naive local datetime.
 
-        IB format: ``"20260106  06:15:51 Europe/London"``
-        Falls back to Asia/Hong_Kong if no timezone in the string.
+        ib_insync provides ``execution.time`` as a timezone-aware
+        ``datetime`` object (UTC).  Convert to local TZ and strip tzinfo.
+
+        Also handles the legacy string format ``"20260106  06:15:51 Europe/London"``
+        just in case.
         """
+        if isinstance(time_val, datetime):
+            # ib_insync gives us a tz-aware datetime (typically UTC)
+            if time_val.tzinfo is None:
+                dt = pytz.timezone(TZ_LOCAL).localize(time_val)
+            else:
+                dt = time_val.astimezone(pytz.timezone(TZ_LOCAL))
+            return dt.replace(tzinfo=None)
+
+        # Legacy string format fallback
+        time_str = str(time_val)
         parts = time_str.rsplit(" ", 1)
         if len(parts) == 2 and "/" in parts[1]:
             datetime_str = parts[0].strip()

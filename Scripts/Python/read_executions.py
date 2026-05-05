@@ -13,14 +13,14 @@ ACCOUNT_IDS = [1, 2]
 
 
 def main(ctx: ScriptContext) -> None:
-    port = IBConnection.get_port(1, ctx.config.this_computer)
     client_id = IBConnection.get_client_id(ctx.script_name, ctx.db, ctx.config.data_dir)
 
-    with IBConnection(port=port, client_id=client_id, readonly=True) as conn:
-        reader = ExecutionReader(conn, ctx.db, ctx.config, ctx.start_time)
+    reader = ExecutionReader(db=ctx.db, cfg=ctx.config, start_time=ctx.start_time)
 
-        for account_id in ACCOUNT_IDS:
-            reader.read_executions(account_id)
+    for account_id in ACCOUNT_IDS:
+        port = IBConnection.get_port(account_id, ctx.config.this_computer)
+        with IBConnection(port=port, client_id=client_id, readonly=True) as conn:
+            reader.read_executions(account_id, conn)
 
     reader.save_to_files()
     reader.save_to_db()
